@@ -1,0 +1,122 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* Global Colors */
+    --global-bg-1: #161616;
+    --global-bg-2: #1b1b1b;
+    --global-bg-3: #2c2c2c;
+    --global-bg-4: #c0c0c0;
+    --global-bg-5: #e63e21;
+    --global-bg-6: #f4f4f4;
+    --global-bg-7: #ffffff;
+    --global-bg-8: #ffffffcc;
+    
+    /* Text Colors */
+    --global-text-1: #000000;
+    --global-text-2: #0000007f;
+    --global-text-3: #9e9e9e;
+    --global-text-4: #c0c0c0;
+    --global-text-5: #da0083;
+    --global-text-6: #f25034;
+    --global-text-7: #f35034;
+    --global-text-8: #fdfdfd;
+    --global-text-9: #ffffff;
+    
+    /* Header Colors */
+    --header-bg-1: #f35034;
+    
+    /* Primary Colors */
+    --primary-background: #f35034;
+    --primary-foreground: #ffffff;
+    --primary-light: #f56042;
+    --primary-dark: #e63e21;
+
+    /* Secondary Colors */
+    --secondary-background: #1b1b1b;
+    --secondary-foreground: #ffffff;
+    --secondary-light: #2c2c2c;
+    --secondary-dark: #161616;
+
+    /* Border Colors */
+    --border-primary: #262626;
+    --border-secondary: #c0c0c0;
+    --border-light: #f4f4f4;
+    --border-dark: #161616;
+
+    /* Text Colors */
+    --text-primary: #ffffff;
+    --text-secondary: #c0c0c0;
+    --text-muted: #9e9e9e;
+    --text-accent: #f35034;
+
+    /* Background Colors */
+    --bg-main: #161616;
+    --bg-card: #1b1b1b;
+    --bg-overlay: #2c2c2c;
+  }
+}
+
+@layer utilities {
+  /* Global Backgrounds */
+  .bg-global-1 {
+    background-color: var(--global-bg-1);
+  }
+  .bg-global-2 {
+    background-color: var(--global-bg-2);
+  }
+  .bg-global-3 {
+    background-color: var(--global-bg-3);
+  }
+  .bg-global-4 {
+    background-color: var(--global-bg-4);
+  }
+  .bg-global-5 {
+    background-color: var(--global-bg-5);
+  }
+  .bg-global-6 {
+    background-color: var(--global-bg-6);
+  }
+  .bg-global-7 {
+    background-color: var(--global-bg-7);
+  }
+  .bg-global-8 {
+    background-color: var(--global-bg-8);
+  }
+
+  /* Global Text Colors */
+  .text-global-1 {
+    color: var(--global-text-1);
+  }
+  .text-global-2 {
+    color: var(--global-text-2);
+  }
+  .text-global-3 {
+    color: var(--global-text-3);
+  }
+  .text-global-4 {
+    color: var(--global-text-4);
+  }
+  .text-global-5 {
+    color: var(--global-text-5);
+  }
+  .text-global-6 {
+    color: var(--global-text-6);
+  }
+  .text-global-7 {
+    color: var(--global-text-7);
+  }
+  .text-global-8 {
+    color: var(--global-text-8);
+  }
+  .text-global-9 {
+    color: var(--global-text-9);
+  }
+
+  /* Header Colors */
+  .bg-header-1 {
+    background-color: var(--header-bg-1);
+  }
+}
