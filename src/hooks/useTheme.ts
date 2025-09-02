@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 type Theme = 'light' | 'dark';
 
 export const useTheme = () => {
-  const [theme, setTheme] = useState<Theme>('dark');
+  const [theme, setTheme] = useState<Theme>('light');
 
   useEffect(() => {
     // Check for saved theme preference or default to 'dark'

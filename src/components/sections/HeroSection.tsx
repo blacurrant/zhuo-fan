@@ -30,14 +30,32 @@ const HeroSection: React.FC = () => {
         <div className="container mx-auto">
           {/* Main Content Area */}
           <div className="relative">
-            {/* Profile Image - Positioned absolutely in top right */}
+            {/* Profile Image - Top right on desktop, top left on mobile */}
             <motion.div
               initial={{ opacity: 0, scale: 0.8 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.8, delay: 0.5 }}
-              className="absolute top-0 right-0 hidden md:block"
+              className="absolute top-0 right-0 md:block hidden"
             >
               <div className="w-32 h-32 lg:w-40 lg:h-40 rounded-full bg-gray-200 dark:bg-gray-700 overflow-hidden shadow-lg">
+                <Image
+                  src="/pfp.jpg"
+                  alt="Profile"
+                  width={500}
+                  height={500}
+                  className="w-full h-full object-cover"
+                />
+              </div>
+            </motion.div>
+
+            {/* Mobile Profile Image - Top Left */}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.8, delay: 0.2 }}
+              className="md:hidden mb-8"
+            >
+              <div className="w-24 h-24 rounded-full bg-gray-200 dark:bg-gray-700 overflow-hidden shadow-lg">
                 <Image
                   src="/pfp.jpg"
                   alt="Profile"
@@ -78,7 +96,7 @@ const HeroSection: React.FC = () => {
               initial={{ opacity: 0, y: 50 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.7 }}
-              className="grid grid-cols-1 md:grid-cols-2 gap-8 mt-16"
+              className="space-y-8 md:grid md:grid-cols-2 md:gap-8 md:space-y-0 mt-16"
             >
               {/* Email */}
               <motion.div
@@ -105,23 +123,7 @@ const HeroSection: React.FC = () => {
               </div>
             </motion.div>
 
-            {/* Mobile Profile Image */}
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.9 }}
-              className="md:hidden flex justify-center mt-12"
-            >
-              <div className="w-32 h-32 rounded-full bg-gray-200 dark:bg-gray-700 overflow-hidden shadow-lg">
-                <Image
-                  src="/pfp.jpg"
-                  alt="Profile"
-                  width={500}
-                  height={500}
-                  className="w-full h-full object-cover"
-                />
-              </div>
-            </motion.div>
+
           </div>
         </div>
       </main>
