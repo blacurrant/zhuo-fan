@@ -40,8 +40,8 @@
   },
   "scripts": {
     "dev": "next dev -p 4028",
-    "build": "npx @cloudflare/next-on-pages",
-    "start": "next dev -p 4028",
+    "build": "next build",
+    "start": "next start",
     "format": "prettier --write \"src/**/*.{ts,tsx,css,md,json}\"",
     "serve": "next start",
     "type-check": "tsc --noEmit"
