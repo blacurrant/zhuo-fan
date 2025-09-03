@@ -1,13 +1,17 @@
 'use client';
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import Image from 'next/image';
 import { motion, useScroll, useTransform } from 'framer-motion';
 import { Copy } from 'lucide-react';
 
 const HeroSection: React.FC = () => {
-  const { scrollYProgress } = useScroll();
-  const y = useTransform(scrollYProgress, [0, 1], ['0%', '50%']);
-  const opacity = useTransform(scrollYProgress, [0, 0.5], [1, 0]);
+  const sectionRef = useRef<HTMLDivElement | null>(null);
+  const { scrollYProgress } = useScroll({
+    target: sectionRef,
+    offset: ['start start', 'end start']
+  });
+  const scale = useTransform(scrollYProgress, [0, 1], [1, 0.7]);
+  const fade = useTransform(scrollYProgress, [0, 1], [1, 0.7]);
   const [showCopied, setShowCopied] = useState(false);
 
   const copyEmailToClipboard = async () => {
@@ -21,12 +25,13 @@ const HeroSection: React.FC = () => {
   };
 
   return (
-    <motion.div
-      // style={{ y, opacity }}
-      className="min-h-screen bg-white dark:bg-gray-950 transition-colors duration-300 pt-20"
+    <div
+      ref={sectionRef}
+      className="h-fit overflow-hidden bg-white dark:bg-gray-950 transition-colors duration-300 pt-32"
     >
+      <motion.div style={{ scale, opacity: fade }} className="h-full">
       {/* Hero Section */}
-      <main className="flex-1 px-6 py-4">
+      <main className="flex-1 px-8 py-4">
         <div className="container mx-auto">
           {/* Main Content Area */}
           <div className="relative">
@@ -139,7 +144,8 @@ const HeroSection: React.FC = () => {
           Email copied to clipboard!
         </motion.div>
       )}
-    </motion.div>
+      </motion.div>
+    </div>
   );
 };
 

@@ -1,0 +1,21 @@
+[
+  {
+    "slug": "melloup",
+    "title": "MelloUp",
+    "image": "/mello1.png",
+    "href": "/works/melloup"
+  },
+  {
+    "slug": "ibasho",
+    "title": "Ibasho",
+    "image": "/ibasho1.png",
+    "href": "/works/ibasho"
+  },
+  {
+    "slug": "portfolio",
+    "title": "Portfolio",
+    "image": "/portofolio.png",
+    "href": "/home"
+  }
+]
+

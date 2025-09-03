@@ -14,7 +14,7 @@ const ContactSection: React.FC = () => {
         <div className="absolute top-60 left-1/2 w-1 h-1 bg-white rounded-full"></div>
       </div>
 
-      <div className="relative z-1 px-6 py-16">
+      <div className="relative z-1 px-6 py-8">
         <div className="container mx-auto">
           {/* Social Links - Top Right */}
           <motion.div

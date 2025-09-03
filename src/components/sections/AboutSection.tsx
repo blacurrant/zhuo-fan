@@ -10,7 +10,7 @@ const AboutSection: React.FC = () => {
   return (
     <motion.section 
       // style={{ y }}
-      className="bg-white dark:bg-gray-950 py-16 px-6"
+      className="bg-white dark:bg-gray-950 py-16"
     >
       <div className="container mx-auto">
         {/* Section Header */}
@@ -18,18 +18,11 @@ const AboutSection: React.FC = () => {
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
-          className="flex justify-between items-center mb-8 pb-4 border-b border-gray-200 dark:border-gray-700"
+          className="flex justify-between items-center mb-8 pb-4 border-b border-gray-950 dark:border-gray-300  px-6"
         >
           <h2 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white">
             about.
           </h2>
-          {/* <motion.button 
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            className="px-4 py-2 text-sm border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
-          >
-            Show More
-          </motion.button> */}
         </motion.div>
 
         {/* About Content */}
@@ -39,11 +32,11 @@ const AboutSection: React.FC = () => {
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.2 }}
-            className="max-w-5xl p-6 lg:p-8"
+            className="max-w-4xl p-6 lg:p-8"
           >
             <p className="text-xl lg:text-4xl font-medium text-gray-900 dark:text-white leading-relaxed tracking-wide">
-            I am a Fullstack Developer with 2 years of experience crafting responsive web apps using React.js, Next.js and
-                  TailwindCSS. Expert in blending UI design with REST API integration to deliver seamless web solutions
+            Fullstack Developer with 2+ years of experience crafting beautiful & responsive web apps using React.js, Next.js and
+                  TailwindCSS.
                 
             </p>
           </motion.div>
@@ -81,8 +74,8 @@ const AboutSection: React.FC = () => {
               >
                 <div>
                   <p className="text-lg lg:text-xl text-gray-900 dark:text-white leading-relaxed">
-                    me and milo (Say Hi!) are dedicated to crafting beautiful and highly functional designs that
-                    seamlessly align with our clients' unique needs and long-term goals.
+                  ✨ Hi from me and Daisy! (Say hi! 👋)
+We pour our hearts into creating designs that aren't just pretty — it should be something people enjoy using, remember, and come back to.
                   </p>
                   
                 </div>
