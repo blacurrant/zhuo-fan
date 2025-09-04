@@ -82,7 +82,7 @@ const HeroSection: React.FC = () => {
                 initial={{ opacity: 0, x: -100 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.8, delay: 0.3 }}
-                className="uppercase text-6xl font-semibold md:font-medium md:text-8xl lg:text-9xl xl:text-[12rem] text-gray-900 dark:text-white leading-none tracking-tighter"
+                className="uppercase text-5xl font-bold md:font-medium md:text-8xl lg:text-9xl xl:text-[12rem] text-gray-900 dark:text-white leading-none tracking-tighter"
               >
                 Nishant
               </motion.h1>
@@ -90,7 +90,7 @@ const HeroSection: React.FC = () => {
                 initial={{ opacity: 0, x: -100 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.8, delay: 0.5 }}
-                className="uppercase text-6xl font-semibold md:font-medium md:text-8xl lg:text-9xl xl:text-[12rem] text-gray-900 dark:text-white leading-none tracking-tighter"
+                className="uppercase text-5xl font-bold md:font-medium md:text-8xl lg:text-9xl xl:text-[12rem] text-gray-900 dark:text-white leading-none tracking-tighter"
               >
                 Choudhary
               </motion.h1>

@@ -189,7 +189,7 @@ const HomePage: React.FC = () => {
       <div className="w-full max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex flex-col justify-start items-center w-full gap-[20px] pt-[24px] pb-[32px] sm:pb-[48px] lg:pb-[64px] px-[56px] sm:px-[84px] lg:px-[112px]">
           {/* Header Section */}
-          <Header />
+          {/* <Header /> */}
 
           {/* Main Content */}
           <div className="flex flex-col gap-[20px] justify-start items-center w-full">
