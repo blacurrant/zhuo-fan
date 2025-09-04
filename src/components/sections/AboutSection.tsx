@@ -35,7 +35,7 @@ const AboutSection: React.FC = () => {
             className="max-w-4xl p-6 lg:p-8"
           >
             <p className="text-xl lg:text-4xl font-medium text-gray-900 dark:text-white leading-relaxed tracking-wide">
-            Fullstack Developer with 2+ years of experience crafting beautiful & responsive web apps using React.js, Next.js and
+            Frontend Developer and Designer with 2+ years of experience crafting beautiful & responsive web apps using React.js, Next.js and
                   TailwindCSS.
                 
             </p>

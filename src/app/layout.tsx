@@ -2,6 +2,7 @@ import React from 'react';
 import '../styles/index.css';
 import Navbar from '@/components/sections/Navbar';
 import InvertCursor from '@/components/ui/InvertCursor';
+import Noise from '@/components/ui/Noise';
 
 export const viewport = {
   width: 'device-width',
@@ -56,6 +57,22 @@ export default function RootLayout({
       </head>
       <body className="antialiased relative flex">
         <div className="w-full relative">
+          <div
+            style={{
+              position: 'fixed',
+              inset: 0, 
+              zIndex: -1, 
+              pointerEvents: 'none',
+            }}
+          >
+            <Noise
+              patternSize={250}
+              patternScaleX={1}
+              patternScaleY={1}
+              patternRefreshInterval={2}
+              patternAlpha={15}
+            />
+          </div>
           <InvertCursor />
           <Navbar />
           {children}

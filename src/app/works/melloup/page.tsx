@@ -23,13 +23,13 @@ export default function MelloupCase() {
           </p>
         </div>
 
-        <div className="w-full h-96 md:h-[600px] bg-gray-100 rounded-lg mb-20">
+        <div className="w-full h-96 md:h-full bg-gray-100 rounded-lg mb-20">
           <Image
-            src=""
+            src="/melloup/melloup.png"
             alt="Melloup MVP dashboard showing ROI metrics, lead quality insights, and engagement tracking"
             width={1200}
-            height={600}
-            className="w-full h-full object-cover rounded-lg"
+            height={1000}
+            className="w-full h-full object-cover rounded-lg brightness-125"
           />
         </div>
       </section>

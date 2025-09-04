@@ -56,11 +56,11 @@ const ContactSection: React.FC = () => {
               className="space-y-4"
             >
               <h2 className="text-4xl md:text-5xl lg:text-6xl font-light leading-tight">
-                Curious about what we can create <span className="text-gray-400">together?</span>
+                Curious about what we can create <span className="bg-gradient-to-r from-white to-transparent bg-clip-text text-transparent">together?</span>
               </h2>
-              <h3 className="text-4xl md:text-5xl lg:text-6xl font-light leading-tight">
+              {/* <h3 className="text-4xl md:text-5xl lg:text-6xl font-light leading-tight">
                 Let's bring something extraordinary <span className="text-gray-400">to life!</span>
-              </h3>
+              </h3> */}
             </motion.div>
 
             {/* CTA Buttons */}

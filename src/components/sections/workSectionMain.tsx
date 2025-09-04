@@ -3,7 +3,7 @@ import React from 'react';
 import Image from 'next/image';
 import { motion, useScroll, useTransform } from 'framer-motion';
 import Button from '../ui/Button';
-import { CircleArrowOutUpRight } from 'lucide-react';
+import { ArrowUpRight, CircleArrowOutUpRight } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 
 // 1. Your JSON data (this could be imported from a file instead)
@@ -32,10 +32,10 @@ const projects = [
     title: 'Portfolio',
     sub: 'Landing Page',
     role: '',
-    image: '/portfolio/portfolio.png',
+    image: '/awwards.png',
     alt: 'Portfolio Project',
-    route: '/home',
-    gradient: '',
+    route: '',
+    gradient: 'brightness-125 object-contain',
     ctaBg: 'bg-white',
   },
   // Add more projects as needed
@@ -72,15 +72,18 @@ const WorkSection: React.FC = () => {
               onClick={() => router.push(project.route)}
               className="group cursor-pointer bg-white"
             >
-              <div className={`h-full relative rounded-sm flex flex-col gap-2 bg-white dark:bg-gray-950`}>
-                <div className='rounded-sm'>
+              <div className={` h-full relative rounded-sm flex flex-col gap-2 bg-white dark:bg-gray-950`}>
+                <div className='group w-full h-[40vh] lg:h-[60vh] overflow-hidden rounded-sm'>
                   <Image
                     src={project.image}
                     alt={project.alt}
                     width={1000}
                     height={1000}
-                    className={`w-full h-[40vh] lg:h-[60vh] object-cover filter rounded-sm ${project.gradient}`}
+                    className={`w-full h-[40vh] lg:h-[60vh] object-cover filter rounded-sm ${project.gradient} hover:scale-105 hover:opacity-90 transform ease-in-out duration-500`}
                   />
+                  <div className='absolute top-3 right-3 group-hover:translate-x-2 group-hover:-translate-y-2 transform ease-in-out duration-300'>
+                    <ArrowUpRight className='text-white' />
+                  </div>
                 </div>
 
                 <div className="w-full h-fit flex justify-between items-center bg:white dark:bg-gray-950 py-1 text-black dark:text-white">
