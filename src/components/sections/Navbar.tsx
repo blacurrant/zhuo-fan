@@ -3,6 +3,7 @@ import React from 'react';
 import ThemeToggle from '@/components/ui/ThemeToggle';
 import Button from '../ui/Button';
 import { useRouter } from 'next/navigation';
+import Image from 'next/image';
 
 const Navbar: React.FC = () => {
   const handleDownloadCV = () => {
@@ -16,7 +17,10 @@ const Navbar: React.FC = () => {
 
   return (
     <nav className="z-50 fixed top-0 left-0 right-0 h-fit flex justify-between items-center px-8 py-4 bg-white dark:bg-gray-950 shadow ">
-      <div onClick={() => router.push('/')} className="text-2xl font-bold text-gray-900 dark:text-white">NC</div>
+      <div onClick={() => router.push('/')} className="font-mono text-3xl font-bold text-gray-900 dark:text-white">NC</div>
+      {/* <div onClick={() => router.push('/')} className="w-12 h-12 font-bold text-gray-900 dark:text-white">
+        <Image src="/logo.png" alt='logo' width={300} height={300} className='object-cover' />
+      </div> */}
       <div className="flex items-center space-x-8">
         {/* <a
           href="#"

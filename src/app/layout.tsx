@@ -61,7 +61,7 @@ export default function RootLayout({
             style={{
               position: 'fixed',
               inset: 0, 
-              zIndex: -1, 
+              zIndex: 200, 
               pointerEvents: 'none',
             }}
           >

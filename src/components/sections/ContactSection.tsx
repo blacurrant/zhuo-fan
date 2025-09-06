@@ -4,15 +4,15 @@ import { motion } from 'framer-motion';
 
 const ContactSection: React.FC = () => {
   return (
-    <section className="min-h-screen bg-black text-white relative overflow-hidden">
+    <section className="min-h-fit bg-black text-white relative overflow-hidden">
       {/* Background Pattern */}
-      <div className="absolute inset-0 opacity-10">
+      {/* <div className="absolute inset-0 opacity-10">
         <div className="absolute top-20 left-20 w-2 h-2 bg-white rounded-full"></div>
         <div className="absolute top-40 right-32 w-1 h-1 bg-white rounded-full"></div>
         <div className="absolute bottom-32 left-16 w-1.5 h-1.5 bg-white rounded-full"></div>
         <div className="absolute bottom-20 right-20 w-2 h-2 bg-white rounded-full"></div>
         <div className="absolute top-60 left-1/2 w-1 h-1 bg-white rounded-full"></div>
-      </div>
+      </div> */}
 
       <div className="relative z-1 px-6 py-8">
         <div className="container mx-auto">
@@ -47,7 +47,7 @@ const ContactSection: React.FC = () => {
           </motion.div>
 
           {/* Main Content */}
-          <div className="flex flex-col justify-center min-h-[60vh] space-y-12">
+          <div className="flex flex-col justify-center py-24 space-y-12">
             {/* Main Heading */}
             <motion.div
               initial={{ opacity: 0, y: 50 }}

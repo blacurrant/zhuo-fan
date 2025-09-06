@@ -27,20 +27,20 @@ const HeroSection: React.FC = () => {
   return (
     <div
       ref={sectionRef}
-      className="h-fit overflow-hidden bg-white dark:bg-gray-950 transition-colors duration-300 pt-32"
+      className="min-h-fit overflow-hidden bg-white dark:bg-gray-950 transition-colors duration-300 pt-32"
     >
-      <motion.div style={{ scale, opacity: fade }} className="h-full">
+      <motion.div style={{ opacity: fade }} className="h-full w-full">
         {/* Hero Section */}
-        <main className="flex-1 px-8 py-4">
-          <div className="container mx-auto">
+        <main className="flex-1 px-4 sm:px-8 py-4 w-full">
+          <div className="container mx-auto ">
             {/* Main Content Area */}
-            <div className="relative">
+            <div className="relative w-full">
               {/* Profile Image - Top right on desktop, top left on mobile */}
               <motion.div
                 initial={{ opacity: 0, scale: 0.8 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ duration: 0.8, delay: 0.5 }}
-                className="absolute top-0 right-0 md:block hidden"
+                className="absolute top-0 right-0 md:block hidden z-10"
               >
                 <div className="w-32 h-32 lg:w-40 lg:h-40 rounded-full bg-gray-200 dark:bg-gray-700 overflow-hidden shadow-lg">
                   <Image
@@ -60,7 +60,7 @@ const HeroSection: React.FC = () => {
                 transition={{ duration: 0.8, delay: 0.2 }}
                 className="md:hidden mb-8"
               >
-                <div className="w-24 h-24 rounded-full bg-gray-200 dark:bg-gray-700 overflow-hidden shadow-lg">
+                <div className="w-32 h-32 rounded-full bg-gray-200 dark:bg-gray-700 overflow-hidden shadow-lg">
                   <Image
                     src="/pfp.jpg"
                     alt="Profile"
@@ -76,13 +76,13 @@ const HeroSection: React.FC = () => {
                 initial={{ opacity: 0, y: 100 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 1, delay: 0.2 }}
-                className="mb-16"
+                className="w-full overflow-hidden"
               >
                 <motion.h1
                   initial={{ opacity: 0, x: -100 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ duration: 0.8, delay: 0.3 }}
-                  className="uppercase text-5xl font-bold md:font-medium md:text-8xl lg:text-9xl xl:text-[12rem] text-gray-900 dark:text-white leading-none tracking-tighter"
+                  className="uppercase text-6xl font-bold md:font-medium md:text-7xl lg:text-8xl xl:text-9xl 2xl:text-[12rem] text-gray-900 dark:text-white leading-none tracking-tight text-balance break-words"
                 >
                   Nishant
                 </motion.h1>
@@ -90,7 +90,7 @@ const HeroSection: React.FC = () => {
                   initial={{ opacity: 0, x: -100 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ duration: 0.8, delay: 0.5 }}
-                  className="uppercase text-5xl font-bold md:font-medium md:text-8xl lg:text-9xl xl:text-[12rem] text-gray-900 dark:text-white leading-none tracking-tighter"
+                  className="py-2 md:py-0 uppercase text-6xl font-bold md:font-medium md:text-7xl lg:text-8xl xl:text-9xl 2xl:text-[12rem] text-gray-900 dark:text-white leading-none tracking-tight text-balance break-words"
                 >
                   Choudhary
                 </motion.h1>
@@ -101,30 +101,23 @@ const HeroSection: React.FC = () => {
                 initial={{ opacity: 0, y: 50 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8, delay: 0.7 }}
-                className="space-y-8 md:grid md:grid-cols-2 md:gap-8 md:space-y-0 mt-16"
+                className="space-y-8 md:grid md:grid-cols-2 md:gap-8 md:space-y-0 mt-16 w-full"
               >
                 {/* Email */}
                 <motion.div
                   whileHover={{ scale: 1.05 }}
                   onClick={copyEmailToClipboard}
-                  className="cursor-pointer flex items-center space-x-2 text-black dark:text-gray-400"
+                  className="cursor-pointer flex items-center space-x-2 text-black dark:text-gray-400 w-full min-w-0"
                 >
-                  <span className="text-lg font-medium">nishantchoudhary.dev@gmail.com</span>
-                  <Copy size={16} />
+                  <span className="text-base sm:text-lg font-medium truncate">nishantchoudhary.dev@gmail.com</span>
+                  <Copy size={16} className="flex-shrink-0" />
                 </motion.div>
 
                 {/* Description */}
-                <div className='flex flex-col items-start'>
-                  {/* <p className="max-w-2xl text-xl lg:text-2xl text-black font-medium dark:text-gray-300 leading-relaxed">
-                  Hello, I am a Fullstack Developer with 2 years of experience crafting responsive web apps using React.js, Next.js and
-                  TailwindCSS. Expert in blending UI design with REST API integration to deliver seamless web solutions
-                </p> */}
-                  {/* <p className="max-w-2xl text-xl lg:text-2xl text-black font-medium dark:text-gray-300 leading-relaxed"> */}
-                  {/* <p className="text-black dark:text-white">pronounced /ni-shant: chow.dri/</p> */}
-
-                  <p className="max-w-2xl text-xl lg:text-2xl text-black font-medium dark:text-gray-300 leading-relaxed">
-                    Hello, I'm a Developer/Designer specializing in minimal design and optimised
-                    development with 2+ years of experience, based in India, working remote;;
+                <div className='w-full flex flex-col items-end'>
+                  <p className="w-full text-2xl text-black font-light md:font-medium dark:text-gray-300 leading-tight tracking-tight">
+                  <span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>                    
+                    Hello,  I'm a Developer/Designer who loves the idea of creating and has been doing so for over 2 years professionally,  based in India,  working remote;;
                   </p>
                 </div>
               </motion.div>

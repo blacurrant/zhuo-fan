@@ -27,26 +27,26 @@ const techLogos = [
   { node: <SiNextdotjs />, title: 'Next.js', href: 'https://nextjs.org' },
   { node: <SiTypescript />, title: 'TypeScript', href: 'https://www.typescriptlang.org' },
   { node: <SiTailwindcss />, title: 'Tailwind CSS', href: 'https://tailwindcss.com' },
-  { node: <SiJavascript />, title: 'Tailwind CSS', href: 'https://tailwindcss.com' },
-  { node: <SiGithub />, title: 'Tailwind CSS', href: 'https://tailwindcss.com' },
-  { node: <SiPython />, title: 'Tailwind CSS', href: 'https://tailwindcss.com' },
-  { node: <SiShadcnui />, title: 'Tailwind CSS', href: 'https://tailwindcss.com' },
-  { node: <SiHtml5 />, title: 'Tailwind CSS', href: 'https://tailwindcss.com' },
-  { node: <SiCss3 />, title: 'Tailwind CSS', href: 'https://tailwindcss.com' },
-  { node: <SiAdobe />, title: 'Tailwind CSS', href: 'https://tailwindcss.com' },
-  { node: <SiNodedotjs />, title: 'Tailwind CSS', href: 'https://tailwindcss.com' },
-  { node: <SiMongodb />, title: 'Tailwind CSS', href: 'https://tailwindcss.com' },
-  { node: <SiExpress />, title: 'Tailwind CSS', href: 'https://tailwindcss.com' },
+  { node: <SiJavascript />, title: 'JavaScript', href: 'https://developer.mozilla.org/en-US/docs/Web/JavaScript' },
+  { node: <SiGithub />, title: 'GitHub', href: 'https://github.com' },
+  { node: <SiPython />, title: 'Python', href: 'https://python.org' },
+  { node: <SiShadcnui />, title: 'Shadcn/ui', href: 'https://ui.shadcn.com' },
+  { node: <SiHtml5 />, title: 'HTML5', href: 'https://developer.mozilla.org/en-US/docs/Web/HTML' },
+  { node: <SiCss3 />, title: 'CSS3', href: 'https://developer.mozilla.org/en-US/docs/Web/CSS' },
+  { node: <SiAdobe />, title: 'Adobe', href: 'https://adobe.com' },
+  { node: <SiNodedotjs />, title: 'Node.js', href: 'https://nodejs.org' },
+  { node: <SiMongodb />, title: 'MongoDB', href: 'https://mongodb.com' },
+  { node: <SiExpress />, title: 'Express.js', href: 'https://expressjs.com' },
 ];
 
 const LandingPage: React.FC = () => {
   return (
-    <main className="relative w-full">
+    <main className="min-h-screen relative w-full overflow-x-hidden">
       {/* <Navbar /> */}
       <HeroSection />
       <WorkSection />
       <AboutSection />
-      <div className='bg-white dark:bg-gray-950' style={{ height: '100px', position: 'relative', overflow: 'hidden' }}>
+      <div className='bg-white dark:bg-gray-950 w-full overflow-hidden' style={{ height: '100px', position: 'relative' }}>
         <LogoLoop
           logos={techLogos}
           speed={120}
@@ -61,9 +61,9 @@ const LandingPage: React.FC = () => {
         />
       </div>
       {/* <ContactSection /> */}
-      <section className="sticky top-0 h-screen z-40">
+      {/* <section className="sticky top-0 h-screen z-40 w-full"> */}
         <ContactSection />
-      </section>
+      {/* </section> */}
     </main>
   );
 };
