@@ -7,15 +7,6 @@ import { ArrowRight, Link, Link2, X } from 'lucide-react';
 
 const works = [
   {
-    slug: 'melloup',
-    title: 'MELLOUP',
-    year: '2024',
-    description:
-      'a comprehensive social platform designed to connect music enthusiasts through collaborative playlists and real-time music discovery. Built with modern web technologies, featuring seamless integration with streaming services and innovative social features that revolutionize how people share and discover music together.',
-    images: ['/mello1.png', '/mello2.png'],
-    href: '/works/melloup',
-  },
-  {
     slug: 'ibasho',
     title: 'IBASHO',
     year: '2024',
@@ -23,6 +14,15 @@ const works = [
       'an immersive digital experience platform that bridges physical and virtual spaces. This project explores the intersection of architecture, technology, and human interaction, creating meaningful connections through carefully crafted digital environments that respond to user behavior and emotional states.',
     images: ['/ibasho1.png', '/ibasho2.png'],
     href: '/works/ibasho',
+  },
+  {
+    slug: 'melloup',
+    title: 'MELLOUP',
+    year: '2024',
+    description:
+      'a comprehensive social platform designed to connect music enthusiasts through collaborative playlists and real-time music discovery. Built with modern web technologies, featuring seamless integration with streaming services and innovative social features that revolutionize how people share and discover music together.',
+    images: ['/mello1.png', '/mello2.png'],
+    href: '/works/melloup',
   },
   {
     slug: 'portfolio',

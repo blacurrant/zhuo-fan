@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 
 const Navbar: React.FC = () => {
+  const [isPreviewOpen, setIsPreviewOpen] = React.useState(false);
   const handleDownloadCV = () => {
     const link = document.createElement('a');
     link.href = '/Nishant_fullstack_cv.pdf';
@@ -43,26 +44,52 @@ const Navbar: React.FC = () => {
         <Button
           variant="ghost"
           size="md"
-          onClick={handleDownloadCV}
+          onClick={() => setIsPreviewOpen(true)}
           className="hover:border hover:border-gray-300 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-[#1b1b1b] py-[8px] w-full sm:w-auto transition-all duration-200"
-          // rightIcon={
-          //   <svg
-          //     className="w-[20px] h-[20px] sm:w-[24px] sm:h-[24px]"
-          //     fill="none"
-          //     stroke="currentColor"
-          //     viewBox="0 0 24 24"
-          //   >
-          //     <path
-          //       strokeLinecap="round"
-          //       strokeLinejoin="round"
-          //       strokeWidth={2}
-          //       d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-          //     />
-          //   </svg>
-          // }
         >
-          Download CV
-        </Button> 
+          Preview CV
+        </Button>
+        {isPreviewOpen && (
+          <div
+            className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/60"
+            role="dialog"
+            aria-modal="true"
+          >
+            <div className="w-full max-w-5xl h-[80vh] bg-white dark:bg-gray-950 rounded-lg shadow-xl overflow-hidden flex flex-col">
+              <div className="flex items-center justify-between px-4 py-3 border-b border-gray-200 dark:border-gray-800">
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Nishant Fullstack CV</h3>
+                <div className="flex items-center gap-2">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="text-gray-700 dark:text-gray-300"
+                    onClick={handleDownloadCV}
+                  >
+                    Download
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="text-gray-700 dark:text-gray-300"
+                    onClick={() => setIsPreviewOpen(false)}
+                  >
+                    Close
+                  </Button>
+                </div>
+              </div>
+              <div className="flex-1 bg-gray-50 dark:bg-[#0f0f10]">
+                <iframe
+                  title="CV Preview"
+                  src="/Nishant_fullstack_cv.pdf#toolbar=0&navpanes=0&scrollbar=1"
+                  className="w-full h-full"
+                />
+              </div>
+              <div className="px-4 py-2 border-t border-gray-200 dark:border-gray-800 text-xs text-gray-500 dark:text-gray-400">
+                If the preview does not load, use the Download button above.
+              </div>
+            </div>
+          </div>
+        )}
         <ThemeToggle />
       </div>
     </nav>
