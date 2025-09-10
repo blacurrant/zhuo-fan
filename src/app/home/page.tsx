@@ -156,8 +156,8 @@ const HomePage: React.FC = () => {
 
   const handleDownloadCV = () => {
     const link = document.createElement('a');
-    link.href = '/Nishant_fullstack_cv.pdf';
-    link.download = 'Nishant_Fullstack_CV.pdf';
+    link.href = '/Nishant_Frontend_Resume.pdf';
+    link.download = 'Nishant_Frontend_Resume.pdf';
     link.click();
   };
 

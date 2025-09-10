@@ -1,10 +1,26 @@
 import React from 'react';
+import dynamic from 'next/dynamic';
 import HeroSection from '@/components/sections/HeroSection';
-import WorkSection from '@/components/sections/workSectionMain';
-import AboutSection from '@/components/sections/AboutSection';
-import Navbar from '@/components/sections/Navbar';
-import ContactSection from '@/components/sections/ContactSection';
-import LogoLoop from '@/components/ui/LogoLoop';
+
+const WorkSection = dynamic(() => import('@/components/sections/workSectionMain'), {
+  ssr: false,
+  loading: () => null,
+});
+
+const AboutSection = dynamic(() => import('@/components/sections/AboutSection'), {
+  ssr: false,
+  loading: () => null,
+});
+
+const ContactSection = dynamic(() => import('@/components/sections/ContactSection'), {
+  ssr: false,
+  loading: () => null,
+});
+
+const LogoLoop = dynamic(() => import('@/components/ui/LogoLoop'), {
+  ssr: false,
+  loading: () => null,
+});
 import {
   SiReact,
   SiNextdotjs,
@@ -42,7 +58,6 @@ const techLogos = [
 const LandingPage: React.FC = () => {
   return (
     <main className="min-h-screen relative w-full overflow-x-hidden">
-      {/* <Navbar /> */}
       <HeroSection />
       <WorkSection />
       <AboutSection />

@@ -1,8 +1,18 @@
 import React from 'react';
 import '../styles/index.css';
 import Navbar from '@/components/sections/Navbar';
-import InvertCursor from '@/components/ui/InvertCursor';
-import Noise from '@/components/ui/Noise';
+import dynamic from 'next/dynamic';
+import Script from 'next/script';
+
+const InvertCursor = dynamic(() => import('@/components/ui/InvertCursor'), {
+  ssr: false,
+  loading: () => null,
+});
+
+const Noise = dynamic(() => import('@/components/ui/Noise'), {
+  ssr: false,
+  loading: () => null,
+});
 
 export const viewport = {
   width: 'device-width',
@@ -77,20 +87,11 @@ export default function RootLayout({
           <Navbar />
           {children}
         </div>
-        {/* <div className="hidden lg:flex absolute top-0 bottom-0 right-0 w-[12%] bg-white dark:bg-black py-10">
-          <div className="z-0 h-screen w-full flex flex-col items-center justify-evenly">
-            <p className="w-7xl z-10 font-mono text-black dark:text-white text-md font-light rotate-90 p-4">
-              01/02
-            </p>
-            <p className="w-7xl z-10 font-mono text-black dark:text-white text-md font-light rotate-90 p-4">
-              @ nishant choudhary
-            </p>
-          </div>
-        </div> */}
-        <script
+        <Script
           type="module"
           src="https://static.rocket.new/rocket-web.js?_cfg=https%3A%2F%2Fnishants1754back.builtwithrocket.new&_be=https%3A%2F%2Fapplication.rocket.new&_v=0.1.8"
-        ></script>
+          strategy="lazyOnload"
+        />
       </body>
     </html>
   );

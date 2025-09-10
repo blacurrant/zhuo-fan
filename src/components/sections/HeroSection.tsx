@@ -82,7 +82,7 @@ const HeroSection: React.FC = () => {
                   initial={{ opacity: 0, x: -100 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ duration: 0.8, delay: 0.3 }}
-                  className="uppercase text-6xl font-bold md:font-medium md:text-7xl lg:text-8xl xl:text-9xl 2xl:text-[12rem] text-gray-900 dark:text-white leading-none tracking-tight text-balance break-words"
+                  className="uppercase text-[60px] font-bold md:font-medium md:text-7xl lg:text-8xl xl:text-9xl 2xl:text-[12rem] text-gray-900 dark:text-white leading-none tracking-tight text-balance break-words"
                 >
                   Nishant
                 </motion.h1>
@@ -90,7 +90,7 @@ const HeroSection: React.FC = () => {
                   initial={{ opacity: 0, x: -100 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ duration: 0.8, delay: 0.5 }}
-                  className="py-2 md:py-0 uppercase text-6xl font-bold md:font-medium md:text-7xl lg:text-8xl xl:text-9xl 2xl:text-[12rem] text-gray-900 dark:text-white leading-none tracking-tight text-balance break-words"
+                  className="py-2 md:py-0 uppercase text-[60px] font-bold md:font-medium md:text-7xl lg:text-8xl xl:text-9xl 2xl:text-[12rem] text-gray-900 dark:text-white leading-none tracking-tighter text-balance break-words"
                 >
                   Choudhary
                 </motion.h1>

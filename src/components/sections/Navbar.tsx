@@ -9,8 +9,8 @@ const Navbar: React.FC = () => {
   const [isPreviewOpen, setIsPreviewOpen] = React.useState(false);
   const handleDownloadCV = () => {
     const link = document.createElement('a');
-    link.href = '/Nishant_fullstack_cv.pdf';
-    link.download = 'Nishant_Fullstack_CV.pdf';
+    link.href = '/Nishant_Frontend_Resume.pdf';
+    link.download = 'Nishant_Frontend_Resume.pdf';
     link.click();
   };
 
@@ -22,7 +22,7 @@ const Navbar: React.FC = () => {
       {/* <div onClick={() => router.push('/')} className="w-12 h-12 font-bold text-gray-900 dark:text-white">
         <Image src="/logo.png" alt='logo' width={300} height={300} className='object-cover' />
       </div> */}
-      <div className="flex items-center space-x-8">
+      <div className="flex items-center gap-4">
         {/* <a
           href="#"
           className="text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white"
@@ -80,7 +80,7 @@ const Navbar: React.FC = () => {
               <div className="flex-1 bg-gray-50 dark:bg-[#0f0f10]">
                 <iframe
                   title="CV Preview"
-                  src="/Nishant_fullstack_cv.pdf#toolbar=0&navpanes=0&scrollbar=1"
+                  src="/Nishant_Frontend_Resume.pdf#toolbar=0&navpanes=0&scrollbar=1"
                   className="w-full h-full"
                 />
               </div>

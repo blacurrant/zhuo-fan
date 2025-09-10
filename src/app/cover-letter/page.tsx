@@ -52,7 +52,7 @@ export default function CoverLetterComponent() {
       <div className="mb-8">
         <div className="space-y-1">
           <p className="font-semibold text-gray-900">Hiring Manager</p>
-          <p className="text-gray-700">Navan</p>
+          <p className="text-gray-700">company</p>
         </div>
       </div>
 
@@ -61,10 +61,9 @@ export default function CoverLetterComponent() {
         <p className="text-gray-900 font-medium">Dear Hiring Manager,</p>
         
         <p>
-          I'm excited to apply for the <strong className="text-gray-900">Software Engineer II (Frontend)</strong> role at Navan. 
+          I'm excited to apply for the <strong className="text-gray-900">Software Engineer (Frontend)</strong> role at company. 
           What drew me to this role is the chance to work on products that thousands of people rely on every day. 
-          I've always enjoyed building interfaces that feel simple, accessible, and seamless for users—and Navan's 
-          mission of making travel and expense management effortless really resonates with me.
+          I've always enjoyed building interfaces that feel simple, accessible, and seamless for users.
         </p>
 
         <p>
@@ -89,7 +88,7 @@ export default function CoverLetterComponent() {
 
         <p>
           I'd love the chance to bring my experience with <strong className="text-gray-900">React, Next.js, and accessibility-first design</strong> to 
-          Navan and help shape the next generation of your platform. Thanks for considering my application—I'd be 
+          company and help shape the next generation of your platform. Thanks for considering my application—I'd be 
           happy to share more about how I can contribute.
         </p>
 
