@@ -48,6 +48,7 @@
   },
   "dependencies": {
     "@dhiwise/component-tagger": "^1.0.10",
+    "@supabase/supabase-js": "^2.58.0",
     "@tailwindcss/typography": "^0.5.16",
     "framer-motion": "^12.23.12",
     "gsap": "^3.13.0",

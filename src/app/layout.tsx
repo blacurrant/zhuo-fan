@@ -3,6 +3,7 @@ import '../styles/index.css';
 import Navbar from '@/components/sections/Navbar';
 import dynamic from 'next/dynamic';
 import Script from 'next/script';
+import ToggleNavbar from '@/components/ToggleNavbar';
 
 const InvertCursor = dynamic(() => import('@/components/ui/InvertCursor'), {
   ssr: false,
@@ -84,7 +85,8 @@ export default function RootLayout({
             />
           </div>
           <InvertCursor />
-          <Navbar />
+          <ToggleNavbar />
+          {/* <Navbar /> */}
           {children}
         </div>
         <Script

@@ -1,6 +1,7 @@
 'use client';
 import React, { useState } from 'react';
 import ButtonComponent from './button';
+import PolaroidComponent from './polaroid';
 
 interface ComponentItem {
   id: string;
@@ -19,6 +20,18 @@ const components: ComponentItem[] = [
     icon: (
       <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
         <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-8.293l-3-3a1 1 0 00-1.414 0l-3 3a1 1 0 001.414 1.414L9 9.414V13a1 1 0 102 0V9.414l1.293 1.293a1 1 0 001.414-1.414z" clipRule="evenodd" />
+      </svg>
+    )
+  },
+  {
+    id: 'polaroid',
+    name: 'Polaroid Card',
+    description: 'Vintage-styled photo card with tape and hover effects',
+    status: 'available',
+    icon: (
+      <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+        <path d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2v-1H4V5a2 2 0 012-2h10a2 2 0 012 2h-2a2 2 0 00-2-2H4z" />
+        <path d="M6 9h8l-2.5 3.5-2-2.5L6 13V9z" />
       </svg>
     )
   },
@@ -75,6 +88,8 @@ const UIComponentsPage: React.FC = () => {
     switch (selectedComponent) {
       case 'button':
         return <ButtonComponent />;
+      case 'polaroid':
+        return <PolaroidComponent />;
       default:
         return (
           <div className="flex items-center justify-center h-96">
@@ -97,18 +112,34 @@ const UIComponentsPage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-white dark:bg-gray-900 pt-24">
+    <div className="min-h-screen bg-white dark:bg-gray-900">
+      {/* Mobile Top Bar */}
+      <div className="md:hidden sticky top-0 z-20 bg-white/80 dark:bg-gray-900/80 backdrop-blur border-b border-gray-200 dark:border-gray-800 pt-24">
+        <div className="px-4 py-3 flex items-center justify-between">
+          <div>
+            <h1 className="text-2xl font-extrabold tracking-tight text-gray-900 dark:text-white">UI Components</h1>
+            <p className="text-xs text-gray-600 dark:text-gray-400">Reusable components for your apps</p>
+          </div>
+          <select
+            value={selectedComponent}
+            onChange={(e) => setSelectedComponent(e.target.value)}
+            className="text-sm bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-200 px-3 py-2 rounded"
+          >
+            {components.map((c) => (
+              <option key={c.id} value={c.id} disabled={c.status === 'coming-soon'}>
+                {c.name}{c.status === 'coming-soon' ? ' (Soon)' : ''}
+              </option>
+            ))}
+          </select>
+        </div>
+      </div>
+
       <div className="flex">
         {/* Sidebar */}
-        <div className="w-80 bg-gray-50 dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 min-h-screen">
+        <div className="hidden md:block w-80 bg-gray-50 dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 min-h-screen pt-24">
           <div className="p-6">
-            <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
-              UI Components
-            </h1>
-            <p className="text-sm text-gray-600 dark:text-gray-400 mb-6">
-              Reusable components for your applications
-            </p>
-            
+            <h1 className="text-3xl font-extrabold tracking-tight text-gray-900 dark:text-white mb-2">UI Components</h1>
+            <p className="text-sm text-gray-600 dark:text-gray-400 mb-6">Reusable components for your applications</p>
             <nav className="space-y-2">
               {components.map((component) => (
                 <button
@@ -137,16 +168,12 @@ const UIComponentsPage: React.FC = () => {
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2">
-                      <span className="font-medium truncate">{component.name}</span>
+                      <span className="font-semibold truncate">{component.name}</span>
                       {component.status === 'coming-soon' && (
-                        <span className="text-xs bg-gray-200 dark:bg-gray-600 text-gray-600 dark:text-gray-400 px-2 py-0.5 rounded">
-                          Soon
-                        </span>
+                        <span className="text-xs bg-gray-200 dark:bg-gray-600 text-gray-600 dark:text-gray-400 px-2 py-0.5 rounded">Soon</span>
                       )}
                     </div>
-                    <p className="text-xs text-gray-500 dark:text-gray-400 truncate">
-                      {component.description}
-                    </p>
+                    <p className="text-xs text-gray-500 dark:text-gray-400 truncate">{component.description}</p>
                   </div>
                 </button>
               ))}
@@ -155,8 +182,8 @@ const UIComponentsPage: React.FC = () => {
         </div>
 
         {/* Main Content */}
-        <div className="flex-1 overflow-auto">
-          <div className="max-w-4xl mx-auto p-6">
+        <div className="flex-1 overflow-auto pt-24">
+          <div className="max-w-6xl md:max-w-4xl mx-auto p-4 md:p-6">
             {renderComponent()}
           </div>
         </div>
