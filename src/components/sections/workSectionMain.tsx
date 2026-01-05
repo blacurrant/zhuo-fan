@@ -9,6 +9,16 @@ import { useRouter } from 'next/navigation';
 // 1. Your JSON data (this could be imported from a file instead)
 const projects = [
   {
+    title: 'Craon',
+    sub: "AI Video Editor, Web App, SaaS Platform, Full-Stack",
+    role: '@Full-Stack Developer',
+    image: '/craon/craon-hero.png',
+    alt: 'Craon AI Video Editor',
+    route: '/works/craon',
+    gradient: '',
+    ctaBg: 'bg-white',
+  },
+  {
     title: 'MelloUp',
     sub: "MVP, Saas, Website, Landing, PWA",
     role: '@Founding Engineer',
@@ -29,13 +39,13 @@ const projects = [
     ctaBg: 'bg-white',
   },
   {
-    title: 'Portfolio',
-    sub: 'Landing Page',
-    role: '',
-    image: '/awwards.png',
-    alt: 'Portfolio Project',
-    route: '',
-    gradient: 'brightness-125 object-contain',
+    title: 'FreightEZ',
+    sub: 'B2B SaaS, TMS Platform, Fleet Management, Web App',
+    role: '@Lead Frontend Engineer',
+    image: '/freightez/freightez-hero.png',
+    alt: 'FreightEZ Project',
+    route: '/works/freightez',
+    gradient: '',
     ctaBg: 'bg-white',
   },
   // Add more projects as needed

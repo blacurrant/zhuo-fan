@@ -3,12 +3,30 @@ import { useState, useEffect } from 'react';
 
 type Theme = 'light' | 'dark';
 
+const getStoredTheme = (): Theme | null => {
+  try {
+    if (typeof window === 'undefined') return null;
+    return localStorage.getItem('theme') as Theme;
+  } catch {
+    return null;
+  }
+};
+
+const setStoredTheme = (theme: Theme): void => {
+  try {
+    if (typeof window === 'undefined') return;
+    localStorage.setItem('theme', theme);
+  } catch {
+    // Silent fail in incognito mode or when storage is disabled
+  }
+};
+
 export const useTheme = () => {
   const [theme, setTheme] = useState<Theme>('light');
 
   useEffect(() => {
-    // Check for saved theme preference or default to 'dark'
-    const savedTheme = localStorage.getItem('theme') as Theme;
+    // Check for saved theme preference or default to system preference
+    const savedTheme = getStoredTheme();
     const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
     
     const initialTheme = savedTheme || (prefersDark ? 'dark' : 'light');
@@ -25,7 +43,7 @@ export const useTheme = () => {
       root.classList.remove('dark');
     }
     
-    localStorage.setItem('theme', newTheme);
+    setStoredTheme(newTheme);
   };
 
   const toggleTheme = () => {

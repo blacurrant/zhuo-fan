@@ -3,7 +3,7 @@ import dynamic from 'next/dynamic';
 import HeroSection from '@/components/sections/HeroSection';
 
 const WorkSection = dynamic(() => import('@/components/sections/workSectionMain'), {
-  ssr: false,
+  ssr: true,
   loading: () => null,
 });
 
@@ -37,6 +37,7 @@ import {
   SiMongodb,
   SiExpress,
 } from 'react-icons/si';
+
 
 const techLogos = [
   { node: <SiReact />, title: 'React', href: 'https://react.dev' },

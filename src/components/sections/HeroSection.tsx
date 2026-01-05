@@ -1,5 +1,5 @@
 'use client';
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState, useCallback } from 'react';
 import Image from 'next/image';
 import { motion, useScroll, useTransform } from 'framer-motion';
 import { Copy } from 'lucide-react';
@@ -14,7 +14,7 @@ const HeroSection: React.FC = () => {
   const fade = useTransform(scrollYProgress, [0, 1], [1, 0.7]);
   const [showCopied, setShowCopied] = useState(false);
 
-  const copyEmailToClipboard = async () => {
+  const copyEmailToClipboard = useCallback(async () => {
     try {
       await navigator.clipboard.writeText('nishantchoudhary.dev@gmail.com');
       setShowCopied(true);
@@ -22,7 +22,7 @@ const HeroSection: React.FC = () => {
     } catch (err) {
       console.error('Failed to copy email:', err);
     }
-  };
+  }, []);
 
   return (
     <div
@@ -48,6 +48,11 @@ const HeroSection: React.FC = () => {
                     alt="Profile"
                     width={500}
                     height={500}
+                    quality={90}
+                    priority
+                    placeholder="blur"
+                    blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAgGBgcGBQgHBwcJCQgKDBQNDAsLDBkSEw8UHRofHh0aHBwgJC4nICIsIxwcKDcpLDAxNDQ0Hyc5PTgyPC4zNDL/2wBDAQkJCQwLDBgNDRgyIRwhMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjL/wAARCAAIAAoDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAb/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/8QAFQEBAQAAAAAAAAAAAAAAAAAAAAX/xAAUEQEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIRAxEAPwCdABmX/9k="
+                    sizes="(max-width: 768px) 128px, 160px"
                     className="w-full h-full object-cover"
                   />
                 </div>
@@ -66,6 +71,11 @@ const HeroSection: React.FC = () => {
                     alt="Profile"
                     width={500}
                     height={500}
+                    quality={90}
+                    priority
+                    placeholder="blur"
+                    blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAgGBgcGBQgHBwcJCQgKDBQNDAsLDBkSEw8UHRofHh0aHBwgJC4nICIsIxwcKDcpLDAxNDQ0Hyc5PTgyPC4zNDL/2wBDAQkJCQwLDBgNDRgyIRwhMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjL/wAARCAAIAAoDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAb/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/8QAFQEBAQAAAAAAAAAAAAAAAAAAAAX/xAAUEQEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIRAxEAPwCdABmX/9k="
+                    sizes="128px"
                     className="w-full h-full object-cover"
                   />
                 </div>
@@ -141,4 +151,4 @@ const HeroSection: React.FC = () => {
   );
 };
 
-export default HeroSection;
+export default React.memo(HeroSection);

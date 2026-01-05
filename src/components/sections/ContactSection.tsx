@@ -119,4 +119,4 @@ const ContactSection: React.FC = () => {
   );
 };
 
-export default ContactSection;
+export default React.memo(ContactSection);

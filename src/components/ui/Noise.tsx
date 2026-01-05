@@ -18,6 +18,10 @@ const Noise: React.FC<NoiseProps> = ({
   patternAlpha = 15
 }) => {
   const grainRef = useRef<HTMLCanvasElement | null>(null);
+  const frameRef = useRef<number>(0);
+  const rafRef = useRef<number | null>(null);
+  const isVisibleRef = useRef<boolean>(true);
+  const isInViewRef = useRef<boolean>(true);
 
   useEffect(() => {
     const canvas = grainRef.current;
@@ -25,9 +29,6 @@ const Noise: React.FC<NoiseProps> = ({
 
     const ctx = canvas.getContext('2d', { alpha: true });
     if (!ctx) return;
-
-    let frame = 0;
-    let animationId: number;
 
     const canvasSize = 1024;
 
@@ -56,20 +57,58 @@ const Noise: React.FC<NoiseProps> = ({
     };
 
     const loop = () => {
-      if (frame % patternRefreshInterval === 0) {
+      // Only animate if page is visible and element is in view
+      if (!isVisibleRef.current || !isInViewRef.current) {
+        rafRef.current = null;
+        return;
+      }
+
+      if (frameRef.current % patternRefreshInterval === 0) {
         drawGrain();
       }
-      frame++;
-      animationId = window.requestAnimationFrame(loop);
+      frameRef.current++;
+      rafRef.current = window.requestAnimationFrame(loop);
     };
 
+    // Page Visibility API
+    const handleVisibilityChange = () => {
+      isVisibleRef.current = !document.hidden;
+      if (isVisibleRef.current && isInViewRef.current && rafRef.current === null) {
+        loop();
+      }
+    };
+
+    // Intersection Observer for viewport visibility
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        isInViewRef.current = entry.isIntersecting;
+        if (entry.isIntersecting && isVisibleRef.current && rafRef.current === null) {
+          loop();
+        } else if (!entry.isIntersecting && rafRef.current !== null) {
+          window.cancelAnimationFrame(rafRef.current);
+          rafRef.current = null;
+        }
+      },
+      { threshold: 0.01 }
+    );
+
+    if (canvas) {
+      observer.observe(canvas);
+    }
+
     window.addEventListener('resize', resize);
+    document.addEventListener('visibilitychange', handleVisibilityChange);
     resize();
     loop();
 
     return () => {
+      observer.disconnect();
       window.removeEventListener('resize', resize);
-      window.cancelAnimationFrame(animationId);
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+      if (rafRef.current !== null) {
+        window.cancelAnimationFrame(rafRef.current);
+        rafRef.current = null;
+      }
     };
   }, [patternSize, patternScaleX, patternScaleY, patternRefreshInterval, patternAlpha]);
 
@@ -84,4 +123,4 @@ const Noise: React.FC<NoiseProps> = ({
   );
 };
 
-export default Noise;
+export default React.memo(Noise);
