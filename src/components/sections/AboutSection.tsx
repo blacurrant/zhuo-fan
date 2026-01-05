@@ -59,7 +59,12 @@ const AboutSection: React.FC = () => {
                     src="/cat.jpg" 
                     alt="About image" 
                     width={1000} 
-                    height={1000} 
+                    height={1000}
+                    quality={85}
+                    priority
+                    placeholder="blur"
+                    blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAgGBgcGBQgHBwcJCQgKDBQNDAsLDBkSEw8UHRofHh0aHBwgJC4nICIsIxwcKDcpLDAxNDQ0Hyc5PTgyPC4zNDL/2wBDAQkJCQwLDBgNDRgyIRwhMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjL/wAARCAAIAAoDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAb/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/8QAFQEBAQAAAAAAAAAAAAAAAAAAAAX/xAAUEQEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIRAxEAPwCdABmX/9k="
+                    sizes="(max-width: 1024px) 100vw, 50vw"
                     className="w-full h-full object-cover"
                   />
                 </motion.div>
@@ -74,8 +79,8 @@ const AboutSection: React.FC = () => {
               >
                 <div>
                   <p className="text-lg lg:text-xl text-gray-900 dark:text-white leading-relaxed">
-                  ✨ Hi from me and Daisy! (Say hi! 👋)
-We pour our hearts into creating designs that aren't just pretty — it should be something people enjoy using, remember, and come back to.
+                  👋 Hi from me and Daisy! <span className="text-gray-500 dark:text-gray-400 text-sm">(she&apos;s not real)</span>. 
+We pour our hearts into creating designs that aren't just pretty, it should be something people enjoy using, remember, and come back to.
                   </p>
                   
                 </div>
@@ -88,4 +93,4 @@ We pour our hearts into creating designs that aren't just pretty — it should b
   );
 };
 
-export default AboutSection;
+export default React.memo(AboutSection);

@@ -2,8 +2,8 @@ import React from 'react';
 import '../styles/index.css';
 import Navbar from '@/components/sections/Navbar';
 import dynamic from 'next/dynamic';
-import Script from 'next/script';
 import ToggleNavbar from '@/components/ToggleNavbar';
+
 
 const InvertCursor = dynamic(() => import('@/components/ui/InvertCursor'), {
   ssr: false,
@@ -89,11 +89,6 @@ export default function RootLayout({
           {/* <Navbar /> */}
           {children}
         </div>
-        <Script
-          type="module"
-          src="https://static.rocket.new/rocket-web.js?_cfg=https%3A%2F%2Fnishants1754back.builtwithrocket.new&_be=https%3A%2F%2Fapplication.rocket.new&_v=0.1.8"
-          strategy="lazyOnload"
-        />
       </body>
     </html>
   );

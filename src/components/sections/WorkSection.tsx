@@ -1,11 +1,20 @@
 'use client';
-import React, { useState } from 'react';
+import React, { useState, useCallback, useMemo } from 'react';
 import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useRouter } from 'next/navigation';
 import { ArrowRight, Link, Link2, X } from 'lucide-react';
 
 const works = [
+  {
+    slug: 'craon',
+    title: 'CRAON',
+    year: '2024-2025',
+    description:
+      'an AI-powered browser-based video editor that combines professional editing tools with intelligent automation. Features real-time subtitle generation, multi-track timeline editing, cloud-native architecture with resumable uploads, and collaborative editing. Built with Next.js 16, React 19, and Redux Toolkit, Craon reduces editing time by 70% while delivering desktop-class performance with 60 FPS timeline scrubbing.',
+    images: ['/craon/craon-1.png', '/craon/craon-2.png'],
+    href: '/works/craon',
+  },
   {
     slug: 'ibasho',
     title: 'IBASHO',
@@ -25,13 +34,13 @@ const works = [
     href: '/works/melloup',
   },
   {
-    slug: 'portfolio',
-    title: 'PORTFOLIO',
-    year: '2024',
+    slug: 'freightez',
+    title: 'FREIGHTEZ',
+    year: '2024-2025',
     description:
-      'a brutalist approach to personal branding through digital craftsmanship. This portfolio represents a bold statement in contemporary web design, emphasizing raw functionality over decoration while maintaining sophisticated user experience principles and cutting-edge technical implementation.',
-    images: ['/portofolio.png', '/portfolio2.png'],
-    href: '/home',
+      'a Transportation Management System (TMS) designed for small to medium North American fleets. Streamlines dispatch operations, automates invoicing, centralizes documents, and provides real-time fleet tracking. Built with modern web technologies to replace spreadsheets with smart tools, helping smaller fleets manage loads, track trucks, and handle compliance effortlessly.',
+    images: ['/freightez/freightez-1.png', '/freightez/freightez-2.png'],
+    href: '/works/freightez',
   },
 ];
 
@@ -39,9 +48,16 @@ const WorkSection: React.FC = () => {
   const [openAccordion, setOpenAccordion] = useState<string | null>(null);
   const router = useRouter();
 
-  const toggleAccordion = (slug: string) => {
+  const toggleAccordion = useCallback((slug: string) => {
     setOpenAccordion(openAccordion === slug ? null : slug);
-  };
+  }, [openAccordion]);
+
+  const accordionAnimation = useMemo(() => ({
+    initial: { height: 0, opacity: 0 },
+    animate: { height: '70vh', opacity: 1 },
+    exit: { height: 0, opacity: 0 },
+    transition: { duration: 0.5, ease: [0.22, 1, 0.36, 1] as [number, number, number ,number] }
+  }), []);
 
   return (
     <section className="min-h-screen bg-white dark:bg-gray-950 py-16">
@@ -97,10 +113,7 @@ const WorkSection: React.FC = () => {
               <AnimatePresence>
                 {openAccordion === project.slug && (
                   <motion.div
-                    initial={{ height: 0, opacity: 0 }}
-                    animate={{ height: '70vh', opacity: 1 }}
-                    exit={{ height: 0, opacity: 0 }}
-                    transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+                  {...accordionAnimation}
                     className="overflow-hidden bg-gray-950 dark:bg-white p-8"
                   >
                     <div className="flex w-full items-center justify-between">
@@ -147,6 +160,11 @@ const WorkSection: React.FC = () => {
                               alt={`${project.title} ${imageIndex + 1}`}
                               width={1000}
                               height={1000}
+                              quality={85}
+                              loading="lazy"
+                              placeholder="blur"
+                              blurDataURL="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mN8/5+hHgAHggJ/PchI7wAAAABJRU5ErkJggg=="
+                              sizes="(max-width: 1024px) 50vw, 33vw"
                               className="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
                             />
                           </motion.div>
@@ -164,4 +182,4 @@ const WorkSection: React.FC = () => {
   );
 };
 
-export default WorkSection;
+export default React.memo(WorkSection);
