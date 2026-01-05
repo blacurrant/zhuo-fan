@@ -41,7 +41,7 @@ const FreightEZCaseStudy: React.FC = () => {
             <div className="flex flex-wrap justify-center gap-6 text-sm md:text-base">
               <div className="flex flex-col">
                 <span className="text-gray-500 dark:text-gray-500">Role</span>
-                <span className="font-semibold text-gray-900 dark:text-white">Lead Frontend Engineer</span>
+                <span className="font-semibold text-gray-900 dark:text-white">Frontend Engineer</span>
               </div>
               <div className="flex flex-col">
                 <span className="text-gray-500 dark:text-gray-500">Timeline</span>
