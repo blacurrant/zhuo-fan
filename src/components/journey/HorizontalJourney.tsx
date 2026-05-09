@@ -96,6 +96,27 @@ const HorizontalJourney: React.FC = () => {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, []);
 
+  // Vertical scroll (wheel/touchpad) → horizontal scroll
+  useEffect(() => {
+    const handleWheel = (e: WheelEvent) => {
+      if (!scrollContainerRef.current) return;
+
+      e.preventDefault();
+
+      // Map vertical wheel movement to horizontal scroll
+      // deltaY positive = scroll down = move right
+      // deltaY negative = scroll up = move left
+      const scrollAmount = e.deltaY > 0 ? 50 : -50;
+      scrollContainerRef.current.scrollLeft += scrollAmount;
+    };
+
+    const container = scrollContainerRef.current;
+    if (container) {
+      container.addEventListener('wheel', handleWheel, { passive: false });
+      return () => container.removeEventListener('wheel', handleWheel);
+    }
+  }, []);
+
   return (
     <div className="relative w-full h-screen bg-replicate-canvas overflow-hidden">
       {/* Horizontal scroll container */}
