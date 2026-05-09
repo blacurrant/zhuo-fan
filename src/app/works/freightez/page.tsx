@@ -1,297 +1,240 @@
 'use client';
 import React from 'react';
-import Image from 'next/image';
-import { motion } from 'framer-motion';
-import { ArrowLeft, ExternalLink } from 'lucide-react';
-import { useRouter } from 'next/navigation';
+import CaseStudyTemplate from '@/components/CaseStudyTemplate';
 
 const FreightEZCaseStudy: React.FC = () => {
-  const router = useRouter();
-
-  return (
-    <div className="min-h-screen bg-white dark:bg-gray-950">
-      {/* Hero Section */}
-      <section className="relative h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-white dark:from-gray-900 dark:to-gray-950">
-        <div className="absolute inset-0 overflow-hidden">
-          <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 to-purple-500/5" />
+  const sections = [
+    {
+      id: 'overview',
+      title: 'Overview',
+      content: (
+        <div className="space-y-4">
+          <p>
+            FreightEZ is a comprehensive Transportation Management System (TMS) designed specifically for small to medium-sized North American freight fleets. The platform replaces traditional spreadsheets with smart, automated tools that streamline every aspect of fleet operations.
+          </p>
+          <p>
+            From dispatch management and invoice automation to real-time fleet tracking and compliance handling, FreightEZ provides an all-in-one solution that helps smaller fleets compete with larger operations while maintaining operational efficiency.
+          </p>
         </div>
-        
-        <div className="relative container mx-auto px-6 text-center">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-          >
-            <button
-              onClick={() => router.push('/landing')}
-              className="mb-8 inline-flex items-center gap-2 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors"
-            >
-              <ArrowLeft size={20} />
-              Back to Work
-            </button>
-            
-            <h1 className="text-5xl md:text-7xl lg:text-8xl font-bold text-gray-900 dark:text-white mb-6">
-              FreightEZ
-            </h1>
-            
-            <p className="text-xl md:text-2xl text-gray-600 dark:text-gray-400 mb-8 max-w-3xl mx-auto">
-              Transportation Management System for Small to Medium Fleets
-            </p>
-            
-            <div className="flex flex-wrap justify-center gap-6 text-sm md:text-base">
-              <div className="flex flex-col">
-                <span className="text-gray-500 dark:text-gray-500">Role</span>
-                <span className="font-semibold text-gray-900 dark:text-white">Frontend Engineer</span>
-              </div>
-              <div className="flex flex-col">
-                <span className="text-gray-500 dark:text-gray-500">Timeline</span>
-                <span className="font-semibold text-gray-900 dark:text-white">2024-2025</span>
-              </div>
-              <div className="flex flex-col">
-                <span className="text-gray-500 dark:text-gray-500">Platform</span>
-                <span className="font-semibold text-gray-900 dark:text-white">Web App (B2B SaaS)</span>
-              </div>
-            </div>
-          </motion.div>
+      )
+    },
+    {
+      id: 'problem',
+      title: 'The Problem',
+      content: (
+        <div className="space-y-4">
+          <p className="mb-6">Small and medium-sized freight fleets face unique operational challenges:</p>
+          <ul className="space-y-3">
+            <li>
+              <strong>Spreadsheet Dependency:</strong> Outdated systems leading to errors and inefficiencies
+            </li>
+            <li>
+              <strong>Manual Invoicing:</strong> Time-consuming payment tracking and reconciliation
+            </li>
+            <li>
+              <strong>Visibility Gaps:</strong> No real-time insight into fleet operations and driver locations
+            </li>
+            <li>
+              <strong>Scattered Documents:</strong> Compliance paperwork across multiple platforms
+            </li>
+            <li>
+              <strong>Communication Silos:</strong> Gaps between dispatchers, drivers, and office staff
+            </li>
+          </ul>
         </div>
-      </section>
-
-      {/* Overview Section */}
-      <section className="py-20 px-6 bg-white dark:bg-gray-950">
-        <div className="container mx-auto max-w-4xl">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            viewport={{ once: true }}
-          >
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-6">
-              Overview
-            </h2>
-            <p className="text-lg text-gray-600 dark:text-gray-400 leading-relaxed mb-6">
-              FreightEZ is a comprehensive Transportation Management System (TMS) designed specifically for small to medium-sized North American freight fleets. The platform replaces traditional spreadsheets with smart, automated tools that streamline every aspect of fleet operations.
+      )
+    },
+    {
+      id: 'solution',
+      title: 'The Solution',
+      content: (
+        <div className="space-y-6">
+          <p>
+            FreightEZ provides an integrated platform bringing all fleet operations under one roof, with role-specific interfaces for different team members. Dispatch management, invoice automation, compliance tracking, and driver communication all converge in a single, cohesive system.
+          </p>
+          <div className="bg-replicate-surface-bone p-6 rounded-md border-l-4 border-replicate-primary">
+            <h3 className="font-display text-lg font-bold mb-3">Competitive Advantage</h3>
+            <p>
+              Small fleets gain enterprise-grade operational tools without enterprise complexity or cost. The result: faster dispatch, better compliance, and happier drivers.
             </p>
-            <p className="text-lg text-gray-600 dark:text-gray-400 leading-relaxed">
-              From dispatch management and invoice automation to real-time fleet tracking and compliance handling, FreightEZ provides an all-in-one solution that helps smaller fleets compete with larger operations while maintaining operational efficiency.
-            </p>
-          </motion.div>
-        </div>
-      </section>
-
-      {/* Problem Statement */}
-      <section className="py-20 px-6 bg-gray-50 dark:bg-gray-900">
-        <div className="container mx-auto max-w-4xl">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            viewport={{ once: true }}
-          >
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-6">
-              The Problem
-            </h2>
-            <p className="text-lg text-gray-600 dark:text-gray-400 leading-relaxed mb-6">
-              Small and medium-sized freight fleets face unique challenges in managing their operations:
-            </p>
-            <ul className="space-y-4 text-lg text-gray-600 dark:text-gray-400">
-              <li className="flex gap-3">
-                <span className="text-blue-500 font-bold">•</span>
-                <span>Reliance on outdated spreadsheets leading to errors and inefficiencies</span>
-              </li>
-              <li className="flex gap-3">
-                <span className="text-blue-500 font-bold">•</span>
-                <span>Time-consuming manual invoicing and payment tracking</span>
-              </li>
-              <li className="flex gap-3">
-                <span className="text-blue-500 font-bold">•</span>
-                <span>Lack of real-time visibility into fleet operations and driver locations</span>
-              </li>
-              <li className="flex gap-3">
-                <span className="text-blue-500 font-bold">•</span>
-                <span>Scattered documents and compliance paperwork across multiple platforms</span>
-              </li>
-              <li className="flex gap-3">
-                <span className="text-blue-500 font-bold">•</span>
-                <span>Communication gaps between dispatchers, drivers, and office staff</span>
-              </li>
-            </ul>
-          </motion.div>
-        </div>
-      </section>
-
-      {/* Solution */}
-      <section className="py-20 px-6 bg-white dark:bg-gray-950">
-        <div className="container mx-auto max-w-4xl">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            viewport={{ once: true }}
-          >
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-6">
-              The Solution
-            </h2>
-            <p className="text-lg text-gray-600 dark:text-gray-400 leading-relaxed mb-8">
-              FreightEZ provides an integrated platform that brings all fleet management operations under one roof, with role-specific interfaces for different team members.
-            </p>
-          </motion.div>
-        </div>
-      </section>
-
-      {/* Key Features */}
-      <section className="py-20 px-6 bg-gray-50 dark:bg-gray-900">
-        <div className="container mx-auto max-w-6xl">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            viewport={{ once: true }}
-            className="mb-12"
-          >
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-6">
-              Key Features
-            </h2>
-          </motion.div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            {[
-              {
-                title: 'Streamlined Dispatch',
-                description: 'Easily assign drivers, track progress, and reduce delays with zero confusion. Real-time updates keep everyone informed.',
-              },
-              {
-                title: 'Automatic Invoicing',
-                description: 'Generate professional invoices in seconds, track payment status in real-time, and stay on top of all billing without jumping between tools.',
-              },
-              {
-                title: 'Centralized Documents',
-                description: 'All your documents in one place. Upload, organize, and access critical paperwork from anywhere, anytime.',
-              },
-              {
-                title: 'Real-Time Trip Updates',
-                description: 'Track every trip as it happens with live updates across Confirmed, Dispatched, In Transit, and Delivered stages.',
-              },
-              {
-                title: 'Mobile Driver App',
-                description: 'Drivers can view assigned loads, upload documents, track progress, and get updates from a mobile app built for the road.',
-              },
-              {
-                title: 'Fleet Analytics',
-                description: 'Monitor trends, improve efficiency, and stay ahead of costly issues with insights built right into the TMS.',
-              },
-            ].map((feature, index) => (
-              <motion.div
-                key={feature.title}
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: index * 0.1 }}
-                viewport={{ once: true }}
-                className="bg-white dark:bg-gray-800 p-6 rounded-lg"
-              >
-                <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-3">
-                  {feature.title}
-                </h3>
-                <p className="text-gray-600 dark:text-gray-400">
-                  {feature.description}
-                </p>
-              </motion.div>
-            ))}
           </div>
         </div>
-      </section>
-
-      {/* Technology Stack */}
-      <section className="py-20 px-6 bg-white dark:bg-gray-950">
-        <div className="container mx-auto max-w-4xl">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            viewport={{ once: true }}
-          >
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-6">
-              Technology Stack
-            </h2>
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-              {['React', 'Next.js', 'TypeScript', 'TailwindCSS', 'PostgreSQL', 'Node.js'].map((tech) => (
-                <div
-                  key={tech}
-                  className="bg-gray-50 dark:bg-gray-900 px-4 py-3 rounded-lg text-center font-semibold text-gray-900 dark:text-white"
-                >
-                  {tech}
-                </div>
-              ))}
+      )
+    },
+    {
+      id: 'features',
+      title: 'Core Features',
+      content: (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          {[
+            {
+              icon: '📍',
+              title: 'Real-Time Fleet Tracking',
+              desc: 'GPS tracking, live driver location, and trip status updates.'
+            },
+            {
+              icon: '📋',
+              title: 'Dispatch Management',
+              desc: 'Optimized route planning, load assignment, and driver scheduling.'
+            },
+            {
+              icon: '💰',
+              title: 'Invoice Automation',
+              desc: 'Auto-generated invoices, payment tracking, and financial reporting.'
+            },
+            {
+              icon: '✅',
+              title: 'Compliance Hub',
+              desc: 'DOT compliance, HOS logs, vehicle maintenance, insurance tracking.'
+            },
+            {
+              icon: '💬',
+              title: 'Driver Communication',
+              desc: 'In-app messaging, delivery confirmations, and feedback collection.'
+            },
+            {
+              icon: '📊',
+              title: 'Analytics Dashboard',
+              desc: 'Fleet KPIs, cost per mile, efficiency metrics, and trend analysis.'
+            }
+          ].map((feature, idx) => (
+            <div key={idx} className="bg-replicate-surface-bone p-6 rounded-md">
+              <div className="text-3xl mb-3">{feature.icon}</div>
+              <h3 className="font-display font-bold text-lg mb-2">{feature.title}</h3>
+              <p className="text-replicate-body text-sm">{feature.desc}</p>
             </div>
-          </motion.div>
+          ))}
         </div>
-      </section>
-
-      {/* Impact */}
-      <section className="py-20 px-6 bg-gray-50 dark:bg-gray-900">
-        <div className="container mx-auto max-w-4xl">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            viewport={{ once: true }}
-          >
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-6">
-              Impact
-            </h2>
-            <ul className="space-y-4 text-lg text-gray-600 dark:text-gray-400">
-              <li className="flex gap-3">
-                <span className="text-blue-500 font-bold">✓</span>
-                <span>Reduced invoice generation time from hours to seconds</span>
-              </li>
-              <li className="flex gap-3">
-                <span className="text-blue-500 font-bold">✓</span>
-                <span>Improved dispatch efficiency with real-time load tracking</span>
-              </li>
-              <li className="flex gap-3">
-                <span className="text-blue-500 font-bold">✓</span>
-                <span>Eliminated spreadsheet errors</span>
-              </li>
-              <li className="flex gap-3">
-                <span className="text-blue-500 font-bold">✓</span>
-                <span>Centralized compliance and documentation management</span>
-              </li>
-              <li className="flex gap-3">
-                <span className="text-blue-500 font-bold">✓</span>
-                <span>Enhanced driver-dispatcher communication</span>
-              </li>
+      )
+    },
+    {
+      id: 'tech',
+      title: 'Tech Stack',
+      isDark: true,
+      content: (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          {[
+            {
+              category: 'Frontend',
+              items: ['Next.js 16', 'React 19', 'TypeScript', 'Tailwind CSS', 'Shadcn UI']
+            },
+            {
+              category: 'Mapping & Tracking',
+              items: ['Mapbox GL', 'Real-time WebSocket updates', 'GPS data integration']
+            },
+            {
+              category: 'Backend',
+              items: ['REST API', 'PostgreSQL', 'Redis for caching', 'Background jobs']
+            },
+            {
+              category: 'Infrastructure',
+              items: ['Docker containers', 'AWS deployment', 'CI/CD pipelines', 'Monitoring']
+            }
+          ].map((stack, idx) => (
+            <div key={idx}>
+              <h3 className="font-display font-bold mb-3">{stack.category}</h3>
+              <ul className="space-y-1 text-replicate-on-dark-mute text-sm font-body">
+                {stack.items.map((item, i) => (
+                  <li key={i}>• {item}</li>
+                ))}
+              </ul>
+            </div>
+          ))}
+        </div>
+      )
+    },
+    {
+      id: 'challenges',
+      title: 'Key Challenges Solved',
+      content: (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {[
+            {
+              title: 'Real-Time GPS Tracking',
+              solution: 'WebSocket-based location updates with map rendering optimization',
+              result: 'Sub-second location accuracy'
+            },
+            {
+              title: 'Route Optimization',
+              solution: 'Integration with routing APIs and custom algorithms for efficient dispatch',
+              result: '15-20% fuel cost reduction'
+            },
+            {
+              title: 'Compliance Automation',
+              solution: 'Automated HOS calculations, document generation, and compliance checking',
+              result: 'Zero DOT violations'
+            },
+            {
+              title: 'Multi-Tenant Architecture',
+              solution: 'Secure data isolation for multiple fleet customers in single system',
+              result: 'Scalable SaaS model'
+            }
+          ].map((item, idx) => (
+            <div key={idx} className="bg-replicate-surface-bone p-6 rounded-md border-l-4 border-replicate-primary">
+              <h3 className="font-display font-bold mb-2">{item.title}</h3>
+              <p className="text-replicate-body text-sm mb-3">{item.solution}</p>
+              <div className="text-replicate-badge-success text-sm font-display font-bold">
+                ✓ {item.result}
+              </div>
+            </div>
+          ))}
+        </div>
+      )
+    },
+    {
+      id: 'impact',
+      title: 'Business Impact',
+      content: (
+        <div className="space-y-6">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {[
+              { metric: '40%', label: 'Admin time reduction' },
+              { metric: '18%', label: 'Cost savings' },
+              { metric: '95%', label: 'User adoption' }
+            ].map((stat, idx) => (
+              <div key={idx} className="text-center p-6 bg-replicate-surface-bone rounded-md">
+                <div className="text-3xl font-bold text-replicate-primary mb-2">
+                  {stat.metric}
+                </div>
+                <div className="text-replicate-body text-sm">{stat.label}</div>
+              </div>
+            ))}
+          </div>
+          <div className="mt-8">
+            <h3 className="font-display font-bold text-lg mb-4">Key Learnings</h3>
+            <ul className="space-y-3">
+              {[
+                'Domain expertise is crucial for B2B SaaS product design',
+                'User testing with operators beats assumptions',
+                'Compliance requirements drive feature design',
+                'Real-time features create genuine competitive advantage'
+              ].map((point, idx) => (
+                <li key={idx} className="flex gap-3">
+                  <span className="text-replicate-primary flex-shrink-0">→</span>
+                  <span>{point}</span>
+                </li>
+              ))}
             </ul>
-          </motion.div>
+          </div>
         </div>
-      </section>
+      )
+    }
+  ];
 
-      {/* CTA Section */}
-      <section className="py-20 px-6 bg-white dark:bg-gray-950">
-        <div className="container mx-auto max-w-4xl text-center">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            viewport={{ once: true }}
-          >
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-6">
-              Visit FreightEZ
-            </h2>
-            <p className="text-lg text-gray-600 dark:text-gray-400 mb-8">
-              Simplifying operations for North American logistics, one load at a time.
-            </p>
-            <a
-              href="https://www.freightez.ca/"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 rounded-lg font-semibold transition-colors"
-            >
-              View Live Site
-              <ExternalLink size={20} />
-            </a>
-          </motion.div>
-        </div>
-      </section>
-    </div>
+  return (
+    <CaseStudyTemplate
+      title="FreightEZ"
+      subtitle="Transportation Management System for Small to Medium Fleets"
+      description="Simplifying fleet operations through intelligent automation and real-time visibility"
+      meta={{
+        role: 'Frontend Engineer',
+        duration: '2024-2025',
+        industry: 'B2B SaaS · Logistics',
+        status: 'Active Development'
+      }}
+      sections={sections}
+      backHref="/landing"
+    />
   );
 };
 

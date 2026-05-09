@@ -1,10 +1,17 @@
 @import './tailwind.css';
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap');
 
 /* Root variables for consistent theming */
 :root {
   --transition-duration: 300ms;
   --transition-timing: cubic-bezier(0.4, 0, 0.2, 1);
+
+  /* Replicate Design System Fonts */
+  --font-freigeist: 'Bricolage Grotesque', sans-serif;
+  --font-basier: 'Inter', sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
 }
 
 /* Base styles */
