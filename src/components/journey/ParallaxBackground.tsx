@@ -42,34 +42,32 @@ const ParallaxBackground: React.FC<ParallaxBackgroundProps> = ({
 
   return (
     <div className="absolute inset-0 bg-replicate-canvas overflow-hidden">
-      {/* Fixed 1920x1080 viewport for parallax - doesn't stretch with section width */}
-      <div className="absolute top-0 left-0 w-screen h-screen overflow-hidden">
-        {layers.map((layer, idx) => {
-          const depth = getDepthForLayer(layer, idx, layers.length);
-          const parallaxOffset = scrollWithinSection * depth;
+      {/* Parallax layers extend across full section width with tiling */}
+      {layers.map((layer, idx) => {
+        const depth = getDepthForLayer(layer, idx, layers.length);
+        const parallaxOffset = scrollWithinSection * depth;
 
-          return (
-            <motion.div
-              key={`${backgroundNumber}-${layer}`}
-              className="absolute top-0 left-0 w-screen h-screen"
-              animate={{
-                x: -parallaxOffset,
-              }}
-              transition={{ type: 'tween', duration: 0.01 }}
-            >
-              <img
-                src={`/parallax-backgrounds/game_background_${backgroundNumber}/layers/${layer}.png`}
-                alt={`${layer} parallax layer`}
-                className="w-screen h-screen object-cover"
-                draggable="false"
-              />
-            </motion.div>
-          );
-        })}
+        return (
+          <motion.div
+            key={`${backgroundNumber}-${layer}`}
+            className="absolute inset-0"
+            animate={{
+              x: -parallaxOffset,
+            }}
+            transition={{ type: 'tween', duration: 0.01 }}
+            style={{
+              backgroundImage: `url(/parallax-backgrounds/game_background_${backgroundNumber}/layers/${layer}.png)`,
+              backgroundSize: '1920px 1080px',
+              backgroundPosition: '0 0',
+              backgroundRepeat: 'repeat-x',
+              backgroundAttachment: 'local',
+            }}
+          />
+        );
+      })}
 
-        {/* Vignette overlay for depth */}
-        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-replicate-canvas/5 pointer-events-none" />
-      </div>
+      {/* Vignette overlay for depth */}
+      <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-replicate-canvas/5 pointer-events-none" />
     </div>
   );
 };
