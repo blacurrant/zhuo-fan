@@ -49,6 +49,9 @@ const HorizontalJourney: React.FC = () => {
   });
 
   const lastScrollRef = useRef(0);
+  const velocityRef = useRef(0);
+  const momentumRef = useRef(0);
+  const lastWheelTimeRef = useRef(0);
 
   // Handle native scroll
   useEffect(() => {
@@ -96,7 +99,7 @@ const HorizontalJourney: React.FC = () => {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, []);
 
-  // Vertical scroll (wheel/touchpad) → horizontal scroll
+  // Vertical scroll (wheel/touchpad) → horizontal scroll with momentum
   useEffect(() => {
     const handleWheel = (e: WheelEvent) => {
       if (!scrollContainerRef.current) return;
@@ -104,10 +107,26 @@ const HorizontalJourney: React.FC = () => {
       e.preventDefault();
 
       // Map vertical wheel movement to horizontal scroll
-      // deltaY positive = scroll down = move right
-      // deltaY negative = scroll up = move left
-      const scrollAmount = e.deltaY > 0 ? 50 : -50;
+      // Scale deltaY to reasonable scroll amount (deltaY can be 100+ on trackpad)
+      const scrollAmount = (e.deltaY / 3) * 0.5; // Scale down for smoother feel
+
+      // Apply scroll immediately
       scrollContainerRef.current.scrollLeft += scrollAmount;
+
+      // Accumulate velocity for momentum
+      const now = Date.now();
+      const timeSinceLastWheel = now - lastWheelTimeRef.current;
+
+      if (timeSinceLastWheel < 100) {
+        // Still scrolling, accumulate velocity
+        velocityRef.current = scrollAmount / Math.max(timeSinceLastWheel, 16);
+      } else {
+        // New scroll started, reset velocity
+        velocityRef.current = scrollAmount / 16;
+      }
+
+      lastWheelTimeRef.current = now;
+      momentumRef.current = velocityRef.current;
     };
 
     const container = scrollContainerRef.current;
@@ -115,6 +134,29 @@ const HorizontalJourney: React.FC = () => {
       container.addEventListener('wheel', handleWheel, { passive: false });
       return () => container.removeEventListener('wheel', handleWheel);
     }
+  }, []);
+
+  // Momentum/inertia scrolling
+  useEffect(() => {
+    let animationFrameId: number;
+
+    const applyMomentum = () => {
+      if (!scrollContainerRef.current || Math.abs(momentumRef.current) < 0.1) {
+        momentumRef.current = 0;
+        return;
+      }
+
+      // Apply momentum scroll
+      scrollContainerRef.current.scrollLeft += momentumRef.current;
+
+      // Decelerate momentum (friction)
+      momentumRef.current *= 0.95;
+
+      animationFrameId = requestAnimationFrame(applyMomentum);
+    };
+
+    animationFrameId = requestAnimationFrame(applyMomentum);
+    return () => cancelAnimationFrame(animationFrameId);
   }, []);
 
   return (
