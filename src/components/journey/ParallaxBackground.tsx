@@ -1,33 +1,49 @@
 'use client';
-import React, { useMemo } from 'react';
-import { motion } from 'framer-motion';
+import React, { useMemo, useRef, useLayoutEffect } from 'react';
+import gsap from 'gsap';
 
 interface ParallaxBackgroundProps {
   backgroundNumber: number;
   sectionStartX: number;
+  sectionWidth: number;
   scrollX: number;
+  /**
+   * undefined → render ALL layers (normal sections)
+   * false     → render only background layers: sky/clouds/birds/pines
+   * true      → render only foreground layers: rocks/ground/plant
+   */
+  foregroundOnly?: boolean;
 }
 
-// Assign depth based on layer name and position - sky first (low depth), foreground last (high depth)
+const FOREGROUND_KEYWORDS = ['rock', 'ground', 'plant'];
+
 const getDepthForLayer = (layerName: string, position: number, totalLayers: number): number => {
   if (layerName.includes('sky')) return 0.05;
-  if (layerName.includes('cloud')) return 0.15 + (position * 0.1);
+  if (layerName.includes('cloud')) return 0.15 + position * 0.1;
   if (layerName.includes('bird')) return 0.4;
   if (layerName.includes('pine')) return 0.55;
   if (layerName.includes('plant')) return 0.6;
-  if (layerName.includes('ground')) return 0.7 + (position * 0.08);
-  if (layerName.includes('rock')) return 0.75 + (position * 0.1);
-  // Default: spread remaining layers evenly from mid to far
+  if (layerName.includes('ground')) return 0.7 + position * 0.08;
+  if (layerName.includes('rock')) return 0.75 + position * 0.1;
   return 0.3 + (position / totalLayers) * 0.5;
 };
+
+const isForeground = (name: string) =>
+  FOREGROUND_KEYWORDS.some((kw) => name.includes(kw));
 
 const ParallaxBackground: React.FC<ParallaxBackgroundProps> = ({
   backgroundNumber,
   sectionStartX,
+  sectionWidth,
   scrollX,
+  foregroundOnly,
 }) => {
-  // Layer list - hardcoded for each background since they vary
-  const layers = useMemo(() => {
+  const yRefsMap = useRef<{ [key: string]: HTMLDivElement | null }>({});
+  const xRefsMap = useRef<{ [key: string]: HTMLDivElement | null }>({});
+  // Section 1 starts already "entered"
+  const animationFiredRef = useRef(false);
+
+  const allLayers = useMemo(() => {
     const layerMap: { [key: number]: string[] } = {
       1: ['sky', 'clouds_1', 'clouds_2', 'clouds_3', 'clouds_4', 'rocks_1', 'rocks_2'],
       2: ['sky', 'clouds_1', 'clouds_2', 'clouds_3', 'birds', 'pines', 'rocks_1', 'rocks_2', 'rocks_3'],
@@ -37,37 +53,147 @@ const ParallaxBackground: React.FC<ParallaxBackgroundProps> = ({
     return layerMap[backgroundNumber] || [];
   }, [backgroundNumber]);
 
-  // Calculate parallax offset relative to section scroll position
-  const scrollWithinSection = Math.max(0, scrollX - sectionStartX);
+  const layers = useMemo(() => {
+    return allLayers.filter((l) => {
+      if (foregroundOnly === undefined) return true;          // all layers
+      if (foregroundOnly === true) return isForeground(l);   // rocks/ground only
+      return !isForeground(l);                               // sky/clouds/pines only
+    });
+  }, [allLayers, foregroundOnly]);
+
+  // Hook A: Set initial state once on mount
+  useLayoutEffect(() => {
+    layers.forEach((layer) => {
+      const elY = yRefsMap.current[`${backgroundNumber}-${layer}`];
+      if (!elY) return;
+      
+      // Sky is always visible everywhere
+      if (layer.includes('sky')) {
+        gsap.set(elY, { opacity: 1, y: 0 });
+        return;
+      }
+
+      let initialY = 0;
+      // Section 1 layers start off-screen so Hook C can animate them in on load
+      if (backgroundNumber === 1) {
+        initialY = isForeground(layer) ? window.innerHeight : -window.innerHeight;
+      }
+      gsap.set(elY, { opacity: 1, y: initialY });
+    });
+  }, [backgroundNumber, layers]);
+
+  // Hook B: Update parallax x/y on every scroll tick
+  useLayoutEffect(() => {
+    layers.forEach((layer, idx) => {
+      const elX = xRefsMap.current[`${backgroundNumber}-${layer}`];
+      if (!elX) return;
+
+      let distFromVisible = 0;
+      const sectionEndScroll = sectionStartX + sectionWidth - window.innerWidth;
+
+      if (scrollX < sectionStartX) {
+        distFromVisible = sectionStartX - scrollX;
+      } else if (scrollX > sectionEndScroll) {
+        distFromVisible = scrollX - sectionEndScroll;
+      }
+
+      let opacity = 1;
+      const transitionDist = window.innerWidth;
+      
+      if (backgroundNumber !== 1) {
+        if (distFromVisible > transitionDist) {
+          opacity = 0;
+        } else {
+          // Fade from 0 to 1 as distFromVisible goes from transitionDist to 0.7 * transitionDist
+          const fadeZone = transitionDist * 0.3;
+          const fadeStart = transitionDist * 0.7;
+          if (distFromVisible > fadeStart) {
+            opacity = 1 - (distFromVisible - fadeStart) / fadeZone;
+          }
+        }
+      }
+
+      if (!layer.includes('sky')) {
+        const depth = getDepthForLayer(layer, idx, allLayers.length);
+        const direction = isForeground(layer) ? 1 : -1;
+        const yOffset = distFromVisible * depth * 0.8;
+        
+        gsap.set(elX, { x: 0, y: direction * yOffset, opacity });
+      } else {
+        gsap.set(elX, { x: 0, y: 0, opacity });
+      }
+    });
+  }, [scrollX, sectionStartX, sectionWidth, layers, allLayers, backgroundNumber]);
+
+  // Hook C: Entrance animations (only for Section 1 on load)
+  useLayoutEffect(() => {
+    // Only Section 1 has an on-load entrance animation
+    if (backgroundNumber !== 1) return;
+
+    if (!animationFiredRef.current) {
+      animationFiredRef.current = true;
+
+      const bgLayers = layers.filter((l) => !isForeground(l) && !l.includes('sky'));
+      const fgLayers = layers.filter((l) => isForeground(l) && !l.includes('sky'));
+
+      if (bgLayers.length > 0) {
+        gsap.to(bgLayers.map((l) => yRefsMap.current[`1-${l}`]), {
+          duration: 1.2,
+          y: 0,
+          ease: 'power2.out',
+          stagger: 0.1,
+          overwrite: 'auto',
+        });
+      }
+
+      if (fgLayers.length > 0) {
+        gsap.to(fgLayers.map((l) => yRefsMap.current[`1-${l}`]), {
+          duration: 1.2,
+          y: 0,
+          ease: 'power2.out',
+          stagger: 0.1,
+          overwrite: 'auto',
+        });
+      }
+    }
+  }, [layers, backgroundNumber]);
 
   return (
-    <div className="absolute inset-0 bg-replicate-canvas overflow-hidden">
-      {/* Parallax layers extend across full section width with tiling */}
-      {layers.map((layer, idx) => {
-        const depth = getDepthForLayer(layer, idx, layers.length);
-        const parallaxOffset = scrollWithinSection * depth;
+    <div className={`absolute inset-0 overflow-hidden ${foregroundOnly ? '' : 'bg-replicate-canvas'}`}>
+      {layers.map((layer) => {
+        const layerKey = `${backgroundNumber}-${layer}`;
 
         return (
-          <motion.div
-            key={`${backgroundNumber}-${layer}`}
+          <div
+            key={layerKey + '_y'}
+            ref={(el) => {
+              if (el) yRefsMap.current[layerKey] = el;
+            }}
             className="absolute inset-0"
-            animate={{
-              x: -parallaxOffset,
-            }}
-            transition={{ type: 'tween', duration: 0.01 }}
-            style={{
-              backgroundImage: `url(/parallax-backgrounds/game_background_${backgroundNumber}/layers/${layer}.png)`,
-              backgroundSize: '1920px 1080px',
-              backgroundPosition: '0 0',
-              backgroundRepeat: 'repeat-x',
-              backgroundAttachment: 'local',
-            }}
-          />
+          >
+            <div
+              key={layerKey + '_x'}
+              ref={(el) => {
+                if (el) xRefsMap.current[layerKey] = el;
+              }}
+              className="absolute inset-0"
+              style={{
+                backgroundImage: `url(/parallax-backgrounds/game_background_${backgroundNumber}/layers/${layer}.png)`,
+                backgroundSize: '1920px 1080px',
+                backgroundPosition: '0 0',
+                backgroundRepeat: 'repeat-x',
+                backgroundAttachment: 'local',
+                willChange: 'transform',
+              }}
+            />
+          </div>
         );
       })}
 
-      {/* Vignette overlay for depth */}
-      <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-replicate-canvas/5 pointer-events-none" />
+      {/* Vignette only on the background pass */}
+      {!foregroundOnly && (
+        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-replicate-canvas/5 pointer-events-none" />
+      )}
     </div>
   );
 };

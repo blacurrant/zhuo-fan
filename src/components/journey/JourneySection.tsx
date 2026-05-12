@@ -7,6 +7,8 @@ interface JourneySectionProps {
   backgroundNumber: number;
   width: number;
   scrollX: number;
+  /** When true, foreground rocks/ground render OVER the children (cards appear behind mountains) */
+  behindMountains?: boolean;
   children?: React.ReactNode;
 }
 
@@ -15,38 +17,54 @@ const JourneySection: React.FC<JourneySectionProps> = ({
   backgroundNumber,
   width,
   scrollX,
+  behindMountains = false,
   children,
 }) => {
-  // Calculate section start position for parallax offset
-  // Hero: 0, Projects: vw, Process: vw + 3.5*vw = 4.5*vw, Contact: 5.5*vw
+  // Section start positions for parallax offset
   const sectionStartX = useMemo(() => {
-    switch (backgroundNumber) {
-      case 1: return 0;
-      case 2: return window.innerWidth;
-      case 3: return window.innerWidth * 4.5;
-      case 4: return window.innerWidth * 5.5;
+    switch (id) {
+      case 'hero': return 0;
+      case 'projects': return window.innerWidth;
+      case 'process': return window.innerWidth * 3.2;  // 1 (hero) + 2.2 (projects)
+      case 'contact': return window.innerWidth * 4.2;  // + 1 (process)
       default: return 0;
     }
-  }, [backgroundNumber]);
+  }, [id]);
 
   return (
     <div
+      id={id}
       className="relative flex-shrink-0 h-full bg-replicate-canvas overflow-hidden"
-      style={{
-        width: `${width}px`,
-      }}
+      style={{ width: `${width}px` }}
     >
-      {/* Parallax background layers */}
+      {/* ── Background pass ──
+           behindMountains=true  → sky/clouds/birds/pines only (foregroundOnly=false)
+           behindMountains=false → all layers (foregroundOnly=undefined, default)       */}
       <ParallaxBackground
         backgroundNumber={backgroundNumber}
         sectionStartX={sectionStartX}
+        sectionWidth={width}
         scrollX={scrollX}
+        foregroundOnly={behindMountains ? false : undefined}
       />
 
-      {/* Content overlay */}
+      {/* ── Content layer ── */}
       <div className="relative z-10 h-full w-full">
         {children}
       </div>
+
+      {/* ── Foreground pass: rocks/ground rendered OVER content (Projects section only) ── */}
+      {behindMountains && (
+        <div className="absolute inset-0 z-20 pointer-events-none">
+          <ParallaxBackground
+            backgroundNumber={backgroundNumber}
+            sectionStartX={sectionStartX}
+            sectionWidth={width}
+            scrollX={scrollX}
+            foregroundOnly={true}
+          />
+        </div>
+      )}
     </div>
   );
 };

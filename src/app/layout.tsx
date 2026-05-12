@@ -85,7 +85,7 @@ export default function RootLayout({
             />
           </div>
           <InvertCursor />
-          <ToggleNavbar />
+          {/* <ToggleNavbar /> */}
           {/* <Navbar /> */}
           {children}
         </div>

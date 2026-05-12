@@ -1,5 +1,7 @@
 import React from 'react';
-import HorizontalJourney from '@/components/journey/HorizontalJourney';
+import dynamic from 'next/dynamic';
+
+const HorizontalJourney = dynamic(() => import('@/components/journey/HorizontalJourney'), { ssr: false });
 
 export const metadata = {
   title: 'Journey - Nishant Choudhary',
