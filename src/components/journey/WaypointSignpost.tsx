@@ -1,6 +1,7 @@
 'use client';
 import React, { useMemo } from 'react';
 import { motion } from 'framer-motion';
+import { ArrowRight } from 'lucide-react';
 
 interface WaypointSignpostProps {
   label: string;
@@ -15,75 +16,39 @@ const WaypointSignpost: React.FC<WaypointSignpostProps> = ({
   characterX,
   isVisible = true,
 }) => {
-  const distance = Math.abs(position - characterX);
-  const isApproaching = distance < 400 && distance > 0;
-  const isPassed = characterX > position;
+  const distance = position - characterX; // positive means it's ahead
+  
+  // Show the sign until it naturally scrolls way off the left edge of the screen
+  const isApproaching = distance > -window.innerWidth * 1.5 && distance < window.innerWidth * 1.5;
 
-  const relativeX = position - characterX;
-
-  // Only show if ahead (positive distance)
-  if (relativeX < -100 || relativeX > 800 || !isVisible) return null;
+  if (!isApproaching || !isVisible) return null;
 
   return (
     <motion.div
-      className="fixed z-40 pointer-events-none"
+      className="fixed z-45 pointer-events-none flex flex-col items-center justify-end"
       style={{
-        left: `calc(50vw + ${relativeX}px)`,
-        top: '20%',
+        left: `calc(80vw + ${distance}px)`,
+        bottom: 30, // Planted on the road (road is h-200, char is bottom-50)
       }}
-      animate={{
-        opacity: isApproaching ? 1 : 0.5,
-        scale: isApproaching ? 1.1 : 1,
-      }}
-      transition={{ duration: 0.3 }}
+      // initial={{ opacity: 0, y: 20 }}
+      // animate={{ opacity: 1, y: 20 }}
+      // transition={{ duration: 0.5 }}
     >
-      {/* Signpost pole */}
-      <div className="flex flex-col items-center">
-        {/* Sign */}
-        <motion.div
-          className="bg-replicate-primary text-replicate-on-primary px-4 py-2 rounded-lg font-display font-bold text-sm whitespace-nowrap shadow-lg"
-          animate={{
-            y: isApproaching ? [0, -8, 0] : 0,
-          }}
-          transition={{
-            duration: 2,
-            repeat: isApproaching ? Infinity : 0,
-            ease: 'easeInOut',
-          }}
-        >
+      {/* Wooden Sign Board */}
+      <div className="relative bg-[#8b5a2b] border-4 border-[#5c3a21] text-[#f4e4bc] px-3 py-1 shadow-xl flex items-center justify-center transform rounded-md z-10">
+        {/* Right Arrow Cutout Shape effect (using CSS clip-path or border, but a simple arrow text works too) */}
+        <span className="font-display font-light text-lg mr-4 drop-shadow-md">
           {label}
-        </motion.div>
-
-        {/* Pole */}
-        <div className="w-1 h-16 bg-gradient-to-b from-replicate-primary to-replicate-primary-deep opacity-60" />
-
-        {/* Distance indicator */}
-        <motion.div
-          className="text-xs text-replicate-charcoal font-body mt-2 opacity-60"
-          animate={{
-            opacity: isApproaching ? 1 : 0.3,
-          }}
-        >
-          {Math.round(distance)}m
-        </motion.div>
+        </span>
+        <ArrowRight size={14} className="text-3xl font-bold drop-shadow-md" />
+        
+        {/* Wooden texture stripes */}
+        <div className="absolute inset-0 opacity-10 bg-[repeating-linear-gradient(0deg,transparent,transparent_4px,#000_5px,#000_6px)] pointer-events-none" />
       </div>
 
-      {/* Arrow pointing direction */}
-      {!isPassed && (
-        <motion.div
-          className="absolute left-1/2 transform -translate-x-1/2 text-2xl mt-2"
-          animate={{
-            x: isApproaching ? [0, 8, 0] : 0,
-          }}
-          transition={{
-            duration: 1.5,
-            repeat: isApproaching ? Infinity : 0,
-            ease: 'easeInOut',
-          }}
-        >
-          →
-        </motion.div>
-      )}
+      {/* Wooden Post */}
+      <div className="w-2 h-12 bg-[#5c3a21] border-l-2 border-[#8b5a2b] border-r-4 border-[#3e2716] shadow-[10px_0_15px_rgba(0,0,0,0.4)]" />
+    
     </motion.div>
   );
 };
