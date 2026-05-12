@@ -16,25 +16,25 @@ interface ScrollState {
 const PROJECTS = [
   {
     title: 'Craon',
-    subtitle: 'Next-Generation Web-Based Video Editor',
+    subtitle: 'AI Video Editor · SaaS',
     image: '/craon/craon-hero.png',
     role: 'Lead Frontend Engineer',
   },
   {
     title: 'MelloUp',
-    subtitle: 'AI-Powered Event Marketing ROI Platform',
+    subtitle: 'Event Marketing · MVP',
     image: '/melloup/melloup.png',
     role: 'Founding Engineer',
   },
   {
     title: 'Ibasho',
-    subtitle: 'Digital Sanctuary for Emotional Expression',
+    subtitle: 'Brand · UI/UX · Web',
     image: '/ibasho/ibashoo.png',
     role: 'Lead Designer & Developer',
   },
   {
     title: 'FreightEZ',
-    subtitle: 'Transportation Management System',
+    subtitle: 'Fleet TMS · B2B SaaS',
     image: '/freightez/freightez-hero.png',
     role: 'Frontend Engineer',
   },
@@ -146,57 +146,106 @@ const HorizontalJourney: React.FC = () => {
             width={window.innerWidth}
             scrollX={scrollState.x}
           >
-            <motion.div
-              className="flex items-center justify-center h-full px-16"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ duration: 0.8 }}
-            >
-              <div className="max-w-2xl text-center">
-                <motion.h1
-                  className="text-8xl font-display font-bold text-replicate-ink mb-6"
-                  initial={{ opacity: 0, y: 30 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.6, delay: 0.2 }}
+            <div className="flex items-start justify-start h-full px-16 pt-16 pb-48">
+              <motion.div
+                className="max-w-3xl"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.6 }}
+              >
+                {/* Red eyebrow tag */}
+                <motion.div
+                  className="flex items-center gap-3 mb-6"
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ duration: 0.5, delay: 0.1 }}
                 >
-                  Nishant Choudhary
+                  <div className="w-8 h-[2px] bg-replicate-primary" />
+                  <span
+                    className="font-body text-sm font-semibold uppercase tracking-[0.2em] text-replicate-primary"
+                    style={{ textShadow: '0 1px 8px rgba(0,0,0,0.8)' }}
+                  >
+                    Portfolio · 2025
+                  </span>
+                </motion.div>
+
+                {/* Name — massive */}
+                <motion.h1
+                  className="font-display font-bold text-white leading-[0.92] mb-6"
+                  style={{
+                    fontSize: 'clamp(3.5rem, 7vw, 6.5rem)',
+                    textShadow: '0 4px 40px rgba(0,0,0,0.9), 0 1px 6px rgba(0,0,0,0.95)',
+                  }}
+                  initial={{ opacity: 0, y: 40 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.7, delay: 0.2 }}
+                >
+                  Nishant<br />Choudhary
                 </motion.h1>
 
+                {/* Rule */}
+                <motion.div
+                  className="w-24 h-[3px] bg-replicate-primary mb-6"
+                  initial={{ scaleX: 0, originX: 0 }}
+                  animate={{ scaleX: 1 }}
+                  transition={{ duration: 0.5, delay: 0.55 }}
+                />
+
+                {/* Role */}
                 <motion.p
-                  className="text-3xl text-replicate-body font-display mb-6"
-                  initial={{ opacity: 0, y: 30 }}
+                  className="font-display font-semibold text-white mb-4"
+                  style={{
+                    fontSize: 'clamp(1.1rem, 2vw, 1.5rem)',
+                    textShadow: '0 2px 20px rgba(0,0,0,0.9)',
+                  }}
+                  initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.6, delay: 0.4 }}
+                  transition={{ duration: 0.5, delay: 0.65 }}
                 >
                   Full-Stack Creative Developer
                 </motion.p>
 
+                {/* Description */}
                 <motion.p
-                  className="text-xl text-replicate-charcoal font-body leading-relaxed mb-8"
-                  initial={{ opacity: 0, y: 30 }}
+                  className="font-body leading-relaxed mb-10"
+                  style={{
+                    fontSize: 'clamp(0.95rem, 1.4vw, 1.1rem)',
+                    color: 'rgba(255,255,255,0.78)',
+                    textShadow: '0 2px 16px rgba(0,0,0,0.85)',
+                    maxWidth: '38ch',
+                  }}
+                  initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.6, delay: 0.6 }}
+                  transition={{ duration: 0.5, delay: 0.75 }}
                 >
                   Building immersive digital experiences through code, design, and obsessive
                   attention to detail.
                 </motion.p>
 
+                {/* Scroll CTA */}
                 <motion.div
-                  className="flex items-center justify-center gap-2 text-replicate-primary font-body text-sm"
+                  className="flex items-center gap-3"
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
-                  transition={{ duration: 0.6, delay: 0.8 }}
+                  transition={{ duration: 0.5, delay: 0.9 }}
                 >
-                  <span>Scroll right to begin</span>
+                  <span
+                    className="font-body text-sm font-medium uppercase tracking-[0.15em]"
+                    style={{ color: 'rgba(255,255,255,0.55)', textShadow: '0 1px 8px rgba(0,0,0,0.8)' }}
+                  >
+                    Scroll to begin
+                  </span>
                   <motion.span
-                    animate={{ x: [0, 8, 0] }}
-                    transition={{ duration: 1.5, repeat: Infinity }}
+                    className="text-replicate-primary font-bold text-lg"
+                    animate={{ x: [0, 10, 0] }}
+                    transition={{ duration: 1.4, repeat: Infinity, ease: 'easeInOut' }}
+                    style={{ textShadow: '0 0 12px rgba(234,40,4,0.6)' }}
                   >
                     →
                   </motion.span>
                 </motion.div>
-              </div>
-            </motion.div>
+              </motion.div>
+            </div>
           </JourneySection>
 
           {/* Section 2: Projects — each card owns equal chunk of the 3vw section */}
@@ -209,11 +258,33 @@ const HorizontalJourney: React.FC = () => {
           >
             {/* Section label — top-left */}
             <div className="absolute top-10 left-16 z-10">
-              <h2 className="text-6xl font-display font-bold text-replicate-ink drop-shadow-lg">
-                Work
+              <div className="flex items-center gap-3 mb-2">
+                <div className="w-6 h-[2px] bg-replicate-primary" />
+                <span
+                  className="font-body text-xs font-semibold uppercase tracking-[0.2em] text-replicate-primary"
+                  style={{ textShadow: '0 1px 8px rgba(0,0,0,0.9)' }}
+                >
+                  Selected Work
+                </span>
+              </div>
+              <h2
+                className="font-display font-bold text-white leading-none"
+                style={{
+                  fontSize: 'clamp(3rem, 5vw, 4.5rem)',
+                  textShadow: '0 4px 32px rgba(0,0,0,0.95), 0 1px 6px rgba(0,0,0,0.9)',
+                }}
+              >
+                Projects
               </h2>
-              <p className="text-lg text-replicate-body font-body mt-2 drop-shadow">
-                Selected projects · scroll to explore
+              <p
+                className="font-body mt-2"
+                style={{
+                  fontSize: '0.9rem',
+                  color: 'rgba(255,255,255,0.55)',
+                  textShadow: '0 1px 10px rgba(0,0,0,0.9)',
+                }}
+              >
+                Scroll to explore
               </p>
             </div>
 
@@ -221,9 +292,6 @@ const HorizontalJourney: React.FC = () => {
             {PROJECTS.map((project, idx) => {
               const sectionWidth = window.innerWidth * 2.2;
               const chunkWidth = sectionWidth / PROJECTS.length;
-              // Card = 58% of each chunk — smaller, with more breathing room
-              const cardWidth = Math.round(chunkWidth * 0.58);
-              // Center card in the middle of its chunk
               const cardAbsoluteX = chunkWidth * idx + chunkWidth / 2;
               const cardScrollX = window.innerWidth + cardAbsoluteX;
               return (
@@ -237,7 +305,6 @@ const HorizontalJourney: React.FC = () => {
                   cardX={cardScrollX}
                   index={idx}
                   absoluteX={cardAbsoluteX}
-                  cardWidth={cardWidth}
                 />
               );
             })}
@@ -262,46 +329,85 @@ const HorizontalJourney: React.FC = () => {
             width={window.innerWidth}
             scrollX={scrollState.x}
           >
-            <div className="flex items-center justify-center h-full px-16">
+            <div className="flex items-start justify-start h-full px-16 pt-16 pb-48">
               <motion.div
-                className="text-center max-w-2xl"
-                initial={{ opacity: 0, y: 30 }}
+                className="max-w-2xl"
                 animate={{
                   opacity: scrollState.progress > 0.85 ? 1 : 0,
-                  y: scrollState.progress > 0.85 ? 0 : 30,
+                  y: scrollState.progress > 0.85 ? 0 : 32,
                 }}
-                transition={{ duration: 0.6 }}
+                transition={{ duration: 0.7 }}
               >
-                <h2 className="text-6xl font-display font-bold text-replicate-ink mb-6">
-                  Journey Complete
+                {/* Eyebrow */}
+                <div className="flex items-center gap-3 mb-6">
+                  <div className="w-8 h-[2px] bg-replicate-primary" />
+                  <span
+                    className="font-body text-sm font-semibold uppercase tracking-[0.2em] text-replicate-primary"
+                    style={{ textShadow: '0 1px 8px rgba(0,0,0,0.8)' }}
+                  >
+                    End of Journey
+                  </span>
+                </div>
+
+                {/* Heading */}
+                <h2
+                  className="font-display font-bold text-white leading-[0.92] mb-6"
+                  style={{
+                    fontSize: 'clamp(2.8rem, 5.5vw, 5rem)',
+                    textShadow: '0 4px 40px rgba(0,0,0,0.95), 0 1px 6px rgba(0,0,0,0.9)',
+                  }}
+                >
+                  Let's build<br />something.
                 </h2>
-                <p className="text-xl text-replicate-body font-body mb-8">
-                  Let's create something extraordinary together.
+
+                <div className="w-20 h-[3px] bg-replicate-primary mb-6" />
+
+                <p
+                  className="font-body leading-relaxed mb-10"
+                  style={{
+                    fontSize: 'clamp(1rem, 1.4vw, 1.15rem)',
+                    color: 'rgba(255,255,255,0.72)',
+                    textShadow: '0 2px 16px rgba(0,0,0,0.85)',
+                    maxWidth: '36ch',
+                  }}
+                >
+                  Open to roles, freelance, and ambitious side projects. Let's make something
+                  extraordinary.
                 </p>
 
-                <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
+                {/* CTAs */}
+                <div className="flex flex-wrap gap-4 items-center">
                   <motion.a
                     href="mailto:nishantchoudhary.dev@gmail.com"
-                    className="px-8 py-3 bg-replicate-primary text-replicate-on-primary rounded-full font-display font-bold hover:bg-replicate-primary-deep transition-colors"
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
+                    className="px-7 py-3 bg-replicate-primary text-white rounded-full font-display font-bold text-sm uppercase tracking-wide hover:bg-replicate-primary-deep transition-colors"
+                    style={{ boxShadow: '0 4px 24px rgba(234,40,4,0.45)' }}
+                    whileHover={{ scale: 1.04 }}
+                    whileTap={{ scale: 0.96 }}
                   >
                     Get in Touch
                   </motion.a>
                   <motion.a
-                    href="https://github.com"
+                    href="https://github.com/blacurrant"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="px-8 py-3 border-2 border-replicate-ink text-replicate-ink rounded-full font-display font-bold hover:bg-replicate-canvas transition-colors"
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
+                    className="px-7 py-3 font-display font-bold text-sm uppercase tracking-wide text-white transition-colors"
+                    style={{
+                      border: '2px solid rgba(255,255,255,0.35)',
+                      borderRadius: '9999px',
+                      backdropFilter: 'blur(4px)',
+                    }}
+                    whileHover={{ scale: 1.04, borderColor: 'rgba(255,255,255,0.8)' }}
+                    whileTap={{ scale: 0.96 }}
                   >
                     GitHub
                   </motion.a>
                 </div>
 
-                <p className="text-sm text-replicate-charcoal font-body">
-                  Email: nishantchoudhary.dev@gmail.com
+                <p
+                  className="font-body mt-8 text-xs uppercase tracking-[0.15em]"
+                  style={{ color: 'rgba(255,255,255,0.35)', textShadow: '0 1px 8px rgba(0,0,0,0.8)' }}
+                >
+                  nishantchoudhary.dev@gmail.com
                 </p>
               </motion.div>
             </div>
@@ -335,8 +441,14 @@ const HorizontalJourney: React.FC = () => {
       />
 
       {/* Progress indicator */}
-      <div className="fixed bottom-8 left-8 text-replicate-ink font-body text-sm">
-        {Math.round(scrollState.progress * 100)}% Complete
+      <div
+        className="fixed bottom-8 left-8 font-body text-xs uppercase tracking-[0.18em] font-semibold"
+        style={{
+          color: 'rgba(255,255,255,0.65)',
+          textShadow: '0 1px 8px rgba(0,0,0,0.9)',
+        }}
+      >
+        {Math.round(scrollState.progress * 100)}%
       </div>
     </div>
   );
