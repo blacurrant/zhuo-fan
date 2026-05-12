@@ -6,6 +6,7 @@ import JourneySection from './JourneySection';
 import ProjectCard from './ProjectCard';
 import WaypointSignpost from './WaypointSignpost';
 import ProcessTimeline from './ProcessTimeline';
+import CommissionPath from './CommissionPath';
 
 interface ScrollState {
   x: number;
@@ -256,6 +257,13 @@ const HorizontalJourney: React.FC = () => {
             scrollX={scrollState.x}
             behindMountains
           >
+            {/* Connecting path */}
+            <CommissionPath
+              scrollX={scrollState.x}
+              sectionStartX={window.innerWidth}
+              sectionWidth={window.innerWidth * 2.2}
+            />
+
             {/* Section label — top-left */}
             <div className="absolute top-10 left-16 z-10">
               <div className="flex items-center gap-3 mb-2">
