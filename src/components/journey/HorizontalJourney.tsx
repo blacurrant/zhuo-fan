@@ -49,6 +49,7 @@ const HorizontalJourney: React.FC = () => {
   });
 
   const lastScrollRef = useRef(0);
+  const lastScrollTimeRef = useRef(performance.now());
 
   // Handle native scroll
   useEffect(() => {
@@ -59,7 +60,10 @@ const HorizontalJourney: React.FC = () => {
       const maxScroll =
         scrollContainerRef.current.scrollWidth - scrollContainerRef.current.clientWidth;
       const progress = maxScroll > 0 ? scrollLeft / maxScroll : 0;
-      const velocity = scrollLeft - lastScrollRef.current;
+
+      const now = performance.now();
+      const dt = now - lastScrollTimeRef.current;
+      const velocity = dt > 0 ? (scrollLeft - lastScrollRef.current) / dt : 0;
 
       setScrollState({
         x: scrollLeft,
@@ -68,6 +72,7 @@ const HorizontalJourney: React.FC = () => {
       });
 
       lastScrollRef.current = scrollLeft;
+      lastScrollTimeRef.current = now;
     };
 
     const container = scrollContainerRef.current;
@@ -306,19 +311,18 @@ const HorizontalJourney: React.FC = () => {
 
       {/* Waypoint signposts — positions match 1 + 2.2 + 1 + 1 = 5.2vw total */}
       <WaypointSignpost
-        label="START"
+        label="work"
         position={0}
         characterX={scrollState.x}
-        isVisible={scrollState.x < window.innerWidth * 0.5}
       />
-      <WaypointSignpost label="PROJECTS" position={window.innerWidth} characterX={scrollState.x} />
+      <WaypointSignpost label="process" position={window.innerWidth * 2.2} characterX={scrollState.x} />
       <WaypointSignpost
-        label="PROCESS"
+        label="contact"
         position={window.innerWidth * 3.2}
         characterX={scrollState.x}
       />
       <WaypointSignpost
-        label="CONTACT"
+        label="death valley"
         position={window.innerWidth * 4.2}
         characterX={scrollState.x}
       />
