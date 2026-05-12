@@ -57,8 +57,7 @@ const CommissionPath: React.FC<CommissionPathProps> = ({
         strokeWidth="0.35"
         strokeDasharray="0.9 2.2"
         strokeLinecap="round"
-        animate={{ pathLength: progress }}
-        transition={{ duration: 0.8, ease: 'easeOut' }}
+        style={{ pathLength: progress }}
       />
 
       {/* Dots at each card base */}
@@ -69,6 +68,7 @@ const CommissionPath: React.FC<CommissionPathProps> = ({
           cy={cy}
           r="0.8"
           fill="#ea2804"
+          style={{ transformBox: 'fill-box', transformOrigin: 'center' }}
           animate={{
             scale: progress > DOT_THRESHOLDS[i] ? 1 : 0,
             opacity: progress > DOT_THRESHOLDS[i] ? 1 : 0,
