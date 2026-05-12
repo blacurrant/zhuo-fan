@@ -56,7 +56,8 @@ const HorizontalJourney: React.FC = () => {
       if (!scrollContainerRef.current) return;
 
       const scrollLeft = scrollContainerRef.current.scrollLeft;
-      const maxScroll = scrollContainerRef.current.scrollWidth - scrollContainerRef.current.clientWidth;
+      const maxScroll =
+        scrollContainerRef.current.scrollWidth - scrollContainerRef.current.clientWidth;
       const progress = maxScroll > 0 ? scrollLeft / maxScroll : 0;
       const velocity = scrollLeft - lastScrollRef.current;
 
@@ -130,8 +131,7 @@ const HorizontalJourney: React.FC = () => {
       {/* Horizontal scroll container */}
       <div
         ref={scrollContainerRef}
-        className="w-full h-full overflow-x-auto overflow-y-hidden scroll-smooth"
-        style={{ scrollBehavior: 'smooth' }}
+        className="w-full h-full overflow-x-auto overflow-y-hidden [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]"
       >
         <div className="flex h-full">
           {/* Section 1: Hero */}
@@ -172,7 +172,8 @@ const HorizontalJourney: React.FC = () => {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.6, delay: 0.6 }}
                 >
-                  Building immersive digital experiences through code, design, and obsessive attention to detail.
+                  Building immersive digital experiences through code, design, and obsessive
+                  attention to detail.
                 </motion.p>
 
                 <motion.div
@@ -193,27 +194,34 @@ const HorizontalJourney: React.FC = () => {
             </motion.div>
           </JourneySection>
 
-          {/* Section 2: Projects */}
+          {/* Section 2: Projects — each card owns equal chunk of the 3vw section */}
           <JourneySection
             id="projects"
             backgroundNumber={2}
-            width={window.innerWidth * 3.5}
+            width={window.innerWidth * 2.2}
             scrollX={scrollState.x}
+            behindMountains
           >
-            <div className="flex items-center h-full gap-16 px-20 py-20">
-              <div className="flex-shrink-0 w-80">
-                <h2 className="text-5xl font-display font-bold text-replicate-ink mb-4">
-                  Work
-                </h2>
-                <p className="text-lg text-replicate-body font-body mb-8">
-                  Selected projects showcasing full-stack development and creative problem solving.
-                </p>
-                <p className="text-sm text-replicate-charcoal font-body">
-                  👉 Scroll right to explore
-                </p>
-              </div>
+            {/* Section label — top-left */}
+            <div className="absolute top-10 left-16 z-10">
+              <h2 className="text-6xl font-display font-bold text-replicate-ink drop-shadow-lg">
+                Work
+              </h2>
+              <p className="text-lg text-replicate-body font-body mt-2 drop-shadow">
+                Selected projects · scroll to explore
+              </p>
+            </div>
 
-              {PROJECTS.map((project, idx) => (
+            {/* Cards: each owns 1/4 of the 3vw section, centered in its chunk */}
+            {PROJECTS.map((project, idx) => {
+              const sectionWidth = window.innerWidth * 2.2;
+              const chunkWidth = sectionWidth / PROJECTS.length;
+              // Card = 58% of each chunk — smaller, with more breathing room
+              const cardWidth = Math.round(chunkWidth * 0.58);
+              // Center card in the middle of its chunk
+              const cardAbsoluteX = chunkWidth * idx + chunkWidth / 2;
+              const cardScrollX = window.innerWidth + cardAbsoluteX;
+              return (
                 <ProjectCard
                   key={project.title}
                   title={project.title}
@@ -221,27 +229,31 @@ const HorizontalJourney: React.FC = () => {
                   image={project.image}
                   role={project.role}
                   characterX={scrollState.x + window.innerWidth / 2}
-                  cardX={window.innerWidth + 320 + idx * 360}
+                  cardX={cardScrollX}
                   index={idx}
+                  absoluteX={cardAbsoluteX}
+                  cardWidth={cardWidth}
                 />
-              ))}
-            </div>
+              );
+            })}
           </JourneySection>
 
           {/* Section 3: Process */}
           <JourneySection
             id="process"
-            backgroundNumber={3}
+            backgroundNumber={4}
             width={window.innerWidth}
             scrollX={scrollState.x}
           >
-            <ProcessTimeline scrollProgress={scrollState.progress > 0.5 ? (scrollState.progress - 0.5) * 2 : 0} />
+            <ProcessTimeline
+              scrollProgress={scrollState.progress > 0.5 ? (scrollState.progress - 0.5) * 2 : 0}
+            />
           </JourneySection>
 
           {/* Section 4: Contact */}
           <JourneySection
             id="contact"
-            backgroundNumber={4}
+            backgroundNumber={3}
             width={window.innerWidth}
             scrollX={scrollState.x}
           >
@@ -292,26 +304,22 @@ const HorizontalJourney: React.FC = () => {
         </div>
       </div>
 
-      {/* Waypoint signposts */}
+      {/* Waypoint signposts — positions match 1 + 2.2 + 1 + 1 = 5.2vw total */}
       <WaypointSignpost
         label="START"
         position={0}
         characterX={scrollState.x}
         isVisible={scrollState.x < window.innerWidth * 0.5}
       />
-      <WaypointSignpost
-        label="PROJECTS"
-        position={window.innerWidth}
-        characterX={scrollState.x}
-      />
+      <WaypointSignpost label="PROJECTS" position={window.innerWidth} characterX={scrollState.x} />
       <WaypointSignpost
         label="PROCESS"
-        position={window.innerWidth + window.innerWidth * 3.5}
+        position={window.innerWidth * 3.2}
         characterX={scrollState.x}
       />
       <WaypointSignpost
         label="CONTACT"
-        position={window.innerWidth + window.innerWidth * 3.5 + window.innerWidth}
+        position={window.innerWidth * 4.2}
         characterX={scrollState.x}
       />
 
