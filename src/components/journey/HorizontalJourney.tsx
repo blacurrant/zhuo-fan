@@ -3,43 +3,15 @@ import React, { useState, useRef, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import Character from './Character';
 import JourneySection from './JourneySection';
-import ProjectCard from './ProjectCard';
 import WaypointSignpost from './WaypointSignpost';
 import ProcessTimeline from './ProcessTimeline';
-import CommissionPath from './CommissionPath';
+import ProjectBook from './ProjectBook';
 
 interface ScrollState {
   x: number;
   progress: number;
   velocity: number;
 }
-
-const PROJECTS = [
-  {
-    title: 'Craon',
-    subtitle: 'AI Video Editor · SaaS',
-    image: '/craon/craon-hero.png',
-    role: 'Lead Frontend Engineer',
-  },
-  {
-    title: 'MelloUp',
-    subtitle: 'Event Marketing · MVP',
-    image: '/melloup/melloup.png',
-    role: 'Founding Engineer',
-  },
-  {
-    title: 'Ibasho',
-    subtitle: 'Brand · UI/UX · Web',
-    image: '/ibasho/ibashoo.png',
-    role: 'Lead Designer & Developer',
-  },
-  {
-    title: 'FreightEZ',
-    subtitle: 'Fleet TMS · B2B SaaS',
-    image: '/freightez/freightez-hero.png',
-    role: 'Frontend Engineer',
-  },
-];
 
 const HorizontalJourney: React.FC = () => {
   const scrollContainerRef = useRef<HTMLDivElement>(null);
@@ -249,74 +221,14 @@ const HorizontalJourney: React.FC = () => {
             </div>
           </JourneySection>
 
-          {/* Section 2: Projects — each card owns equal chunk of the 3vw section */}
+          {/* Section 2: Projects — book handles content via fixed overlay */}
           <JourneySection
             id="projects"
             backgroundNumber={2}
             width={window.innerWidth * 2.2}
             scrollX={scrollState.x}
             behindMountains
-          >
-            {/* Connecting path */}
-            <CommissionPath
-              scrollX={scrollState.x}
-              sectionStartX={window.innerWidth}
-              sectionWidth={window.innerWidth * 2.2}
-            />
-
-            {/* Section label — top-left */}
-            <div className="absolute top-10 left-16 z-10">
-              <div className="flex items-center gap-3 mb-2">
-                <div className="w-6 h-[2px] bg-replicate-primary" />
-                <span
-                  className="font-body text-xs font-semibold uppercase tracking-[0.2em] text-replicate-primary"
-                  style={{ textShadow: '0 1px 8px rgba(0,0,0,0.9)' }}
-                >
-                  Selected Work
-                </span>
-              </div>
-              <h2
-                className="font-display font-bold text-white leading-none"
-                style={{
-                  fontSize: 'clamp(3rem, 5vw, 4.5rem)',
-                  textShadow: '0 4px 32px rgba(0,0,0,0.95), 0 1px 6px rgba(0,0,0,0.9)',
-                }}
-              >
-                Projects
-              </h2>
-              <p
-                className="font-body mt-2"
-                style={{
-                  fontSize: '0.9rem',
-                  color: 'rgba(255,255,255,0.55)',
-                  textShadow: '0 1px 10px rgba(0,0,0,0.9)',
-                }}
-              >
-                Scroll to explore
-              </p>
-            </div>
-
-            {/* Cards: each owns 1/4 of the 3vw section, centered in its chunk */}
-            {PROJECTS.map((project, idx) => {
-              const sectionWidth = window.innerWidth * 2.2;
-              const chunkWidth = sectionWidth / PROJECTS.length;
-              const cardAbsoluteX = chunkWidth * idx + chunkWidth / 2;
-              const cardScrollX = window.innerWidth + cardAbsoluteX;
-              return (
-                <ProjectCard
-                  key={project.title}
-                  title={project.title}
-                  subtitle={project.subtitle}
-                  image={project.image}
-                  role={project.role}
-                  characterX={scrollState.x + window.innerWidth / 2}
-                  cardX={cardScrollX}
-                  index={idx}
-                  absoluteX={cardAbsoluteX}
-                />
-              );
-            })}
-          </JourneySection>
+          />
 
           {/* Section 3: Process */}
           <JourneySection
@@ -440,6 +352,9 @@ const HorizontalJourney: React.FC = () => {
         position={window.innerWidth * 4.2}
         characterX={scrollState.x}
       />
+
+      {/* Magic book — fixed viewport overlay, active during projects section */}
+      <ProjectBook scrollX={scrollState.x} />
 
       {/* Character */}
       <Character
