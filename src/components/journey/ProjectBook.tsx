@@ -147,8 +147,8 @@ const ProjectBook: React.FC<ProjectBookProps> = ({ scrollX }) => {
   const vw = window.innerWidth;
   const vh = window.innerHeight;
 
-  // Section: starts when scrollX = 1vw, spans 1.2vw of scroll
-  const sectionStart = vw;
+  // Section: starts when scrollX = 1.5vw, spans 1.2vw of scroll
+  const sectionStart = vw * 1.5;
   const sectionRange = vw * 1.2;
   const t = Math.max(0, Math.min(1, (scrollX - sectionStart) / sectionRange));
 
@@ -177,11 +177,11 @@ const ProjectBook: React.FC<ProjectBookProps> = ({ scrollX }) => {
   const opacity = t < 0.03 ? t / 0.03 : t > 0.97 ? (1 - t) / 0.03 : 1;
 
   // Entrance: book drops from sky and zooms in
-  const DROP_END = 0.12;
+  const DROP_END = 0.10;
   const entranceP = Math.min(1, t / DROP_END);
   const eased = 1 - Math.pow(1 - entranceP, 3); // cubic ease-out
   const entranceScale = 0.1 + eased * 0.9; // 0.1 → 1.0
-  const entranceY = (1 - eased) * -60; // -60vh → 0vh
+  const entranceY = (1 - eased) * 60; // -60vh → 0vh
 
   return (
     <div
@@ -189,7 +189,7 @@ const ProjectBook: React.FC<ProjectBookProps> = ({ scrollX }) => {
       style={{
         left: '50%',
         top: '50%',
-        transform: `translate(-50%, calc(-50% + ${entranceY}vh)) scale(${entranceScale})`,
+        transform: `translate(-50%, calc(-50% - 6vh + ${entranceY}vh)) scale(${entranceScale})`,
         transformOrigin: 'center center',
         zIndex: 45,
         width: `${bookSize}px`,
@@ -242,6 +242,7 @@ const ProjectBook: React.FC<ProjectBookProps> = ({ scrollX }) => {
                 letterSpacing: '0.02em',
                 textShadow: '0.5px 0.5px 0px rgba(0,0,0,0.1)', // Slight ink bleed
                 marginBottom: '10px',
+                filter: 'url(#ink-rough)',
               }}
             >
               {project.title}

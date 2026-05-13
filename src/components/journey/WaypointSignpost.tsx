@@ -7,6 +7,7 @@ interface WaypointSignpostProps {
   label: string;
   position: number; // X position where waypoint is
   characterX: number;
+  showArrow?: boolean;
   isVisible?: boolean;
 }
 
@@ -14,6 +15,7 @@ const WaypointSignpost: React.FC<WaypointSignpostProps> = ({
   label,
   position,
   characterX,
+  showArrow = true,
   isVisible = true,
 }) => {
   const distance = position - characterX; // positive means it's ahead
@@ -37,17 +39,17 @@ const WaypointSignpost: React.FC<WaypointSignpostProps> = ({
       {/* Wooden Sign Board */}
       <div className="relative bg-[#8b5a2b] border-4 border-[#5c3a21] text-[#f4e4bc] px-3 py-1 shadow-xl flex items-center justify-center transform rounded-md z-10">
         {/* Right Arrow Cutout Shape effect (using CSS clip-path or border, but a simple arrow text works too) */}
-        <span className="font-display font-light text-lg mr-4 drop-shadow-md">
+        <span style={{filter: 'url(#ink-rough)',}} className="font-display font-light text-lg drop-shadow-md">
           {label}
         </span>
-        <ArrowRight size={14} className="text-3xl font-bold drop-shadow-md" />
+        {showArrow && <ArrowRight size={14} className="text-3xl font-bold drop-shadow-md" />}
         
         {/* Wooden texture stripes */}
         <div className="absolute inset-0 opacity-10 bg-[repeating-linear-gradient(0deg,transparent,transparent_4px,#000_5px,#000_6px)] pointer-events-none" />
       </div>
 
       {/* Wooden Post */}
-      <div className="w-2 h-12 bg-[#5c3a21] border-l-2 border-[#8b5a2b] border-r-4 border-[#3e2716] shadow-[10px_0_15px_rgba(0,0,0,0.4)]" />
+      <div className="w-2 h-12 bg-[#5c3a21] border-l-2 border-r-4 border-[#3e2716] shadow-[10px_0_15px_rgba(0,0,0,0.4)]" />
     
     </motion.div>
   );
