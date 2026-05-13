@@ -99,16 +99,16 @@ const ParallaxBackground: React.FC<ParallaxBackgroundProps> = ({
 
       let opacity = 1;
       const transitionDist = window.innerWidth;
-      
+
       if (backgroundNumber !== 1) {
         if (distFromVisible > transitionDist) {
           opacity = 0;
         } else {
-          // Fade from 0 to 1 as distFromVisible goes from transitionDist to 0.7 * transitionDist
-          const fadeZone = transitionDist * 0.3;
-          const fadeStart = transitionDist * 0.7;
+          // Tighter fade zone — clouds reach full opacity sooner
+          const fadeZone = transitionDist * 0.15;
+          const fadeStart = transitionDist * 0.45;
           if (distFromVisible > fadeStart) {
-            opacity = 1 - (distFromVisible - fadeStart) / fadeZone;
+            opacity = Math.max(0, 1 - (distFromVisible - fadeStart) / fadeZone);
           }
         }
       }
@@ -165,17 +165,12 @@ const ParallaxBackground: React.FC<ParallaxBackgroundProps> = ({
 
         return (
           <div
-            key={layerKey + '_y'}
-            ref={(el) => {
-              if (el) yRefsMap.current[layerKey] = el;
-            }}
+            key={layerKey}
+            ref={(el) => { if (el) yRefsMap.current[layerKey] = el; }}
             className="absolute inset-0"
           >
             <div
-              key={layerKey + '_x'}
-              ref={(el) => {
-                if (el) xRefsMap.current[layerKey] = el;
-              }}
+              ref={(el) => { if (el) xRefsMap.current[layerKey] = el; }}
               className="absolute inset-0"
               style={{
                 backgroundImage: `url(/parallax-backgrounds/game_background_${backgroundNumber}/layers/${layer}.png)`,
