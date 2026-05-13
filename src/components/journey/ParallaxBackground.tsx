@@ -117,10 +117,11 @@ const ParallaxBackground: React.FC<ParallaxBackgroundProps> = ({
         const depth = getDepthForLayer(layer, idx, allLayers.length);
         const direction = isForeground(layer) ? 1 : -1;
         const yOffset = distFromVisible * depth * 0.8;
-        
+
         gsap.set(elX, { x: 0, y: direction * yOffset, opacity });
       } else {
-        gsap.set(elX, { x: 0, y: 0, opacity });
+        // Sky never fades — it's the atmosphere; fading it reveals the raw container bg
+        gsap.set(elX, { x: 0, y: 0, opacity: 1 });
       }
     });
   }, [scrollX, sectionStartX, sectionWidth, layers, allLayers, backgroundNumber]);
@@ -159,7 +160,7 @@ const ParallaxBackground: React.FC<ParallaxBackgroundProps> = ({
   }, [layers, backgroundNumber]);
 
   return (
-    <div className={`absolute inset-0 overflow-hidden ${foregroundOnly ? '' : 'bg-replicate-canvas'}`}>
+    <div className={`absolute inset-0 overflow-hidden ${foregroundOnly ? '' : 'bg-[#7ab0d4]'}`}>
       {layers.map((layer) => {
         const layerKey = `${backgroundNumber}-${layer}`;
 

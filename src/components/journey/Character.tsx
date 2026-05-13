@@ -103,7 +103,7 @@ const Character: React.FC<CharacterProps> = ({ scrollX, velocity }) => {
               transform: `scale(2.0) scaleX(${direction === 'left' ? -1 : 1})`,
               transformOrigin: 'bottom center',
               transition: 'transform 0.1s ease',
-              filter: 'drop-shadow(0 0 8px rgba(255, 255, 255, 0.6)) drop-shadow(0 0 15px rgba(255, 255, 255, 0.3))',
+              filter: 'drop-shadow(0 0 4px rgba(255, 255, 255, 0.4)) drop-shadow(0 0 15px rgba(255, 255, 255, 0.3))',
             }}
           />
         </div>

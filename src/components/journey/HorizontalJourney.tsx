@@ -6,6 +6,7 @@ import JourneySection from './JourneySection';
 import WaypointSignpost from './WaypointSignpost';
 import ProcessTimeline from './ProcessTimeline';
 import ProjectBook from './ProjectBook';
+import { ArrowRightCircle } from 'lucide-react';
 
 interface ScrollState {
   x: number;
@@ -23,6 +24,34 @@ const HorizontalJourney: React.FC = () => {
 
   const lastScrollRef = useRef(0);
   const lastScrollTimeRef = useRef(performance.now());
+  
+  // Background Music state
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+  const [isMusicPlaying, setIsMusicPlaying] = useState(false);
+
+  useEffect(() => {
+    audioRef.current = new Audio('/music/Heartbeat.mp3');
+    audioRef.current.loop = true;
+    audioRef.current.volume = 0.4; // Subtle volume
+
+    return () => {
+      if (audioRef.current) {
+        audioRef.current.pause();
+        audioRef.current = null;
+      }
+    };
+  }, []);
+
+  const toggleMusic = () => {
+    if (!audioRef.current) return;
+    if (isMusicPlaying) {
+      audioRef.current.pause();
+      setIsMusicPlaying(false);
+    } else {
+      audioRef.current.play().catch(e => console.log("Audio playback failed:", e));
+      setIsMusicPlaying(true);
+    }
+  };
 
   // Handle native scroll
   useEffect(() => {
@@ -116,108 +145,230 @@ const HorizontalJourney: React.FC = () => {
           <JourneySection
             id="hero"
             backgroundNumber={1}
-            width={window.innerWidth}
+            width={window.innerWidth * 1.5}
             scrollX={scrollState.x}
           >
-            <div className="flex items-start justify-start h-full px-16 pt-16 pb-48">
-              <motion.div
-                className="max-w-3xl"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ duration: 0.6 }}
+            <div className="flex h-full" style={{ width: window.innerWidth * 1.5 }}>
+              {/* Ink roughness filter — woodblock/letterpress effect */}
+              <svg style={{ position: 'absolute', width: 0, height: 0 }}>
+                <defs>
+                  <filter id="ink-rough">
+                    <feTurbulence
+                      type="fractalNoise"
+                      baseFrequency="0.04"
+                      numOctaves="4"
+                      seed="7"
+                      result="noise"
+                    />
+                    <feDisplacementMap
+                      in="SourceGraphic"
+                      in2="noise"
+                      scale="2.2"
+                      xChannelSelector="R"
+                      yChannelSelector="G"
+                    />
+                  </filter>
+                </defs>
+              </svg>
+
+              {/* Landing Screen: Name */}
+              <div 
+                className="flex items-center justify-center h-[70vh] px-16 relative" 
+                style={{ width: window.innerWidth }}
               >
-                {/* Red eyebrow tag */}
                 <motion.div
-                  className="flex items-center gap-3 mb-6"
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ duration: 0.5, delay: 0.1 }}
-                >
-                  <div className="w-8 h-[2px] bg-replicate-primary" />
-                  <span
-                    className="font-body text-sm font-semibold uppercase tracking-[0.2em] text-replicate-primary"
-                    style={{ textShadow: '0 1px 8px rgba(0,0,0,0.8)' }}
-                  >
-                    Portfolio · 2025
-                  </span>
-                </motion.div>
-
-                {/* Name — massive */}
-                <motion.h1
-                  className="font-display font-bold text-white leading-[0.92] mb-6"
-                  style={{
-                    fontSize: 'clamp(3.5rem, 7vw, 6.5rem)',
-                    textShadow: '0 4px 40px rgba(0,0,0,0.9), 0 1px 6px rgba(0,0,0,0.95)',
-                  }}
-                  initial={{ opacity: 0, y: 40 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.7, delay: 0.2 }}
-                >
-                  Nishant<br />Choudhary
-                </motion.h1>
-
-                {/* Rule */}
-                <motion.div
-                  className="w-24 h-[3px] bg-replicate-primary mb-6"
-                  initial={{ scaleX: 0, originX: 0 }}
-                  animate={{ scaleX: 1 }}
-                  transition={{ duration: 0.5, delay: 0.55 }}
-                />
-
-                {/* Role */}
-                <motion.p
-                  className="font-display font-semibold text-white mb-4"
-                  style={{
-                    fontSize: 'clamp(1.1rem, 2vw, 1.5rem)',
-                    textShadow: '0 2px 20px rgba(0,0,0,0.9)',
-                  }}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.5, delay: 0.65 }}
-                >
-                  Full-Stack Creative Developer
-                </motion.p>
-
-                {/* Description */}
-                <motion.p
-                  className="font-body leading-relaxed mb-10"
-                  style={{
-                    fontSize: 'clamp(0.95rem, 1.4vw, 1.1rem)',
-                    color: 'rgba(255,255,255,0.78)',
-                    textShadow: '0 2px 16px rgba(0,0,0,0.85)',
-                    maxWidth: '38ch',
-                  }}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.5, delay: 0.75 }}
-                >
-                  Building immersive digital experiences through code, design, and obsessive
-                  attention to detail.
-                </motion.p>
-
-                {/* Scroll CTA */}
-                <motion.div
-                  className="flex items-center gap-3"
+                  className="flex flex-col items-center text-center"
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
-                  transition={{ duration: 0.5, delay: 0.9 }}
+                  transition={{ duration: 1.4 }}
                 >
-                  <span
-                    className="font-body text-sm font-medium uppercase tracking-[0.15em]"
-                    style={{ color: 'rgba(255,255,255,0.55)', textShadow: '0 1px 8px rgba(0,0,0,0.8)' }}
+                  {/* Top edition label */}
+                  <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ duration: 0.8, delay: 0.15 }}
+                    style={{
+                      fontFamily: '"Georgia", "Times New Roman", serif',
+                      fontSize: '0.6rem',
+                      letterSpacing: '0.32em',
+                      textTransform: 'uppercase',
+                      color: 'rgba(20,12,5,0.8)',
+                      marginBottom: '1.75rem',
+                      filter: 'url(#ink-rough)',
+                    }}
                   >
-                    Scroll to begin
-                  </span>
-                  <motion.span
-                    className="text-replicate-primary font-bold text-lg"
-                    animate={{ x: [0, 10, 0] }}
-                    transition={{ duration: 1.4, repeat: Infinity, ease: 'easeInOut' }}
-                    style={{ textShadow: '0 0 12px rgba(234,40,4,0.6)' }}
+                    Vol. I &nbsp;·&nbsp; Portfolio 2026
+                  </motion.div>
+
+                  {/* Name — letterpress stamp */}
+                  <motion.h1
+                    style={{
+                      fontFamily: '"Playfair Display", "Georgia", "Times New Roman", serif',
+                      fontSize: 'clamp(3.8rem, 8vw, 7rem)',
+                      fontWeight: 100,
+                      color: 'rgba(12,7,2,0.92)',
+                      lineHeight: 0.88,
+                      letterSpacing: '-0.02em',
+                      marginBottom: '1.75rem',
+                      filter: 'url(#ink-rough)',
+                    }}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 1.0, delay: 0.3, ease: [0.16, 1, 0.3, 1] }}
                   >
-                    →
-                  </motion.span>
+                    Nishant
+                    <br />
+                    Choudhary
+                  </motion.h1>
+
+                  {/* Ornate rule with red accent */}
+                  <motion.div
+                    className="flex items-center gap-3"
+                    style={{ marginBottom: '1.4rem' }}
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ duration: 0.6, delay: 0.6 }}
+                  >
+                    <div
+                      style={{ width: '44px', height: '1px', background: 'rgba(20,12,5,0.22)' }}
+                    />
+                    <span
+                      style={{
+                        color: 'rgba(234,40,4,0.85)',
+                        fontSize: '0.6rem',
+                        filter: 'url(#ink-rough)',
+                      }}
+                    >
+                      ✦
+                    </span>
+                    <div
+                      style={{ width: '44px', height: '1px', background: 'rgba(20,12,5,0.22)' }}
+                    />
+                  </motion.div>
                 </motion.div>
-              </motion.div>
+              </div>
+
+              {/* Extension Screen: Role & CTA */}
+              <div 
+                className="flex items-center justify-center h-full px-16 relative" 
+                style={{ width: window.innerWidth * 0.5 }}
+              >
+                <motion.div
+                  className="flex flex-col items-center text-center"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ duration: 1.4 }}
+                >
+                  {/* Role — spaced small-caps */}
+                  <motion.p
+                    style={{
+                      fontFamily: '"Georgia", "Times New Roman", serif',
+                      fontStyle: 'italic',
+                      fontSize: 'clamp(0.9rem, 1.4vw, 1.1rem)',
+                      color: 'rgba(20,12,5,0.85)',
+                      letterSpacing: '0.06em',
+                      marginBottom: '1.1rem',
+                      // filter: 'url(#ink-rough)',
+                    }}
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ duration: 0.6, delay: 0.72 }}
+                  >
+                    Full-Stack Creative Developer
+                  </motion.p>
+
+                  {/* Description */}
+                  <motion.p
+                    style={{
+                      fontFamily: '"Georgia", "Times New Roman", serif',
+                      fontSize: 'clamp(0.78rem, 1.05vw, 0.9rem)',
+                      color: 'rgba(20,12,5,0.75)',
+                      lineHeight: 1.9,
+                      maxWidth: '30ch',
+                      marginBottom: '2.2rem',
+                    }}
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ duration: 0.6, delay: 0.86 }}
+                  >
+                    Charting immersive digital worlds through code, design, and obsessive attention
+                    to craft.
+                  </motion.p>
+
+                  {/* CTA — stamped */}
+                  <motion.div
+                    className="flex items-center gap-3"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ duration: 0.6, delay: 1.0 }}
+                  >
+                    <div
+                      style={{ width: '28px', height: '1px', background: 'rgba(20,12,5,0.18)' }}
+                    />
+                    <span
+                      style={{
+                        fontFamily: '"Georgia", "Times New Roman", serif',
+                        fontStyle: 'italic',
+                        fontSize: '0.75rem',
+                        letterSpacing: '0.12em',
+                        textTransform: 'uppercase',
+                        color: 'rgba(20,12,5,0.75)',
+                        filter: 'url(#ink-rough)',
+                      }}
+                    >
+                      begin the journey
+                    </span>
+                    <motion.span
+                      style={{ color: 'rgba(20,12,5,0.3)', fontSize: '0.8rem' }}
+                      animate={{ x: [0, 7, 0] }}
+                      transition={{ duration: 1.9, repeat: Infinity, ease: 'easeInOut' }}
+                    >
+                      <ArrowRightCircle size={14} />
+                    </motion.span>
+                    <div
+                      style={{ width: '28px', height: '1px', background: 'rgba(20,12,5,0.18)' }}
+                    />
+                  </motion.div>
+
+                  {/* Wax seal — bottom center stamp */}
+                  <motion.div
+                    className="flex flex-col items-center justify-center"
+                    style={{
+                      marginTop: '2rem',
+                      width: '46px',
+                      height: '46px',
+                      borderRadius: '50%',
+                      background: 'rgba(234,40,4,0.85)',
+                      filter: 'url(#ink-rough)',
+                    }}
+                    initial={{ opacity: 0, scale: 0.4 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ duration: 0.8, delay: 1.15, ease: [0.16, 1, 0.3, 1] }}
+                  >
+                    <span
+                      style={{
+                        color: 'rgba(255,255,255,0.92)',
+                        fontSize: '0.95rem',
+                        lineHeight: 1,
+                      }}
+                    >
+                      ✦
+                    </span>
+                    <span
+                      style={{
+                        color: 'rgba(255,255,255,0.6)',
+                        fontSize: '0.38rem',
+                        letterSpacing: '0.14em',
+                        marginTop: '2px',
+                        fontFamily: '"Georgia", serif',
+                        fontWeight: 700,
+                      }}
+                    >
+                      NC
+                    </span>
+                  </motion.div>
+                </motion.div>
+              </div>
             </div>
           </JourneySection>
 
@@ -228,7 +379,30 @@ const HorizontalJourney: React.FC = () => {
             width={window.innerWidth * 2.2}
             scrollX={scrollState.x}
             behindMountains
-          />
+          >
+            {/* "Adventures" — big sky title, sits behind foreground clouds (z-10 < z-20) */}
+            <div
+              className="absolute inset-0 flex items-start justify-center select-none pointer-events-none"
+              style={{ zIndex: 0 }}
+            >
+              <div
+                className="font-display font-bold whitespace-nowrap text-center w-full"
+                style={{
+                  fontSize: '9.2vw',
+                  letterSpacing: '-0.02em',
+                  color: 'rgba(255,255,255,1)',
+                  lineHeight: 1.0,
+                  paddingTop: '0.15em',
+                  WebkitMaskImage:
+                    'linear-gradient(to bottom, rgba(0,0,0,1) 0%, rgba(0,0,0,0.5) 55%, rgba(0,0,0,0) 88%)',
+                  maskImage:
+                    'linear-gradient(to bottom, rgba(0,0,0,1) 0%, rgba(0,0,0,0.5) 55%, rgba(0,0,0,0) 88%)',
+                }}
+              >
+                Adventures
+              </div>
+            </div>
+          </JourneySection>
 
           {/* Section 3: Process */}
           <JourneySection
@@ -238,7 +412,7 @@ const HorizontalJourney: React.FC = () => {
             scrollX={scrollState.x}
           >
             <ProcessTimeline
-              scrollProgress={scrollState.progress > 0.5 ? (scrollState.progress - 0.5) * 2 : 0}
+              scrollProgress={Math.max(0, Math.min(1, scrollState.progress * 4.7 - 2.7))}
             />
           </JourneySection>
 
@@ -277,7 +451,9 @@ const HorizontalJourney: React.FC = () => {
                     textShadow: '0 4px 40px rgba(0,0,0,0.95), 0 1px 6px rgba(0,0,0,0.9)',
                   }}
                 >
-                  Let's build<br />something.
+                  Let's build
+                  <br />
+                  something.
                 </h2>
 
                 <div className="w-20 h-[3px] bg-replicate-primary mb-6" />
@@ -325,7 +501,10 @@ const HorizontalJourney: React.FC = () => {
 
                 <p
                   className="font-body mt-8 text-xs uppercase tracking-[0.15em]"
-                  style={{ color: 'rgba(255,255,255,0.35)', textShadow: '0 1px 8px rgba(0,0,0,0.8)' }}
+                  style={{
+                    color: 'rgba(255,255,255,0.35)',
+                    textShadow: '0 1px 8px rgba(0,0,0,0.8)',
+                  }}
                 >
                   nishantchoudhary.dev@gmail.com
                 </p>
@@ -335,22 +514,23 @@ const HorizontalJourney: React.FC = () => {
         </div>
       </div>
 
-      {/* Waypoint signposts — positions match 1 + 2.2 + 1 + 1 = 5.2vw total */}
+      {/* Waypoint signposts — placed before each section so sign appears while approaching */}
+      <WaypointSignpost label="work" position={window.innerWidth * 0.5} characterX={scrollState.x} />
       <WaypointSignpost
-        label="work"
-        position={0}
+        label="process"
+        position={window.innerWidth * 2.6}
         characterX={scrollState.x}
       />
-      <WaypointSignpost label="process" position={window.innerWidth * 2.2} characterX={scrollState.x} />
       <WaypointSignpost
         label="contact"
-        position={window.innerWidth * 3.2}
+        position={window.innerWidth * 3.7}
         characterX={scrollState.x}
       />
       <WaypointSignpost
-        label="death valley"
-        position={window.innerWidth * 4.2}
+        label="rest, traveller."
+        position={window.innerWidth * 4.7}
         characterX={scrollState.x}
+        showArrow={false}
       />
 
       {/* Magic book — fixed viewport overlay, active during projects section */}
@@ -373,6 +553,23 @@ const HorizontalJourney: React.FC = () => {
       >
         {Math.round(scrollState.progress * 100)}%
       </div>
+
+      {/* Music Toggle Button */}
+      <button
+        onClick={toggleMusic}
+        className="fixed top-8 right-8 z-[100] flex items-center gap-3 px-5 py-2.5 bg-replicate-canvas/60 backdrop-blur-md border border-replicate-hairline rounded-full shadow-lg hover:bg-replicate-canvas/80 transition-all duration-300 group"
+        style={{
+          fontFamily: '"Georgia", "Times New Roman", serif',
+          fontSize: '0.7rem',
+          letterSpacing: '0.2em',
+          textTransform: 'uppercase',
+          color: isMusicPlaying ? 'rgba(234,40,4,0.9)' : 'rgba(20,12,5,0.6)',
+        }}
+      >
+        <span className={`w-1.5 h-1.5 rounded-full ${isMusicPlaying ? 'bg-replicate-primary animate-pulse' : 'bg-replicate-charcoal/30'}`} />
+        <span className="font-bold">{isMusicPlaying ? '♪ Music On' : '♪ Music Off'}</span>
+        <div className="absolute inset-0 rounded-full bg-replicate-primary/5 scale-0 group-hover:scale-100 transition-transform duration-500" />
+      </button>
     </div>
   );
 };

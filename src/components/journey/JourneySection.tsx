@@ -22,9 +22,9 @@ const JourneySection: React.FC<JourneySectionProps> = ({
   const sectionStartX = useMemo(() => {
     switch (id) {
       case 'hero': return 0;
-      case 'projects': return window.innerWidth;
-      case 'process': return window.innerWidth * 3.2;
-      case 'contact': return window.innerWidth * 4.2;
+      case 'projects': return window.innerWidth * 1.5;
+      case 'process': return window.innerWidth * 3.7;
+      case 'contact': return window.innerWidth * 4.7;
       default: return 0;
     }
   }, [id]);
