@@ -416,98 +416,104 @@ const HorizontalJourney: React.FC = () => {
             />
           </JourneySection>
 
-          {/* Section 4: Contact */}
+          {/* Section 4: Farewell */}
           <JourneySection
             id="contact"
             backgroundNumber={3}
             width={window.innerWidth}
             scrollX={scrollState.x}
           >
-            <div className="flex items-start justify-start h-full px-16 pt-16 pb-48">
+            {/* Ink-rough filter — matches hero letterpress aesthetic */}
+            <svg style={{ position: 'absolute', width: 0, height: 0 }}>
+              <defs>
+                <filter id="ink-rough-farewell">
+                  <feTurbulence
+                    type="fractalNoise"
+                    baseFrequency="0.04"
+                    numOctaves="4"
+                    seed="7"
+                    result="noise"
+                  />
+                  <feDisplacementMap
+                    in="SourceGraphic"
+                    in2="noise"
+                    scale="2.2"
+                    xChannelSelector="R"
+                    yChannelSelector="G"
+                  />
+                </filter>
+              </defs>
+            </svg>
+
+            <div className="flex items-center justify-center h-full px-16">
               <motion.div
-                className="max-w-2xl"
+                style={{ maxWidth: '42ch' }}
                 animate={{
-                  opacity: scrollState.progress > 0.85 ? 1 : 0,
-                  y: scrollState.progress > 0.85 ? 0 : 32,
+                  opacity: scrollState.progress > 0.9 ? 1 : 0,
+                  y: scrollState.progress > 0.9 ? 0 : 20,
                 }}
-                transition={{ duration: 0.7 }}
+                transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
               >
-                {/* Eyebrow */}
-                <div className="flex items-center gap-3 mb-6">
-                  <div className="w-8 h-[2px] bg-replicate-primary" />
-                  <span
-                    className="font-body text-sm font-semibold uppercase tracking-[0.2em] text-replicate-primary"
-                    style={{ textShadow: '0 1px 8px rgba(0,0,0,0.8)' }}
-                  >
-                    End of Journey
-                  </span>
-                </div>
-
-                {/* Heading */}
-                <h2
-                  className="font-display font-bold text-white leading-[0.92] mb-6"
-                  style={{
-                    fontSize: 'clamp(2.8rem, 5.5vw, 5rem)',
-                    textShadow: '0 4px 40px rgba(0,0,0,0.95), 0 1px 6px rgba(0,0,0,0.9)',
-                  }}
+                {/* Ornate rule — mirrors hero */}
+                <motion.div
+                  className="flex items-center gap-3"
+                  style={{ marginBottom: '2rem' }}
+                  animate={{ opacity: scrollState.progress > 0.9 ? 1 : 0 }}
+                  transition={{ duration: 0.8, delay: 0.2 }}
                 >
-                  Let's build
+                  <div style={{ width: '44px', height: '1px', background: 'rgba(255,255,255,0.18)' }} />
+                  <span style={{ color: 'rgba(234,40,4,0.85)', fontSize: '0.6rem', filter: 'url(#ink-rough-farewell)' }}>✦</span>
+                  <div style={{ width: '44px', height: '1px', background: 'rgba(255,255,255,0.18)' }} />
+                </motion.div>
+
+                {/* Farewell text */}
+                <motion.p
+                  style={{
+                    fontFamily: '"Georgia", "Times New Roman", serif',
+                    fontSize: 'clamp(1rem, 1.5vw, 1.2rem)',
+                    color: 'rgba(255,255,255,0.82)',
+                    lineHeight: 2.0,
+                    letterSpacing: '0.01em',
+                    marginBottom: '1.8rem',
+                    filter: 'url(#ink-rough-farewell)',
+                  }}
+                  animate={{ opacity: scrollState.progress > 0.9 ? 1 : 0 }}
+                  transition={{ duration: 1.0, delay: 0.4 }}
+                >
+                  thank you for walking with me.
+                  <br /><br />
+                  hope you have a nice day
                   <br />
-                  something.
-                </h2>
+                  and your pillow is cold when you sleep,
+                  <br />
+                  both sides.
+                </motion.p>
 
-                <div className="w-20 h-[3px] bg-replicate-primary mb-6" />
-
-                <p
-                  className="font-body leading-relaxed mb-10"
-                  style={{
-                    fontSize: 'clamp(1rem, 1.4vw, 1.15rem)',
-                    color: 'rgba(255,255,255,0.72)',
-                    textShadow: '0 2px 16px rgba(0,0,0,0.85)',
-                    maxWidth: '36ch',
-                  }}
+                {/* Sign-off — right-aligned, quiet */}
+                <motion.div
+                  style={{ textAlign: 'right' }}
+                  animate={{ opacity: scrollState.progress > 0.9 ? 1 : 0 }}
+                  transition={{ duration: 0.8, delay: 0.8 }}
                 >
-                  Open to roles, freelance, and ambitious side projects. Let's make something
-                  extraordinary.
-                </p>
-
-                {/* CTAs */}
-                <div className="flex flex-wrap gap-4 items-center">
-                  <motion.a
+                  <div style={{ width: '100%', height: '1px', background: 'rgba(255,255,255,0.1)', marginBottom: '1rem' }} />
+                  <a
                     href="mailto:nishantchoudhary.dev@gmail.com"
-                    className="px-7 py-3 bg-replicate-primary text-white rounded-full font-display font-bold text-sm uppercase tracking-wide hover:bg-replicate-primary-deep transition-colors"
-                    style={{ boxShadow: '0 4px 24px rgba(234,40,4,0.45)' }}
-                    whileHover={{ scale: 1.04 }}
-                    whileTap={{ scale: 0.96 }}
-                  >
-                    Get in Touch
-                  </motion.a>
-                  <motion.a
-                    href="https://github.com/blacurrant"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="px-7 py-3 font-display font-bold text-sm uppercase tracking-wide text-white transition-colors"
                     style={{
-                      border: '2px solid rgba(255,255,255,0.35)',
-                      borderRadius: '9999px',
-                      backdropFilter: 'blur(4px)',
+                      fontFamily: '"Georgia", "Times New Roman", serif',
+                      fontStyle: 'italic',
+                      fontSize: '0.78rem',
+                      letterSpacing: '0.06em',
+                      color: 'rgba(255,255,255,0.38)',
+                      textDecoration: 'none',
+                      transition: 'color 0.3s ease',
+                      filter: 'url(#ink-rough-farewell)',
                     }}
-                    whileHover={{ scale: 1.04, borderColor: 'rgba(255,255,255,0.8)' }}
-                    whileTap={{ scale: 0.96 }}
+                    onMouseEnter={e => (e.currentTarget.style.color = 'rgba(234,40,4,0.75)')}
+                    onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.38)')}
                   >
-                    GitHub
-                  </motion.a>
-                </div>
-
-                <p
-                  className="font-body mt-8 text-xs uppercase tracking-[0.15em]"
-                  style={{
-                    color: 'rgba(255,255,255,0.35)',
-                    textShadow: '0 1px 8px rgba(0,0,0,0.8)',
-                  }}
-                >
-                  nishantchoudhary.dev@gmail.com
-                </p>
+                    — nishantchoudhary.dev@gmail.com
+                  </a>
+                </motion.div>
               </motion.div>
             </div>
           </JourneySection>
