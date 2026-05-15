@@ -17,14 +17,19 @@ const links = [
 
 const FarewellChest: React.FC<FarewellChestProps> = ({ scrollX, chestWorldX, burst }) => {
   const [phase, setPhase] = useState<'idle' | 'shaking' | 'burst'>('idle');
-  const screenX = chestWorldX - scrollX;
+  const [frozenX, setFrozenX] = useState(0);
+  const liveScreenX = chestWorldX - scrollX;
+  // Use live position while idle/approaching; freeze at the moment burst fires
+  const screenX = phase === 'idle' ? liveScreenX : frozenX;
 
   useEffect(() => {
     if (!burst || phase !== 'idle') return;
+    setFrozenX(liveScreenX);
     setPhase('shaking');
     const t = setTimeout(() => setPhase('burst'), 420);
     return () => clearTimeout(t);
-  }, [burst, phase]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [burst]);
 
   const visible = screenX > -80 && screenX < window.innerWidth + 80;
   if (!visible && phase === 'idle') return null;
