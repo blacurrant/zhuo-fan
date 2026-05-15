@@ -36,7 +36,7 @@ const FarewellChest: React.FC<FarewellChestProps> = ({ scrollX, chestWorldX, bur
         {phase !== 'burst' && (
           <motion.div
             className="fixed z-[45] pointer-events-none"
-            style={{ left: screenX - 24, bottom: 190 }}
+            style={{ left: screenX - 24, bottom: 34 }}
             animate={phase === 'shaking' ? {
               x: [0, -5, 5, -4, 4, -2, 2, 0],
               rotate: [0, -3, 3, -2, 2, 0],
@@ -58,7 +58,7 @@ const FarewellChest: React.FC<FarewellChestProps> = ({ scrollX, chestWorldX, bur
               className="fixed z-[46] pointer-events-none rounded-full"
               style={{
                 left: screenX - 40,
-                bottom: 180,
+                bottom: 24,
                 width: 80,
                 height: 80,
                 background: 'radial-gradient(circle, rgba(234,40,4,0.9) 0%, transparent 70%)',
@@ -75,7 +75,7 @@ const FarewellChest: React.FC<FarewellChestProps> = ({ scrollX, chestWorldX, bur
                 className="fixed z-[46] pointer-events-none"
                 style={{
                   left: screenX - 4,
-                  bottom: 200,
+                  bottom: 44,
                   width: 6,
                   height: 10,
                   background: '#8B6914',
@@ -100,7 +100,7 @@ const FarewellChest: React.FC<FarewellChestProps> = ({ scrollX, chestWorldX, bur
                 target={link.href.startsWith('http') ? '_blank' : undefined}
                 rel="noopener noreferrer"
                 className="fixed z-[47]"
-                style={{ left: screenX, bottom: 210 }}
+                style={{ left: screenX, bottom: 54 }}
                 initial={{ x: 0, y: 0, opacity: 0, scale: 0.4 }}
                 animate={{
                   x: link.offset.x,
