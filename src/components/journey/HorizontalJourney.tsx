@@ -6,7 +6,14 @@ import JourneySection from './JourneySection';
 import WaypointSignpost from './WaypointSignpost';
 import ProcessTimeline from './ProcessTimeline';
 import ProjectBook from './ProjectBook';
+import FarewellChest from './FarewellChest';
 import { ArrowRightCircle } from 'lucide-react';
+
+// World-space X of the chest — 35% into section 4
+// Section 4 starts at vw*(1.5+2.2+1) = vw*4.7; chest at vw*5.05
+const CHEST_WORLD_X = typeof window !== 'undefined' ? window.innerWidth * 5.05 : 0;
+// Character is always at viewport center; attack fires when character reaches chest
+const ATTACK_TRIGGER_SCROLL = CHEST_WORLD_X - (typeof window !== 'undefined' ? window.innerWidth * 0.5 : 0);
 
 interface ScrollState {
   x: number;
@@ -24,6 +31,7 @@ const HorizontalJourney: React.FC = () => {
 
   const lastScrollRef = useRef(0);
   const lastScrollTimeRef = useRef(performance.now());
+  const [attackTriggered, setAttackTriggered] = useState(false);
   
   // Background Music state
   const audioRef = useRef<HTMLAudioElement | null>(null);
@@ -72,6 +80,10 @@ const HorizontalJourney: React.FC = () => {
         progress,
         velocity,
       });
+
+      if (!attackTriggered && scrollLeft >= ATTACK_TRIGGER_SCROLL) {
+        setAttackTriggered(true);
+      }
 
       lastScrollRef.current = scrollLeft;
       lastScrollTimeRef.current = now;
@@ -542,11 +554,19 @@ const HorizontalJourney: React.FC = () => {
       {/* Magic book — fixed viewport overlay, active during projects section */}
       <ProjectBook scrollX={scrollState.x} />
 
+      {/* Farewell chest */}
+      <FarewellChest
+        scrollX={scrollState.x}
+        chestWorldX={CHEST_WORLD_X}
+        burst={attackTriggered}
+      />
+
       {/* Character */}
       <Character
         scrollX={scrollState.x}
         velocity={scrollState.velocity}
         progress={scrollState.progress}
+        attackTrigger={attackTriggered}
       />
 
       {/* Progress indicator */}

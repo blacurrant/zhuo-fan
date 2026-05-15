@@ -6,45 +6,59 @@ interface CharacterProps {
   scrollX: number;
   velocity: number;
   progress: number;
+  attackTrigger: boolean;
 }
 
 const FRAME_SIZE = 128;
-const RUN_THRESHOLD = 2.5;   // px/ms
-const IDLE_TIMEOUT = 1000;   // ms
+const RUN_THRESHOLD = 2.5;
+const IDLE_TIMEOUT = 1000;
 
 const spriteConfig = {
-  idle: { url: '/Samurai/Idle.png', frames: 6, fps: 10 },
-  walk: { url: '/Samurai/Walk.png', frames: 8, fps: 12 },
-  run:  { url: '/Samurai/Run.png',  frames: 8, fps: 18 },
-  dead: { url: '/Samurai/Dead.png', frames: 3, fps: 8 },
+  idle:     { url: '/Samurai/Idle.png',     frames: 6, fps: 10 },
+  walk:     { url: '/Samurai/Walk.png',     frames: 8, fps: 12 },
+  run:      { url: '/Samurai/Run.png',      frames: 8, fps: 18 },
+  attack:   { url: '/Samurai/Attack_1.png', frames: 6, fps: 14 },
+  dead:     { url: '/Samurai/Dead.png',     frames: 3, fps: 8  },
 };
 
-const Character: React.FC<CharacterProps> = ({ scrollX, velocity, progress }) => {
+const Character: React.FC<CharacterProps> = ({ scrollX, velocity, attackTrigger }) => {
   const characterX = window.innerWidth / 2 - FRAME_SIZE / 2;
 
-  const [state, setState] = useState<'idle' | 'walk' | 'run' | 'dead'>('idle');
+  const [state, setState] = useState<'idle' | 'walk' | 'run' | 'attack' | 'dead'>('idle');
   const [direction, setDirection] = useState<'right' | 'left'>('right');
   const [timedFrame, setTimedFrame] = useState(0);
   const [deadFrame, setDeadFrame] = useState(0);
   const [deadDone, setDeadDone] = useState(false);
+  const [attackFrame, setAttackFrame] = useState(0);
+  const [attackDone, setAttackDone] = useState(false);
+
   const lastScrollTimeRef = useRef(Date.now());
   const rafRef = useRef<number | null>(null);
   const lastFrameTimeRef = useRef(performance.now());
-  const deadStartedRef = useRef(false);
+  const sequenceStartedRef = useRef(false);
 
-  // Trigger dead state when reaching end of journey
+  // Attack trigger → play attack → then dead
   useEffect(() => {
-    if (progress > 0.88 && !deadStartedRef.current) {
-      deadStartedRef.current = true;
+    if (attackTrigger && !sequenceStartedRef.current) {
+      sequenceStartedRef.current = true;
+      setState('attack');
+      setAttackFrame(0);
+      setAttackDone(false);
+    }
+  }, [attackTrigger]);
+
+  // When attack finishes → transition to dead
+  useEffect(() => {
+    if (attackDone) {
       setState('dead');
       setDeadFrame(0);
       setDeadDone(false);
     }
-  }, [progress]);
+  }, [attackDone]);
 
-  // Update state and direction on scroll
+  // Scroll-driven state — locked out once sequence starts
   useEffect(() => {
-    if (deadStartedRef.current) return;
+    if (sequenceStartedRef.current) return;
     lastScrollTimeRef.current = Date.now();
     const absV = Math.abs(velocity);
     if (absV >= RUN_THRESHOLD) setState('run');
@@ -53,28 +67,25 @@ const Character: React.FC<CharacterProps> = ({ scrollX, velocity, progress }) =>
     else if (velocity < 0) setDirection('left');
   }, [scrollX, velocity]);
 
-  // Idle fallback after IDLE_TIMEOUT ms of no scroll
+  // Idle fallback
   useEffect(() => {
     const interval = setInterval(() => {
-      if (deadStartedRef.current) return;
-      if (Date.now() - lastScrollTimeRef.current > IDLE_TIMEOUT) {
-        setState('idle');
-      }
+      if (sequenceStartedRef.current) return;
+      if (Date.now() - lastScrollTimeRef.current > IDLE_TIMEOUT) setState('idle');
     }, 100);
     return () => clearInterval(interval);
   }, []);
 
-  // Time-based frame loop for idle and run
+  // Time-based loop for idle/run
   useEffect(() => {
-    if (state === 'walk' || state === 'dead') {
+    if (state === 'walk' || state === 'attack' || state === 'dead') {
       if (rafRef.current) cancelAnimationFrame(rafRef.current);
       rafRef.current = null;
       return;
     }
 
-    const fps = spriteConfig[state].fps;
+    const { fps, frames } = spriteConfig[state];
     const frameInterval = 1000 / fps;
-    const frames = spriteConfig[state].frames;
 
     const tick = (now: number) => {
       if (now - lastFrameTimeRef.current >= frameInterval) {
@@ -85,48 +96,67 @@ const Character: React.FC<CharacterProps> = ({ scrollX, velocity, progress }) =>
     };
 
     rafRef.current = requestAnimationFrame(tick);
-    return () => {
-      if (rafRef.current) cancelAnimationFrame(rafRef.current);
-    };
+    return () => { if (rafRef.current) cancelAnimationFrame(rafRef.current); };
   }, [state]);
 
-  // Dead animation: play frames 0→2 once, then hold on frame 2
+  // Attack animation — play once then set attackDone
   useEffect(() => {
-    if (state !== 'dead' || deadDone) return;
+    if (state !== 'attack' || attackDone) return;
 
-    const frameInterval = 1000 / spriteConfig.dead.fps;
-    const totalFrames = spriteConfig.dead.frames;
+    const { fps, frames } = spriteConfig.attack;
+    const frameInterval = 1000 / fps;
 
     const tick = (now: number) => {
       if (now - lastFrameTimeRef.current >= frameInterval) {
-        setDeadFrame((prev) => {
-          if (prev >= totalFrames - 1) {
-            setDeadDone(true);
-            return totalFrames - 1;
+        setAttackFrame((prev) => {
+          if (prev >= frames - 1) {
+            setAttackDone(true);
+            return frames - 1;
           }
           lastFrameTimeRef.current = now;
           return prev + 1;
         });
         lastFrameTimeRef.current = now;
       }
-      rafRef.current = requestAnimationFrame(tick);
+      if (!attackDone) rafRef.current = requestAnimationFrame(tick);
     };
 
     rafRef.current = requestAnimationFrame(tick);
-    return () => {
-      if (rafRef.current) cancelAnimationFrame(rafRef.current);
+    return () => { if (rafRef.current) cancelAnimationFrame(rafRef.current); };
+  }, [state, attackDone]);
+
+  // Dead animation — play once then hold on last frame
+  useEffect(() => {
+    if (state !== 'dead' || deadDone) return;
+
+    const { fps, frames } = spriteConfig.dead;
+    const frameInterval = 1000 / fps;
+
+    const tick = (now: number) => {
+      if (now - lastFrameTimeRef.current >= frameInterval) {
+        setDeadFrame((prev) => {
+          if (prev >= frames - 1) {
+            setDeadDone(true);
+            return frames - 1;
+          }
+          lastFrameTimeRef.current = now;
+          return prev + 1;
+        });
+        lastFrameTimeRef.current = now;
+      }
+      if (!deadDone) rafRef.current = requestAnimationFrame(tick);
     };
+
+    rafRef.current = requestAnimationFrame(tick);
+    return () => { if (rafRef.current) cancelAnimationFrame(rafRef.current); };
   }, [state, deadDone]);
 
-  // Frame index: dead = deadFrame, walk = position-locked, idle/run = time-based
+  // Frame index
   let frameIndex = 0;
-  if (state === 'dead') {
-    frameIndex = deadFrame;
-  } else if (state === 'walk') {
-    frameIndex = Math.floor(Math.abs(scrollX) / 24) % spriteConfig.walk.frames;
-  } else {
-    frameIndex = timedFrame;
-  }
+  if (state === 'attack')     frameIndex = attackFrame;
+  else if (state === 'dead')  frameIndex = deadFrame;
+  else if (state === 'walk')  frameIndex = Math.floor(Math.abs(scrollX) / 24) % spriteConfig.walk.frames;
+  else                        frameIndex = timedFrame;
 
   const currentConfig = spriteConfig[state];
   const bgPositionX = -(frameIndex * FRAME_SIZE);
@@ -137,7 +167,6 @@ const Character: React.FC<CharacterProps> = ({ scrollX, velocity, progress }) =>
         className="fixed z-50 pointer-events-none"
         style={{ left: characterX, bottom: 30 }}
       >
-        {/* Character sprite */}
         <div className="relative w-[128px] h-[128px] flex items-end justify-center">
           <div
             style={{
@@ -148,7 +177,7 @@ const Character: React.FC<CharacterProps> = ({ scrollX, velocity, progress }) =>
               backgroundRepeat: 'no-repeat',
               transform: `scale(2.0) scaleX(${direction === 'left' ? -1 : 1})`,
               transformOrigin: 'bottom center',
-              transition: state === 'dead' ? 'none' : 'transform 0.1s ease',
+              transition: (state === 'dead' || state === 'attack') ? 'none' : 'transform 0.1s ease',
               filter: 'drop-shadow(0 0 4px rgba(255, 255, 255, 0.4)) drop-shadow(0 0 15px rgba(255, 255, 255, 0.3))',
             }}
           />
@@ -164,8 +193,6 @@ const Character: React.FC<CharacterProps> = ({ scrollX, velocity, progress }) =>
           backgroundPosition: `${-scrollX}px center`,
           backgroundSize: 'auto 100%',
           filter: 'drop-shadow(0 0 8px rgba(255, 255, 255, 0.2)) drop-shadow(0 0 15px rgba(255, 255, 255, 0.2))',
-          opacity: state === 'dead' ? 0 : 1,
-          transition: 'opacity 2s ease',
         }}
       />
     </>
