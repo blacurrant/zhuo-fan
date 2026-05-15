@@ -9,11 +9,11 @@ import ProjectBook from './ProjectBook';
 import FarewellChest from './FarewellChest';
 import { ArrowRightCircle } from 'lucide-react';
 
-// World-space X of the chest — 35% into section 4
-// Section 4 starts at vw*(1.5+2.2+1) = vw*4.7; chest at vw*5.05
-const CHEST_WORLD_X = typeof window !== 'undefined' ? window.innerWidth * 5.05 : 0;
-// Character is always at viewport center; attack fires when character reaches chest
-const ATTACK_TRIGGER_SCROLL = CHEST_WORLD_X - (typeof window !== 'undefined' ? window.innerWidth * 0.5 : 0);
+// World-space X of the chest — fires at ~92% scroll progress
+// Attack trigger scroll = 0.92 * maxScroll = 0.92 * 4.7 * vw = 4.324 * vw
+// Chest world X = attack trigger scroll + viewport center = 4.324 + 0.5 = 4.824 * vw
+const CHEST_WORLD_X = typeof window !== 'undefined' ? window.innerWidth * 4.824 : 0;
+const ATTACK_TRIGGER_SCROLL = typeof window !== 'undefined' ? window.innerWidth * 4.324 : 0;
 
 interface ScrollState {
   x: number;
