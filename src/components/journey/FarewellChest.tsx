@@ -42,12 +42,17 @@ const FarewellChest: React.FC<FarewellChestProps> = ({ scrollX, chestWorldX, bur
 
   return (
     <>
-      {/* Crate */}
+      {/* Crate — clickable when atChest */}
       <AnimatePresence>
         {phase !== 'burst' && (
           <motion.div
-            className="fixed z-[45] pointer-events-none"
-            style={{ left: screenX - 24, bottom: 34 }}
+            className="fixed z-[45]"
+            style={{
+              left: screenX - 24,
+              bottom: 34,
+              cursor: atChest ? 'pointer' : 'default',
+              pointerEvents: atChest ? 'auto' : 'none',
+            }}
             animate={
               phase === 'shaking'
                 ? {
@@ -59,45 +64,41 @@ const FarewellChest: React.FC<FarewellChestProps> = ({ scrollX, chestWorldX, bur
             }
             transition={phase === 'shaking' ? { duration: 0.5, ease: 'easeInOut' } : { duration: 0.2 }}
             exit={{ scale: 2.8, opacity: 0, transition: { duration: 0.18 } }}
+            onClick={atChest ? onAttackClick : undefined}
           >
             <Crate atChest={atChest} />
-          </motion.div>
-        )}
-      </AnimatePresence>
 
-      {/* Click prompt — appears when samurai is at chest */}
-      <AnimatePresence>
-        {atChest && phase === 'idle' && (
-          <motion.button
-            className="fixed z-[48]"
-            style={{
-              left: screenX - 40,
-              bottom: 100,
-              width: 80,
-              background: 'none',
-              border: 'none',
-              cursor: 'pointer',
-              padding: 0,
-            }}
-            initial={{ opacity: 0, y: 8 }}
-            animate={{ opacity: 1, y: [0, -5, 0] }}
-            exit={{ opacity: 0, y: -8 }}
-            transition={{ duration: 0.5, y: { repeat: Infinity, duration: 1.2, ease: 'easeInOut' } }}
-            onClick={onAttackClick}
-          >
-            <div style={{
-              fontFamily: '"Georgia", "Times New Roman", serif',
-              fontSize: '0.6rem',
-              letterSpacing: '0.22em',
-              textTransform: 'uppercase',
-              color: 'rgba(255,255,255,0.75)',
-              textAlign: 'center',
-              textShadow: '0 0 12px rgba(234,40,4,0.8)',
-              whiteSpace: 'nowrap',
-            }}>
-              [ attack ]
-            </div>
-          </motion.button>
+            {/* Hint label — floats above crate, not a button */}
+            <AnimatePresence>
+              {atChest && (
+                <motion.div
+                  style={{
+                    position: 'absolute',
+                    bottom: '110%',
+                    left: '50%',
+                    transform: 'translateX(-50%)',
+                    pointerEvents: 'none',
+                    whiteSpace: 'nowrap',
+                  }}
+                  initial={{ opacity: 0, y: 4 }}
+                  animate={{ opacity: 1, y: [0, -4, 0] }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.4, y: { repeat: Infinity, duration: 1.4, ease: 'easeInOut' } }}
+                >
+                  <span style={{
+                    fontFamily: '"Georgia", "Times New Roman", serif',
+                    fontSize: '0.58rem',
+                    letterSpacing: '0.2em',
+                    textTransform: 'uppercase',
+                    color: 'rgba(255,255,255,0.65)',
+                    textShadow: '0 0 10px rgba(234,40,4,0.7)',
+                  }}>
+                    click
+                  </span>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </motion.div>
         )}
       </AnimatePresence>
 
