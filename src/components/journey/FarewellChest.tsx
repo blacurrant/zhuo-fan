@@ -23,7 +23,12 @@ const FarewellChest: React.FC<FarewellChestProps> = ({ scrollX, chestWorldX, bur
   const screenX = phase === 'idle' ? liveScreenX : frozenX;
 
   useEffect(() => {
-    if (!burst || phase !== 'idle') return;
+    if (!burst) {
+      setPhase('idle');
+      setFrozenX(0);
+      return;
+    }
+    if (phase !== 'idle') return;
     setFrozenX(liveScreenX);
     setPhase('shaking');
     const t = setTimeout(() => setPhase('burst'), 420);

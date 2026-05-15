@@ -37,13 +37,22 @@ const Character: React.FC<CharacterProps> = ({ scrollX, velocity, attackTrigger 
   const lastFrameTimeRef = useRef(performance.now());
   const sequenceStartedRef = useRef(false);
 
-  // Attack trigger → play attack → then dead
+  // Attack trigger → play attack → then dead; reset on scroll back
   useEffect(() => {
     if (attackTrigger && !sequenceStartedRef.current) {
       sequenceStartedRef.current = true;
       setState('attack');
       setAttackFrame(0);
       setAttackDone(false);
+      setDeadFrame(0);
+      setDeadDone(false);
+    } else if (!attackTrigger && sequenceStartedRef.current) {
+      sequenceStartedRef.current = false;
+      setState('idle');
+      setAttackFrame(0);
+      setAttackDone(false);
+      setDeadFrame(0);
+      setDeadDone(false);
     }
   }, [attackTrigger]);
 

@@ -81,9 +81,7 @@ const HorizontalJourney: React.FC = () => {
         velocity,
       });
 
-      if (!attackTriggered && scrollLeft >= ATTACK_TRIGGER_SCROLL) {
-        setAttackTriggered(true);
-      }
+      setAttackTriggered(scrollLeft >= ATTACK_TRIGGER_SCROLL);
 
       lastScrollRef.current = scrollLeft;
       lastScrollTimeRef.current = now;
