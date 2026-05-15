@@ -9,11 +9,10 @@ import ProjectBook from './ProjectBook';
 import FarewellChest from './FarewellChest';
 import { ArrowRightCircle } from 'lucide-react';
 
-// Chest at center of section 4 — world X = section4Start + vw/2 = 4.7*vw + 0.5*vw = 5.2*vw
-// At max scroll (4.7*vw), screenX = 5.2*vw - 4.7*vw = 0.5*vw = viewport center
-// Samurai walks toward it as user scrolls; arrives exactly at max scroll
-const CHEST_WORLD_X = typeof window !== 'undefined' ? window.innerWidth * 5.2 : 0;
-const CHEST_COLLISION_RANGE = 70; // px from character center to trigger atChest
+// Chest one tile ahead of where the character stops at max scroll
+// At max scroll (4.7*vw), character is at screenX 0.5*vw — chest is 180px further right
+const CHEST_WORLD_X = typeof window !== 'undefined' ? window.innerWidth * 5.2 + 180 : 0;
+const CHEST_COLLISION_RANGE = 220; // wide enough to cover the one-tile gap
 
 interface ScrollState {
   x: number;
