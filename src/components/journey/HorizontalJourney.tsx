@@ -13,7 +13,6 @@ import { ArrowRightCircle } from 'lucide-react';
 // Attack trigger scroll = 0.96 * 4.7 * vw = 4.512 * vw
 // Chest world X = trigger + viewport/2 = 5.012 * vw
 const CHEST_WORLD_X = typeof window !== 'undefined' ? window.innerWidth * 5.012 : 0;
-const ATTACK_TRIGGER_SCROLL = typeof window !== 'undefined' ? window.innerWidth * 4.512 : 0;
 
 interface ScrollState {
   x: number;
@@ -81,7 +80,12 @@ const HorizontalJourney: React.FC = () => {
         velocity,
       });
 
-      setAttackTriggered(scrollLeft >= ATTACK_TRIGGER_SCROLL);
+      // Fire attack when character center has reached or just passed the chest
+      // Character center = viewport center = window.innerWidth / 2
+      // Chest screen X = CHEST_WORLD_X - scrollLeft
+      const chestScreenX = CHEST_WORLD_X - scrollLeft;
+      const atChest = chestScreenX <= window.innerWidth / 2 + 20 && chestScreenX > -100;
+      setAttackTriggered(atChest);
 
       lastScrollRef.current = scrollLeft;
       lastScrollTimeRef.current = now;
@@ -434,81 +438,29 @@ const HorizontalJourney: React.FC = () => {
             scrollX={scrollState.x}
             behindMountains
           >
-            {/* Ink-rough filter */}
-            <svg style={{ position: 'absolute', width: 0, height: 0 }}>
-              <defs>
-                <filter id="ink-rough-farewell">
-                  <feTurbulence type="fractalNoise" baseFrequency="0.04" numOctaves="4" seed="7" result="noise" />
-                  <feDisplacementMap in="SourceGraphic" in2="noise" scale="2.2" xChannelSelector="R" yChannelSelector="G" />
-                </filter>
-              </defs>
-            </svg>
-
-            {/* Big text — behind mountains, parallax world layer */}
+            {/* "thank you" — written in the clouds, sky zone, fades in as section enters */}
             <div
               className="absolute inset-0 flex items-start justify-center select-none pointer-events-none"
-              style={{ zIndex: 0 }}
+              style={{ zIndex: 0, paddingTop: '8vh' }}
             >
               <div
                 style={{
                   fontFamily: '"Georgia", "Times New Roman", serif',
-                  fontSize: '7.8vw',
+                  fontSize: 'clamp(3rem, 8.5vw, 7.5rem)',
                   fontWeight: 300,
-                  color: 'rgba(255,255,255,0.55)',
-                  lineHeight: 1.15,
-                  letterSpacing: '-0.01em',
+                  fontStyle: 'italic',
+                  color: 'rgba(255,255,255,0.42)',
+                  letterSpacing: '0.04em',
                   textAlign: 'center',
-                  paddingTop: '0.2em',
-                  filter: 'url(#ink-rough-farewell)',
-                  WebkitMaskImage: 'linear-gradient(to bottom, rgba(0,0,0,1) 0%, rgba(0,0,0,0.6) 55%, rgba(0,0,0,0) 88%)',
-                  maskImage: 'linear-gradient(to bottom, rgba(0,0,0,1) 0%, rgba(0,0,0,0.6) 55%, rgba(0,0,0,0) 88%)',
+                  lineHeight: 1.2,
+                  opacity: scrollState.progress > 0.87 ? 1 : 0,
+                  transition: 'opacity 1.4s ease',
+                  WebkitMaskImage: 'linear-gradient(to bottom, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.7) 50%, rgba(0,0,0,0) 90%)',
+                  maskImage: 'linear-gradient(to bottom, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.7) 50%, rgba(0,0,0,0) 90%)',
                 }}
               >
-                thank you for<br />walking with me.
+                thank you
               </div>
-            </div>
-
-            {/* Small farewell — in front of mountains, fades in after attack */}
-            <div className="flex items-end justify-center h-full pb-56 px-16">
-              <motion.div
-                style={{ textAlign: 'center', maxWidth: '44ch' }}
-                animate={{ opacity: scrollState.progress > 0.9 ? 1 : 0, y: scrollState.progress > 0.9 ? 0 : 14 }}
-                transition={{ duration: 1.1, ease: [0.16, 1, 0.3, 1] }}
-              >
-                <p
-                  style={{
-                    fontFamily: '"Georgia", "Times New Roman", serif',
-                    fontStyle: 'italic',
-                    fontSize: 'clamp(0.85rem, 1.1vw, 1rem)',
-                    color: 'rgba(255,255,255,0.55)',
-                    lineHeight: 2.0,
-                    letterSpacing: '0.02em',
-                    marginBottom: '1.4rem',
-                    filter: 'url(#ink-rough-farewell)',
-                  }}
-                >
-                  hope you have a nice day
-                  <br />
-                  and your pillow is cold when you sleep, both sides.
-                </p>
-                <div style={{ width: '100%', height: '1px', background: 'rgba(255,255,255,0.08)', marginBottom: '0.9rem' }} />
-                <a
-                  href="mailto:nishantchoudhary.dev@gmail.com"
-                  style={{
-                    fontFamily: '"Georgia", "Times New Roman", serif',
-                    fontStyle: 'italic',
-                    fontSize: '0.72rem',
-                    letterSpacing: '0.08em',
-                    color: 'rgba(255,255,255,0.3)',
-                    textDecoration: 'none',
-                    transition: 'color 0.3s ease',
-                  }}
-                  onMouseEnter={e => (e.currentTarget.style.color = 'rgba(234,40,4,0.75)')}
-                  onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.3)')}
-                >
-                  — nishantchoudhary.dev@gmail.com
-                </a>
-              </motion.div>
             </div>
           </JourneySection>
         </div>
