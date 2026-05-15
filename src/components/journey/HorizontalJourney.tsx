@@ -9,10 +9,11 @@ import ProjectBook from './ProjectBook';
 import FarewellChest from './FarewellChest';
 import { ArrowRightCircle } from 'lucide-react';
 
-// Chest fires at ~96% scroll — deep into the final section
-// Attack trigger scroll = 0.96 * 4.7 * vw = 4.512 * vw
-// Chest world X = trigger + viewport/2 = 5.012 * vw
-const CHEST_WORLD_X = typeof window !== 'undefined' ? window.innerWidth * 5.012 : 0;
+// Chest at center of section 4 — world X = section4Start + vw/2 = 4.7*vw + 0.5*vw = 5.2*vw
+// At max scroll (4.7*vw), screenX = 5.2*vw - 4.7*vw = 0.5*vw = viewport center
+// Samurai walks toward it as user scrolls; arrives exactly at max scroll
+const CHEST_WORLD_X = typeof window !== 'undefined' ? window.innerWidth * 5.2 : 0;
+const CHEST_COLLISION_RANGE = 70; // px from character center to trigger atChest
 
 interface ScrollState {
   x: number;
@@ -30,7 +31,21 @@ const HorizontalJourney: React.FC = () => {
 
   const lastScrollRef = useRef(0);
   const lastScrollTimeRef = useRef(performance.now());
-  const [attackTriggered, setAttackTriggered] = useState(false);
+  const [attackTriggered, setAttackTriggeredState] = useState(false);
+  const attackTriggeredRef = useRef(false);
+
+  const setAttackTriggered = (val: boolean) => {
+    attackTriggeredRef.current = val;
+    setAttackTriggeredState(val);
+  };
+
+  // Derived: samurai has reached the chest
+  const chestScreenX = CHEST_WORLD_X - scrollState.x;
+  const atChest = Math.abs(chestScreenX - window.innerWidth / 2) < CHEST_COLLISION_RANGE;
+
+  const handleAttackClick = () => {
+    if (atChest && !attackTriggeredRef.current) setAttackTriggered(true);
+  };
   
   // Background Music state
   const audioRef = useRef<HTMLAudioElement | null>(null);
@@ -80,12 +95,13 @@ const HorizontalJourney: React.FC = () => {
         velocity,
       });
 
-      // Fire attack when character center has reached or just passed the chest
-      // Character center = viewport center = window.innerWidth / 2
-      // Chest screen X = CHEST_WORLD_X - scrollLeft
-      const chestScreenX = CHEST_WORLD_X - scrollLeft;
-      const atChest = chestScreenX <= window.innerWidth / 2 + 20 && chestScreenX > -100;
-      setAttackTriggered(atChest);
+      // Reset attack if user scrolls back away from chest
+      if (attackTriggeredRef.current) {
+        const csx = CHEST_WORLD_X - scrollLeft;
+        if (csx > window.innerWidth / 2 + CHEST_COLLISION_RANGE + 40) {
+          setAttackTriggered(false);
+        }
+      }
 
       lastScrollRef.current = scrollLeft;
       lastScrollTimeRef.current = now;
@@ -493,7 +509,8 @@ const HorizontalJourney: React.FC = () => {
         scrollX={scrollState.x}
         chestWorldX={CHEST_WORLD_X}
         burst={attackTriggered}
-        proximity={attackTriggered ? 0 : Math.max(0, 1 - Math.abs(CHEST_WORLD_X - scrollState.x - window.innerWidth / 2) / 380)}
+        atChest={atChest && !attackTriggered}
+        onAttackClick={handleAttackClick}
       />
 
       {/* Character */}
