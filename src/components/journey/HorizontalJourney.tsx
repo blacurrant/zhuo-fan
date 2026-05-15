@@ -11,7 +11,7 @@ import { ArrowRightCircle } from 'lucide-react';
 
 // Chest one tile ahead of where the character stops at max scroll
 // At max scroll (4.7*vw), character is at screenX 0.5*vw — chest is 180px further right
-const CHEST_WORLD_X = typeof window !== 'undefined' ? window.innerWidth * 5.2 + 180 : 0;
+const CHEST_WORLD_X = typeof window !== 'undefined' ? window.innerWidth * 5.2 + 60 : 0;
 const CHEST_COLLISION_RANGE = 220; // wide enough to cover the one-tile gap
 
 interface ScrollState {
@@ -460,21 +460,29 @@ const HorizontalJourney: React.FC = () => {
             >
               <div
                 style={{
-                  fontFamily: '"Georgia", "Times New Roman", serif',
-                  fontSize: 'clamp(3rem, 8.5vw, 7.5rem)',
-                  fontWeight: 300,
-                  fontStyle: 'italic',
+                                        fontFamily: '"Playfair Display", "Georgia", "Times New Roman", serif',
+                      fontSize: 'clamp(3.8rem, 8vw, 7rem)',
+                      fontWeight: 100,
+                      // color: 'rgba(12,7,2,0.92)',
+                      lineHeight: 0.88,
+                      letterSpacing: '-0.02em',
+                      marginBottom: '1.75rem',
+                      filter: 'url(#ink-rough)',
+                  // fontFamily: '"Georgia", "Times New Roman", serif',
+                  // fontSize: 'clamp(3rem, 8.5vw, 7.5rem)',
+                  // fontWeight: 400,
                   color: 'rgba(255,255,255,0.42)',
-                  letterSpacing: '0.04em',
+                  // letterSpacing: '0.04em',
+                  // lineHeight: 1.2,
+                  // fontStyle: 'italic',
                   textAlign: 'center',
-                  lineHeight: 1.2,
                   opacity: scrollState.progress > 0.87 ? 1 : 0,
                   transition: 'opacity 1.4s ease',
                   WebkitMaskImage: 'linear-gradient(to bottom, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.7) 50%, rgba(0,0,0,0) 90%)',
-                  maskImage: 'linear-gradient(to bottom, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.7) 50%, rgba(0,0,0,0) 90%)',
+                  maskImage: 'linear-gradient(to bottom, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.7) 50%, rgba(0,0,0,0.1) 95%)',
                 }}
               >
-                thank you
+                goodnight
               </div>
             </div>
           </JourneySection>
@@ -510,6 +518,16 @@ const HorizontalJourney: React.FC = () => {
         burst={attackTriggered}
         atChest={atChest && !attackTriggered}
         onAttackClick={handleAttackClick}
+      />
+
+      {/* Dark road overlay for final section */}
+      <div
+        className="fixed bottom-0 left-0 w-full h-[200px] z-[41] pointer-events-none"
+        style={{
+          background: 'linear-gradient(to top, rgba(0,0,0,0.72) 0%, rgba(0,0,0,0.38) 60%, transparent 100%)',
+          opacity: scrollState.progress > 0.79 ? 1 : 0,
+          transition: 'opacity 1.6s ease',
+        }}
       />
 
       {/* Character */}

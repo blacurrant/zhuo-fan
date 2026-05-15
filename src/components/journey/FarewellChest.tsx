@@ -1,6 +1,7 @@
 'use client';
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { Github, Linkedin, Twitter, FileText, type LucideIcon } from 'lucide-react';
 
 interface FarewellChestProps {
   scrollX: number;
@@ -11,10 +12,10 @@ interface FarewellChestProps {
 }
 
 const links = [
-  { label: 'GitHub',   href: 'https://github.com/blacurrant',                 offset: { x: -220, y: -190 } },
-  { label: 'LinkedIn', href: 'https://linkedin.com/in/nishant-choudhary-dev', offset: { x:  140, y: -210 } },
-  { label: 'Twitter',  href: 'https://twitter.com/blacurrant',                offset: { x: -175, y: -330 } },
-  { label: 'Résumé',   href: '/Nishant_fullstack_cv.pdf',                     offset: { x:  115, y: -350 } },
+  { label: 'GitHub',   href: 'https://github.com/blacurrant',                 offset: { x: -520, y: -260 }, icon: Github,   landRotate: -1, landX: -520 },
+  { label: 'LinkedIn', href: 'https://linkedin.com/in/nishant-choudhary-dev', offset: { x:  420, y: -280 }, icon: Linkedin,  landRotate:   1, landX:  420 },
+  { label: 'Twitter',  href: 'https://twitter.com/nishantcy',                offset: { x: -250, y: -420 }, icon: Twitter,   landRotate:  1, landX: -250 },
+  { label: 'Résumé',   href: '/Nishant_fullstack_cv.pdf',                     offset: { x:  200, y: -440 }, icon: FileText,  landRotate:  -1, landX:  200 },
 ];
 
 const FarewellChest: React.FC<FarewellChestProps> = ({ scrollX, chestWorldX, burst, atChest, onAttackClick }) => {
@@ -68,61 +69,33 @@ const FarewellChest: React.FC<FarewellChestProps> = ({ scrollX, chestWorldX, bur
           >
             <Crate atChest={atChest} />
 
-            {/* Wooden sign — appears when atChest, matches WaypointSignpost style */}
+            {/* Hint label — floats above crate, not a button */}
             <AnimatePresence>
               {atChest && (
                 <motion.div
                   style={{
                     position: 'absolute',
-                    bottom: '100%',
+                    bottom: '110%',
                     left: '50%',
                     transform: 'translateX(-50%)',
                     pointerEvents: 'none',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    alignItems: 'center',
-                  }}
-                  initial={{ opacity: 0, y: 12 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: 8 }}
-                  transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
-                >
-                  {/* Sign board */}
-                  <div style={{
-                    background: '#8b5a2b',
-                    border: '3px solid #5c3a21',
-                    borderRadius: 4,
-                    padding: '6px 14px',
-                    boxShadow: '2px 4px 12px rgba(0,0,0,0.5)',
                     whiteSpace: 'nowrap',
-                    position: 'relative',
-                    overflow: 'hidden',
+                  }}
+                  initial={{ opacity: 0, y: 4 }}
+                  animate={{ opacity: 1, y: [0, -4, 0] }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.4, y: { repeat: Infinity, duration: 1.4, ease: 'easeInOut' } }}
+                >
+                  <span style={{
+                    fontFamily: '"Georgia", "Times New Roman", serif',
+                    fontSize: '0.58rem',
+                    letterSpacing: '0.2em',
+                    textTransform: 'uppercase',
+                    color: 'rgba(255,255,255,0.65)',
+                    textShadow: '0 0 10px rgba(234,40,4,0.7)',
                   }}>
-                    {/* Wood grain */}
-                    <div style={{
-                      position: 'absolute', inset: 0, pointerEvents: 'none', opacity: 0.1,
-                      background: 'repeating-linear-gradient(0deg,transparent,transparent 4px,#000 5px,#000 6px)',
-                    }} />
-                    <span style={{
-                      fontFamily: 'var(--font-bricolage), "Georgia", serif',
-                      fontWeight: 300,
-                      fontSize: '1rem',
-                      color: '#f4e4bc',
-                      letterSpacing: '0.05em',
-                      filter: 'url(#ink-rough)',
-                      position: 'relative',
-                    }}>
-                      open me
-                    </span>
-                  </div>
-                  {/* Post */}
-                  <div style={{
-                    width: 8, height: 40,
-                    background: '#5c3a21',
-                    borderLeft: '2px solid #3e2716',
-                    borderRight: '3px solid #3e2716',
-                    boxShadow: '3px 0 8px rgba(0,0,0,0.3)',
-                  }} />
+                    click
+                  </span>
                 </motion.div>
               )}
             </AnimatePresence>
@@ -168,13 +141,24 @@ const FarewellChest: React.FC<FarewellChestProps> = ({ scrollX, chestWorldX, bur
                 target={link.href.startsWith('http') ? '_blank' : undefined}
                 rel="noopener noreferrer"
                 className="fixed z-[47]"
-                style={{ left: screenX, bottom: 54 }}
-                initial={{ x: 0, y: 0, opacity: 0, scale: 0.3, rotate: (i % 2 === 0 ? -15 : 15) }}
-                animate={{ x: link.offset.x, y: link.offset.y, opacity: 1, scale: 1, rotate: 0 }}
-                transition={{ type: 'spring', stiffness: 220, damping: 16, delay: 0.06 + i * 0.07 }}
-                whileHover={{ scale: 1.1, transition: { duration: 0.15 } }}
+                style={{ left: screenX, bottom: 64 }}
+                initial={{ x: 0, y: 0, opacity: 0, scale: 0.3, rotate: (i % 2 === 0 ? -20 : 20) }}
+                animate={{
+                  x: [0, link.offset.x, link.landX],
+                  y: [0, link.offset.y, 28],
+                  scale: [0.3, 1, 1.25],
+                  rotate: [i % 2 === 0 ? -20 : 20, 0, link.landRotate],
+                  opacity: [0, 1, 1],
+                }}
+                transition={{
+                  duration: 1.6,
+                  times: [0, 0.38, 1],
+                  ease: ['easeOut', [0.4, 0, 1, 0.6]],
+                  delay: 0.06 + i * 0.07,
+                }}
+                whileHover={{ scale: 1.35, rotate: 0, transition: { duration: 0.18 } }}
               >
-                <LinkTag label={link.label} />
+                <LinkTag label={link.label} Icon={link.icon} />
               </motion.a>
             ))}
           </>
@@ -202,16 +186,38 @@ const Crate: React.FC<{ atChest: boolean }> = ({ atChest }) => (
   </div>
 );
 
-const LinkTag: React.FC<{ label: string }> = ({ label }) => (
+const LinkTag: React.FC<{ label: string; Icon: LucideIcon }> = ({ label, Icon }) => (
   <div style={{
     fontFamily: '"Georgia", "Times New Roman", serif',
-    fontSize: '0.72rem', letterSpacing: '0.12em', textTransform: 'uppercase',
-    color: 'rgba(255,255,255,0.9)', background: 'rgba(10,6,2,0.82)',
-    border: '1px solid rgba(234,40,4,0.6)', borderRadius: 2, padding: '5px 12px',
-    backdropFilter: 'blur(6px)', whiteSpace: 'nowrap',
-    boxShadow: '0 2px 16px rgba(234,40,4,0.35)', cursor: 'pointer',
+    fontSize: '0.82rem',
+    fontStyle: 'italic',
+    letterSpacing: '0.02em',
+    color: '#1e0e04',
+    background: 'linear-gradient(160deg, #f5e4a8 0%, #e8c96e 45%, #f2dfa0 100%)',
+    border: '2px solid #6b3a10',
+    borderRadius: '2px 5px 3px 4px',
+    padding: '6px 14px 7px 10px',
+    whiteSpace: 'nowrap',
+    cursor: 'pointer',
+    position: 'relative',
+    overflow: 'hidden',
+    display: 'flex',
+    alignItems: 'center',
+    gap: 7,
+    boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.25), inset 0 -2px 0 rgba(0,0,0,0.18), 0 2px 12px -4px rgba(0,0,0,0.65)',
   }}>
-    {label}
+    {/* parchment grain */}
+    <div style={{
+      position: 'absolute', inset: 0, pointerEvents: 'none', opacity: 0.07,
+      background: 'repeating-linear-gradient(0deg,transparent,transparent 3px,#3a1a00 4px)',
+    }} />
+    {/* aged edge vignette */}
+    <div style={{
+      position: 'absolute', inset: 0, pointerEvents: 'none',
+      background: 'radial-gradient(ellipse at center, transparent 55%, rgba(90,40,5,0.25) 100%)',
+    }} />
+    <Icon size={13} strokeWidth={2.2} />
+    <span style={{ position: 'relative' }}>{label}</span>
   </div>
 );
 
