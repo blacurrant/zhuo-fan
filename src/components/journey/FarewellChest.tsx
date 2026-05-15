@@ -68,33 +68,61 @@ const FarewellChest: React.FC<FarewellChestProps> = ({ scrollX, chestWorldX, bur
           >
             <Crate atChest={atChest} />
 
-            {/* Hint label — floats above crate, not a button */}
+            {/* Wooden sign — appears when atChest, matches WaypointSignpost style */}
             <AnimatePresence>
               {atChest && (
                 <motion.div
                   style={{
                     position: 'absolute',
-                    bottom: '110%',
+                    bottom: '100%',
                     left: '50%',
                     transform: 'translateX(-50%)',
                     pointerEvents: 'none',
-                    whiteSpace: 'nowrap',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
                   }}
-                  initial={{ opacity: 0, y: 4 }}
-                  animate={{ opacity: 1, y: [0, -4, 0] }}
-                  exit={{ opacity: 0 }}
-                  transition={{ duration: 0.4, y: { repeat: Infinity, duration: 1.4, ease: 'easeInOut' } }}
+                  initial={{ opacity: 0, y: 12 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: 8 }}
+                  transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
                 >
-                  <span style={{
-                    fontFamily: '"Georgia", "Times New Roman", serif',
-                    fontSize: '0.58rem',
-                    letterSpacing: '0.2em',
-                    textTransform: 'uppercase',
-                    color: 'rgba(255,255,255,0.65)',
-                    textShadow: '0 0 10px rgba(234,40,4,0.7)',
+                  {/* Sign board */}
+                  <div style={{
+                    background: '#8b5a2b',
+                    border: '3px solid #5c3a21',
+                    borderRadius: 4,
+                    padding: '6px 14px',
+                    boxShadow: '2px 4px 12px rgba(0,0,0,0.5)',
+                    whiteSpace: 'nowrap',
+                    position: 'relative',
+                    overflow: 'hidden',
                   }}>
-                    click
-                  </span>
+                    {/* Wood grain */}
+                    <div style={{
+                      position: 'absolute', inset: 0, pointerEvents: 'none', opacity: 0.1,
+                      background: 'repeating-linear-gradient(0deg,transparent,transparent 4px,#000 5px,#000 6px)',
+                    }} />
+                    <span style={{
+                      fontFamily: 'var(--font-bricolage), "Georgia", serif',
+                      fontWeight: 300,
+                      fontSize: '1rem',
+                      color: '#f4e4bc',
+                      letterSpacing: '0.05em',
+                      filter: 'url(#ink-rough)',
+                      position: 'relative',
+                    }}>
+                      open me
+                    </span>
+                  </div>
+                  {/* Post */}
+                  <div style={{
+                    width: 8, height: 40,
+                    background: '#5c3a21',
+                    borderLeft: '2px solid #3e2716',
+                    borderRight: '3px solid #3e2716',
+                    boxShadow: '3px 0 8px rgba(0,0,0,0.3)',
+                  }} />
                 </motion.div>
               )}
             </AnimatePresence>
