@@ -549,21 +549,61 @@ const HorizontalJourney: React.FC = () => {
         {Math.round(scrollState.progress * 100)}%
       </div>
 
-      {/* Music Toggle Button */}
+      {/* Music Toggle - Redesigned as a Calligraphy Stamp / Wax Seal */}
       <button
         onClick={toggleMusic}
-        className="fixed top-8 right-8 z-[100] flex items-center gap-3 px-5 py-2.5 bg-replicate-canvas/60 backdrop-blur-md border border-replicate-hairline rounded-full shadow-lg hover:bg-replicate-canvas/80 transition-all duration-300 group"
-        style={{
-          fontFamily: '"Georgia", "Times New Roman", serif',
-          fontSize: '0.7rem',
-          letterSpacing: '0.2em',
-          textTransform: 'uppercase',
-          color: isMusicPlaying ? 'rgba(234,40,4,0.9)' : 'rgba(20,12,5,0.6)',
-        }}
+        className="fixed top-8 right-8 z-[100] group flex items-center justify-center"
+        aria-label="Toggle Music"
       >
-        <span className={`w-1.5 h-1.5 rounded-full ${isMusicPlaying ? 'bg-replicate-primary animate-pulse' : 'bg-replicate-charcoal/30'}`} />
-        <span className="font-bold">{isMusicPlaying ? '♪ Music On' : '♪ Music Off'}</span>
-        <div className="absolute inset-0 rounded-full bg-replicate-primary/5 scale-0 group-hover:scale-100 transition-transform duration-500" />
+        <motion.div
+          className="relative flex items-center justify-center"
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+        >
+          {/* The Stamp / Seal Base */}
+          <div
+            style={{
+              width: '54px',
+              height: '54px',
+              borderRadius: '50%',
+              background: isMusicPlaying ? 'rgba(234,40,4,0.92)' : 'rgba(20,12,5,0.15)',
+              filter: 'url(#ink-rough)',
+              border: isMusicPlaying ? 'none' : '1px dashed rgba(20,12,5,0.3)',
+              boxShadow: isMusicPlaying ? '0 4px 12px rgba(234,40,4,0.3)' : 'none',
+              transition: 'all 0.6s cubic-bezier(0.16, 1, 0.3, 1)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}
+          >
+            <span
+              style={{
+                fontFamily: '"Playfair Display", serif',
+                fontSize: '1.4rem',
+                color: isMusicPlaying ? 'rgba(255,255,255,0.95)' : 'rgba(20,12,5,0.4)',
+                lineHeight: 1,
+                marginTop: '-2px',
+              }}
+            >
+              {isMusicPlaying ? '♫' : '♪'}
+            </span>
+          </div>
+
+          {/* Label that appears on hover */}
+          <div
+            className="absolute right-[calc(100%+12px)] opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none whitespace-nowrap"
+            style={{
+              fontFamily: '"Georgia", serif',
+              fontStyle: 'italic',
+              fontSize: '0.65rem',
+              letterSpacing: '0.15em',
+              textTransform: 'uppercase',
+              color: 'rgba(20,12,5,0.6)',
+            }}
+          >
+            {isMusicPlaying ? 'Silence the echoes' : 'Awaken the journey'}
+          </div>
+        </motion.div>
       </button>
     </div>
   );

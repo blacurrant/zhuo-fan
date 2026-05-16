@@ -233,7 +233,7 @@ const FreightEZCaseStudy: React.FC = () => {
         status: 'Active Development'
       }}
       sections={sections}
-      backHref="/landing"
+      backHref="/journey"
     />
   );
 };

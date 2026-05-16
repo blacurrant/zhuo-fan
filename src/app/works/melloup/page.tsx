@@ -237,7 +237,7 @@ const MelloupCaseStudy: React.FC = () => {
       }}
       metrics={metrics}
       sections={sections}
-      backHref="/landing"
+      backHref="/journey"
     />
   );
 };

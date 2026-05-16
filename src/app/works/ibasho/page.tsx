@@ -222,7 +222,7 @@ const IbashoCaseStudy: React.FC = () => {
       }}
       metrics={metrics}
       sections={sections}
-      backHref="/landing"
+      backHref="/journey"
     />
   );
 };

@@ -177,6 +177,34 @@ const Character: React.FC<CharacterProps> = ({ scrollX, velocity, attackTrigger 
         style={{ left: characterX, bottom: 30 }}
       >
         <div className="relative w-[128px] h-[128px] flex items-end justify-center">
+          {/* Dynamic Contact Shadow */}
+          <motion.div
+            style={{
+              position: 'absolute',
+              bottom: 2, // sitting directly under the feet
+              left: '50%',
+              width: 50,
+              height: 10,
+              background: 'rgba(0,0,0,0.22)',
+              borderRadius: '50%',
+              filter: 'blur(4px)',
+              x: '-50%',
+            }}
+            animate={{
+              scale: (state === 'walk' || state === 'run') 
+                ? [0.8, 1.1, 0.8] 
+                : state === 'idle' ? [0.95, 1.05, 0.95] : 1,
+              opacity: (state === 'walk' || state === 'run')
+                ? [0.4, 0.7, 0.4]
+                : 0.6,
+            }}
+            transition={{
+              duration: state === 'run' ? 0.4 : state === 'walk' ? 0.7 : 2,
+              repeat: Infinity,
+              ease: "easeInOut"
+            }}
+          />
+
           <div
             style={{
               width: `${FRAME_SIZE}px`,
