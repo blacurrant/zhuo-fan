@@ -22,7 +22,16 @@ const spriteConfig = {
 };
 
 const Character: React.FC<CharacterProps> = ({ scrollX, velocity, attackTrigger }) => {
-  const characterX = window.innerWidth / 2 - FRAME_SIZE / 2;
+  const [windowWidth, setWindowWidth] = useState(1920);
+
+  useEffect(() => {
+    setWindowWidth(window.innerWidth);
+    const handleResize = () => setWindowWidth(window.innerWidth);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  const characterX = windowWidth / 2 - FRAME_SIZE / 2;
 
   const [state, setState] = useState<'idle' | 'walk' | 'run' | 'attack' | 'dead'>('idle');
   const [direction, setDirection] = useState<'right' | 'left'>('right');

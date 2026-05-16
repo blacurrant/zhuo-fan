@@ -43,6 +43,17 @@ const ParallaxBackground: React.FC<ParallaxBackgroundProps> = ({
   // Section 1 starts already "entered"
   const animationFiredRef = useRef(false);
 
+  const [windowSize, setWindowSize] = React.useState({ width: 1920, height: 1080 });
+
+  React.useEffect(() => {
+    const handleResize = () => {
+      setWindowSize({ width: window.innerWidth, height: window.innerHeight });
+    };
+    handleResize();
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
   const allLayers = useMemo(() => {
     const layerMap: { [key: number]: string[] } = {
       1: ['sky', 'clouds_1', 'clouds_2', 'clouds_3', 'clouds_4', 'rocks_1', 'rocks_2'],
@@ -76,11 +87,11 @@ const ParallaxBackground: React.FC<ParallaxBackgroundProps> = ({
       let initialY = 0;
       // Section 1 layers start off-screen so Hook C can animate them in on load
       if (backgroundNumber === 1) {
-        initialY = isForeground(layer) ? window.innerHeight : -window.innerHeight;
+        initialY = isForeground(layer) ? windowSize.height : -windowSize.height;
       }
       gsap.set(elY, { opacity: 1, y: initialY });
     });
-  }, [backgroundNumber, layers]);
+  }, [backgroundNumber, layers, windowSize.height]);
 
   // Hook B: Update parallax x/y on every scroll tick
   useLayoutEffect(() => {
@@ -89,7 +100,7 @@ const ParallaxBackground: React.FC<ParallaxBackgroundProps> = ({
       if (!elX) return;
 
       let distFromVisible = 0;
-      const sectionEndScroll = sectionStartX + sectionWidth - window.innerWidth;
+      const sectionEndScroll = sectionStartX + sectionWidth - windowSize.width;
 
       if (scrollX < sectionStartX) {
         distFromVisible = sectionStartX - scrollX;
@@ -98,7 +109,7 @@ const ParallaxBackground: React.FC<ParallaxBackgroundProps> = ({
       }
 
       let opacity = 1;
-      const transitionDist = window.innerWidth;
+      const transitionDist = windowSize.width;
 
       if (backgroundNumber !== 1) {
         if (distFromVisible > transitionDist) {

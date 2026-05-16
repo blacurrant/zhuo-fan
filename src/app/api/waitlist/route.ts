@@ -8,6 +8,10 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: 'Email is required' }, { status: 400 })
   }
 
+  if (!supabase) {
+    return NextResponse.json({ error: 'Database connection not configured' }, { status: 500 })
+  }
+
   const { data, error } = await supabase
     .from('waitlist')
     .insert([{ email }])

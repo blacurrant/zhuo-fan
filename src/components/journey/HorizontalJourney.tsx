@@ -38,9 +38,20 @@ const HorizontalJourney: React.FC = () => {
     setAttackTriggeredState(val);
   };
 
+  const [windowSize, setWindowSize] = useState({ width: 1920, height: 1080 });
+
+  useEffect(() => {
+    const handleResize = () => {
+      setWindowSize({ width: window.innerWidth, height: window.innerHeight });
+    };
+    handleResize(); // Initial call
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
   // Derived: samurai has reached the chest
   const chestScreenX = CHEST_WORLD_X - scrollState.x;
-  const atChest = Math.abs(chestScreenX - window.innerWidth / 2) < CHEST_COLLISION_RANGE;
+  const atChest = Math.abs(chestScreenX - windowSize.width / 2) < CHEST_COLLISION_RANGE;
 
   const handleAttackClick = () => {
     if (atChest && !attackTriggeredRef.current) setAttackTriggered(true);
@@ -174,10 +185,10 @@ const HorizontalJourney: React.FC = () => {
           <JourneySection
             id="hero"
             backgroundNumber={1}
-            width={window.innerWidth * 1.5}
+            width={windowSize.width * 1.5}
             scrollX={scrollState.x}
           >
-            <div className="flex h-full" style={{ width: window.innerWidth * 1.5 }}>
+            <div className="flex h-full" style={{ width: windowSize.width * 1.5 }}>
               {/* Ink roughness filter — woodblock/letterpress effect */}
               <svg style={{ position: 'absolute', width: 0, height: 0 }}>
                 <defs>
@@ -203,7 +214,7 @@ const HorizontalJourney: React.FC = () => {
               {/* Landing Screen: Name */}
               <div 
                 className="flex items-center justify-center h-[70vh] px-16 relative" 
-                style={{ width: window.innerWidth }}
+                style={{ width: windowSize.width }}
               >
                 <motion.div
                   className="flex flex-col items-center text-center"
@@ -280,7 +291,7 @@ const HorizontalJourney: React.FC = () => {
               {/* Extension Screen: Role & CTA */}
               <div 
                 className="flex items-center justify-center h-full px-16 relative" 
-                style={{ width: window.innerWidth * 0.5 }}
+                style={{ width: windowSize.width * 0.5 }}
               >
                 <motion.div
                   className="flex flex-col items-center text-center"
@@ -405,7 +416,7 @@ const HorizontalJourney: React.FC = () => {
           <JourneySection
             id="projects"
             backgroundNumber={2}
-            width={window.innerWidth * 2.2}
+            width={windowSize.width * 2.2}
             scrollX={scrollState.x}
             behindMountains
           >
@@ -437,7 +448,7 @@ const HorizontalJourney: React.FC = () => {
           <JourneySection
             id="process"
             backgroundNumber={4}
-            width={window.innerWidth}
+            width={windowSize.width}
             scrollX={scrollState.x}
           >
             <ProcessTimeline
@@ -449,7 +460,7 @@ const HorizontalJourney: React.FC = () => {
           <JourneySection
             id="contact"
             backgroundNumber={3}
-            width={window.innerWidth}
+            width={windowSize.width}
             scrollX={scrollState.x}
             behindMountains
           >
@@ -490,20 +501,20 @@ const HorizontalJourney: React.FC = () => {
       </div>
 
       {/* Waypoint signposts — placed before each section so sign appears while approaching */}
-      <WaypointSignpost label="work" position={window.innerWidth * 0.5} characterX={scrollState.x} />
+      <WaypointSignpost label="work" position={windowSize.width * 0.5} characterX={scrollState.x} />
       <WaypointSignpost
         label="process"
-        position={window.innerWidth * 2.6}
+        position={windowSize.width * 2.6}
         characterX={scrollState.x}
       />
       <WaypointSignpost
         label="contact"
-        position={window.innerWidth * 3.7}
+        position={windowSize.width * 3.7}
         characterX={scrollState.x}
       />
       <WaypointSignpost
         label="rest, traveller."
-        position={window.innerWidth * 4.7}
+        position={windowSize.width * 4.7}
         characterX={scrollState.x}
         showArrow={false}
       />

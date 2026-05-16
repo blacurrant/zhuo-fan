@@ -38,7 +38,16 @@ const FarewellChest: React.FC<FarewellChestProps> = ({ scrollX, chestWorldX, bur
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [burst]);
 
-  const visible = screenX > -80 && screenX < window.innerWidth + 80;
+  const [windowWidth, setWindowWidth] = useState(1920);
+
+  useEffect(() => {
+    setWindowWidth(window.innerWidth);
+    const handleResize = () => setWindowWidth(window.innerWidth);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  const visible = screenX > -80 && screenX < windowWidth + 80;
   if (!visible && phase === 'idle') return null;
 
   return (
