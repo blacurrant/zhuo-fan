@@ -20,8 +20,17 @@ const WaypointSignpost: React.FC<WaypointSignpostProps> = ({
 }) => {
   const distance = position - characterX; // positive means it's ahead
   
+  const [windowWidth, setWindowWidth] = React.useState(1920);
+
+  React.useEffect(() => {
+    setWindowWidth(window.innerWidth);
+    const handleResize = () => setWindowWidth(window.innerWidth);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
   // Show the sign until it naturally scrolls way off the left edge of the screen
-  const isApproaching = distance > -window.innerWidth * 1.5 && distance < window.innerWidth * 1.5;
+  const isApproaching = distance > -windowWidth * 1.5 && distance < windowWidth * 1.5;
 
   if (!isApproaching || !isVisible) return null;
 

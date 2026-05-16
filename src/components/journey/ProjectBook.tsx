@@ -144,8 +144,19 @@ interface ProjectBookProps {
 const ProjectBook: React.FC<ProjectBookProps> = ({ scrollX }) => {
   const router = useRouter();
 
-  const vw = window.innerWidth;
-  const vh = window.innerHeight;
+  const [windowSize, setWindowSize] = React.useState({ width: 1920, height: 1080 });
+
+  React.useEffect(() => {
+    const handleResize = () => {
+      setWindowSize({ width: window.innerWidth, height: window.innerHeight });
+    };
+    handleResize();
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  const vw = windowSize.width;
+  const vh = windowSize.height;
 
   // Section: starts when scrollX = 1.5vw, spans 1.2vw of scroll
   const sectionStart = vw * 1.5;

@@ -19,15 +19,24 @@ const JourneySection: React.FC<JourneySectionProps> = ({
   behindMountains = false,
   children,
 }) => {
+  const [windowWidth, setWindowWidth] = React.useState(1920);
+
+  React.useEffect(() => {
+    setWindowWidth(window.innerWidth);
+    const handleResize = () => setWindowWidth(window.innerWidth);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
   const sectionStartX = useMemo(() => {
     switch (id) {
       case 'hero': return 0;
-      case 'projects': return window.innerWidth * 1.5;
-      case 'process': return window.innerWidth * 3.7;
-      case 'contact': return window.innerWidth * 4.7;
+      case 'projects': return windowWidth * 1.5;
+      case 'process': return windowWidth * 3.7;
+      case 'contact': return windowWidth * 4.7;
       default: return 0;
     }
-  }, [id]);
+  }, [id, windowWidth]);
 
   return (
     <div
