@@ -41,72 +41,139 @@ export default function CaseStudyTemplate({
   const router = useRouter();
 
   return (
-    <div className="min-h-screen bg-replicate-canvas">
-      {/* Hero Section - Orange Band */}
-      <section className="relative min-h-[80vh] flex items-center justify-center bg-replicate-primary overflow-hidden py-32">
-        {/* Atmospheric mesh - orange to pink gradient */}
-        <div className="absolute inset-0">
-          <div className="absolute inset-0 bg-gradient-to-b from-replicate-primary via-replicate-hero-glow to-replicate-hero-pink opacity-90" />
-        </div>
+    <div className="min-h-screen bg-replicate-canvas text-replicate-ink selection:bg-replicate-primary/10">
+      {/* Ink roughness filter — globally defined for this page */}
+      <svg style={{ position: 'absolute', width: 0, height: 0 }}>
+        <defs>
+          <filter id="ink-rough">
+            <feTurbulence type="fractalNoise" baseFrequency="0.04" numOctaves="4" seed="7" result="noise" />
+            <feDisplacementMap in="SourceGraphic" in2="noise" scale="2.2" xChannelSelector="R" yChannelSelector="G" />
+          </filter>
+        </defs>
+      </svg>
 
-        <div className="relative container mx-auto px-6 max-w-5xl">
+      {/* Hero Section - The Archival Header */}
+      <section className="relative pt-32 pb-20 border-b border-replicate-hairline">
+        <div className="container mx-auto px-6 max-w-5xl">
           <motion.div
-            initial={{ opacity: 0, y: 30 }}
+            initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
           >
+            {/* Back to Journey Stamp */}
             <button
               onClick={() => router.push(backHref)}
-              className="mb-8 inline-flex items-center gap-2 text-replicate-on-primary hover:opacity-80 transition-opacity"
+              className="mb-12 group relative flex items-center justify-center w-fit"
             >
-              <ArrowLeft size={20} />
-              <span className="font-body text-sm">Back</span>
+               <motion.div 
+                className="px-6 py-2 border border-replicate-primary/30 rounded-full flex items-center gap-3 transition-all group-hover:bg-replicate-primary/5"
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+               >
+                  <ArrowLeft size={16} className="text-replicate-primary" />
+                  <span style={{
+                    fontFamily: '"Georgia", serif',
+                    fontStyle: 'italic',
+                    fontSize: '0.75rem',
+                    letterSpacing: '0.12em',
+                    textTransform: 'uppercase',
+                    color: 'rgba(20,12,5,0.75)',
+                    filter: 'url(#ink-rough)',
+                  }}>
+                    Return to Journey
+                  </span>
+               </motion.div>
             </button>
 
-            {/* Display XXL - 128px */}
-            <h1 className="text-7xl md:text-8xl lg:text-9xl font-bold text-replicate-on-primary mb-6 leading-tight tracking-tighter">
-              {title}
-            </h1>
+            <div className="flex flex-col items-center text-center">
+               {/* Edition Label */}
+               <div style={{
+                  fontFamily: '"Georgia", serif',
+                  fontSize: '0.65rem',
+                  letterSpacing: '0.35em',
+                  textTransform: 'uppercase',
+                  color: 'rgba(20,12,5,0.6)',
+                  marginBottom: '2rem',
+                  filter: 'url(#ink-rough)',
+               }}>
+                  Chronicle &nbsp;·&nbsp; Case Study Vol. I
+               </div>
 
-            {/* Display LG - 48px */}
-            <p className="text-3xl md:text-4xl text-replicate-on-primary mb-4 font-display">
-              {subtitle}
-            </p>
+              {/* Title - Stamped */}
+              <h1 
+                className="text-7xl md:text-9xl font-light mb-6 tracking-tighter leading-none"
+                style={{
+                  fontFamily: '"Playfair Display", "Georgia", serif',
+                  color: 'rgba(12,7,2,0.92)',
+                  filter: 'url(#ink-rough)',
+                }}
+              >
+                {title}
+              </h1>
 
-            {/* Subtitle */}
-            <p className="text-lg md:text-xl text-replicate-on-dark-mute mb-12 max-w-3xl font-body leading-relaxed">
-              {description}
-            </p>
+              {/* Ornate Divider */}
+              <div className="flex items-center gap-4 mb-8">
+                  <div style={{ width: '60px', height: '1px', background: 'rgba(20,12,5,0.15)' }} />
+                  <span style={{ color: 'rgba(234,40,4,0.7)', fontSize: '0.7rem' }}>✦</span>
+                  <div style={{ width: '60px', height: '1px', background: 'rgba(20,12,5,0.15)' }} />
+              </div>
 
-            {/* Meta Grid */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-8 mb-12">
+              {/* Subtitle */}
+              <p 
+                className="text-2xl md:text-3xl mb-4 italic"
+                style={{
+                  fontFamily: '"Georgia", serif',
+                  color: 'rgba(20,12,5,0.85)',
+                  lineHeight: 1.4,
+                  maxWidth: '30ch',
+                }}
+              >
+                {subtitle}
+              </p>
+
+              <p 
+                className="text-lg text-replicate-mute mb-16 max-w-2xl"
+                style={{
+                  fontFamily: '"Georgia", serif',
+                  lineHeight: 1.8,
+                }}
+              >
+                {description}
+              </p>
+            </div>
+
+            {/* Meta Grid - Archivist Style */}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-12 border-t border-b border-replicate-hairline py-12">
               {[
                 { label: 'Role', value: meta.role },
                 { label: 'Duration', value: meta.duration },
                 { label: 'Industry', value: meta.industry },
                 { label: 'Status', value: meta.status }
               ].map((item) => (
-                <div key={item.label} className="text-replicate-on-dark-mute">
-                  <div className="text-xs md:text-sm font-body mb-1">{item.label}</div>
-                  <div className="text-sm md:text-base font-display text-replicate-on-primary">{item.value}</div>
+                <div key={item.label} className="text-center">
+                  <div className="text-[10px] font-bold uppercase tracking-[0.25em] mb-3 text-replicate-primary/70">{item.label}</div>
+                  <div className="text-sm font-display italic text-replicate-ink">{item.value}</div>
                 </div>
               ))}
             </div>
-
-            {/* Metrics */}
+            {/* Metrics - Codex Tablets */}
             {metrics.length > 0 && (
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8, delay: 0.2 }}
-                className="grid grid-cols-2 md:grid-cols-3 gap-4"
+                className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-12"
               >
                 {metrics.map((metric, idx) => (
-                  <div key={idx} className="bg-replicate-on-primary/20 backdrop-blur-sm p-6 rounded-md">
-                    <div className="text-2xl md:text-3xl font-bold text-replicate-on-primary">
+                  <div 
+                    key={idx} 
+                    className="p-6 border border-replicate-hairline bg-replicate-surface-bone/50 relative overflow-hidden group"
+                  >
+                    <div className="absolute top-0 left-0 w-full h-[2px] bg-replicate-primary/40 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-500" />
+                    <div className="text-2xl font-bold text-replicate-primary mb-1" style={{ fontFamily: '"Playfair Display", serif' }}>
                       {metric.value}
                     </div>
-                    <div className="text-xs md:text-sm text-replicate-on-dark-mute font-body">
+                    <div className="text-[10px] uppercase tracking-widest text-replicate-mute font-bold">
                       {metric.label}
                     </div>
                   </div>
@@ -118,18 +185,14 @@ export default function CaseStudyTemplate({
       </section>
 
       {/* Content Sections */}
-      {sections.map((section, idx) => (
-        <section
-          key={section.id}
-          className={`py-section px-6 ${
-            section.isDark
-              ? 'bg-replicate-surface-dark text-replicate-on-dark'
-              : idx % 2 === 0
-                ? 'bg-replicate-canvas text-replicate-ink'
-                : 'bg-replicate-surface-bone text-replicate-ink'
-          }`}
-        >
-          <div className="container mx-auto max-w-5xl">
+      <div className="max-w-5xl mx-auto px-6">
+        {sections.map((section, idx) => (
+          <section
+            key={section.id}
+            className={`py-24 border-b border-replicate-hairline last:border-0 ${
+              section.isDark ? 'bg-replicate-surface-dark text-replicate-on-dark -mx-screen px-screen' : ''
+            }`}
+          >
             <motion.div
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
@@ -137,21 +200,40 @@ export default function CaseStudyTemplate({
               viewport={{ once: true }}
             >
               {section.title && (
-                <h2 className={`text-5xl md:text-6xl font-bold mb-8 leading-tight tracking-tighter font-display ${
-                  section.isDark ? 'text-replicate-on-dark' : 'text-replicate-ink'
-                }`}>
+                <h2 
+                  className="text-4xl md:text-5xl font-bold mb-10 tracking-tight"
+                  style={{
+                    fontFamily: '"Playfair Display", "Georgia", serif',
+                    filter: 'url(#ink-rough)',
+                  }}
+                >
                   {section.title}
                 </h2>
               )}
-              <div className={`font-body text-base md:text-lg leading-relaxed ${
-                section.isDark ? 'text-replicate-on-dark' : 'text-replicate-body'
-              }`}>
+              <div 
+                className="text-lg leading-relaxed"
+                style={{
+                  fontFamily: '"Georgia", serif',
+                  color: section.isDark ? 'rgba(252,252,252,0.85)' : 'rgba(20,12,5,0.75)',
+                }}
+              >
                 {section.content}
               </div>
             </motion.div>
+          </section>
+        ))}
+      </div>
+
+      {/* Footer - Final Stamp */}
+      <footer className="py-32 text-center">
+          <div 
+            className="inline-flex flex-col items-center justify-center p-8 border border-replicate-hairline"
+            style={{ filter: 'url(#ink-rough)' }}
+          >
+              <div className="text-replicate-primary text-xl mb-2">✦</div>
+              <div className="font-display font-bold text-xs uppercase tracking-widest">End of Record</div>
           </div>
-        </section>
-      ))}
+      </footer>
     </div>
   );
 }
