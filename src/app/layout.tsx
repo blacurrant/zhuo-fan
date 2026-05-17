@@ -33,11 +33,13 @@ export const metadata = {
     description: 'Professional portfolio showcasing fullstack development projects and skills',
     type: 'website',
     locale: 'en_US',
+    images: [{ url: '/og-image.png', width: 1200, height: 630 }],
   },
   twitter: {
     card: 'summary_large_image',
     title: 'Nishant Choudhary - Fullstack Developer Portfolio',
     description: 'Professional portfolio showcasing fullstack development projects and skills',
+    images: ['/og-image.png'],
   },
   icons: {
     icon: [{ url: '/favicon.ico', type: 'image/x-icon' }],
