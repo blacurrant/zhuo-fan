@@ -1,6 +1,7 @@
 'use client';
 import React from 'react';
 import { motion } from 'framer-motion';
+import { useViewportScale } from '@/hooks/useViewportScale';
 
 interface ProcessTimelineProps {
   scrollProgress: number;
@@ -59,6 +60,13 @@ const DOT_POSITIONS: [number, number][] = [
 
 const ProcessTimeline: React.FC<ProcessTimelineProps> = ({ scrollProgress }) => {
   const pathProgress = Math.min(scrollProgress * 1.3, 1);
+  const { viewportScale } = useViewportScale();
+  const tabletWidth = Math.max(120, Math.round(210 * viewportScale));
+  const tabletMinHeight = Math.max(200, Math.round(320 * viewportScale));
+  const tabletPadX = Math.max(12, Math.round(28 * viewportScale));
+  const tabletPadY = Math.max(20, Math.round(40 * viewportScale));
+  const numeralSize = Math.max(4.5, 8 * viewportScale);
+  const titleSize = Math.max(1.1, 1.75 * viewportScale);
 
   return (
     <div className="absolute inset-0 overflow-hidden pointer-events-none">
@@ -162,9 +170,14 @@ const ProcessTimeline: React.FC<ProcessTimelineProps> = ({ scrollProgress }) => 
             {/* Static tilt wrapper */}
             <div style={{ transform: `rotate(${tablet.rotate}deg)` }}>
               <div
-                className="relative w-[210px] py-10 px-7 overflow-hidden"
+                className="relative overflow-hidden"
                 style={{
-                  minHeight: '320px',
+                  width: tabletWidth,
+                  minHeight: tabletMinHeight,
+                  paddingTop: tabletPadY,
+                  paddingBottom: tabletPadY,
+                  paddingLeft: tabletPadX,
+                  paddingRight: tabletPadX,
                   background: 'rgba(255,255,255,1)',
                   borderTop: '2px solid rgba(234,40,4,0.65)',
                   borderLeft: '2px solid rgba(234,40,4,0.30)',
@@ -181,7 +194,7 @@ const ProcessTimeline: React.FC<ProcessTimelineProps> = ({ scrollProgress }) => 
                 <div
                   className="absolute -right-3 -top-3 font-display font-bold select-none pointer-events-none leading-none"
                   style={{
-                    fontSize: '8rem',
+                    fontSize: `${numeralSize}rem`,
                     color: 'rgba(234,40,4,0.08)',
                     lineHeight: 1,
                     userSelect: 'none',
@@ -202,7 +215,7 @@ const ProcessTimeline: React.FC<ProcessTimelineProps> = ({ scrollProgress }) => 
                 <h3
                   className="font-display font-bold leading-tight mb-3"
                   style={{
-                    fontSize: '1.75rem',
+                    fontSize: `${titleSize}rem`,
                     color: 'rgba(20,10,5,0.92)',
                   }}
                 >
