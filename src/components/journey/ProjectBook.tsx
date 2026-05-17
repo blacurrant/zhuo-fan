@@ -38,7 +38,6 @@ const PROJECTS = [
 
 const FRAME_PX = 272;
 
-// Phase breakpoints as fraction of section scroll range (1.2vw)
 const B = {
   OPEN_END: 0.15,
   TURN_01_S: 0.28,
@@ -90,45 +89,30 @@ function computePhase(t: number): Phase | null {
     };
   };
 
-  // Opening
   if (t < B.OPEN_END) {
-    return {
-      ...open,
-      frame: frameOf(t / B.OPEN_END, 12),
-      projectIdx: 0,
-      showContent: false,
-      contentOpacity: 0,
-    };
+    return { ...open, frame: frameOf(t / B.OPEN_END, 12), projectIdx: 0, showContent: false, contentOpacity: 0 };
   }
-  // Project 0
   if (t < B.TURN_01_S) {
     return { ...open, frame: 11, projectIdx: 0, showContent: true, contentOpacity: 1 };
   }
-  // Turn 0 → 1
   if (t < B.TURN_01_E) {
     return turnPhase((t - B.TURN_01_S) / (B.TURN_01_E - B.TURN_01_S), 0, 1, turn);
   }
-  // Project 1
   if (t < B.TURN_12_S) {
     return { ...open, frame: 11, projectIdx: 1, showContent: true, contentOpacity: 1 };
   }
-  // Turn 1 → 2
   if (t < B.TURN_12_E) {
     return turnPhase((t - B.TURN_12_S) / (B.TURN_12_E - B.TURN_12_S), 1, 2, turn);
   }
-  // Project 2
   if (t < B.TURN_23_S) {
     return { ...open, frame: 11, projectIdx: 2, showContent: true, contentOpacity: 1 };
   }
-  // Turn 2 → 3
   if (t < B.TURN_23_E) {
     return turnPhase((t - B.TURN_23_S) / (B.TURN_23_E - B.TURN_23_S), 2, 3, turn);
   }
-  // Project 3
   if (t < B.CLOSE_START) {
     return { ...open, frame: 11, projectIdx: 3, showContent: true, contentOpacity: 1 };
   }
-  // Closing
   return {
     ...close,
     frame: frameOf((t - B.CLOSE_START) / (1 - B.CLOSE_START), 12),
@@ -144,23 +128,24 @@ interface ProjectBookProps {
 
 const ProjectBook: React.FC<ProjectBookProps> = ({ scrollX }) => {
   const router = useRouter();
-
   const { windowSize } = useViewportScale();
-
   const vw = windowSize.width;
   const vh = windowSize.height;
 
-  // Section: starts when scrollX = 1.5vw, spans 1.2vw of scroll
   const sectionStart = vw * 1.5;
   const sectionRange = vw * 1.2;
   if (sectionRange === 0) return null;
   const t = Math.max(0, Math.min(1, (scrollX - sectionStart) / sectionRange));
 
-  const bookSize = Math.round(Math.min(vh * 0.92, vw * 1.3));
+  const isMobile = vw < 768;
+
+  const bookSize = isMobile
+    ? Math.round(Math.min(vh * 0.9, vw * 1.1))
+    : Math.round(Math.min(vh * 0.88, vw * 0.56));
+
   const scale = bookSize / FRAME_PX;
 
   const phase = useMemo(() => computePhase(t), [t]);
-
   if (!phase) return null;
 
   const { sprite, cols, rows, frame, projectIdx, showContent, contentOpacity } = phase;
@@ -176,22 +161,216 @@ const ProjectBook: React.FC<ProjectBookProps> = ({ scrollX }) => {
     backgroundRepeat: 'no-repeat',
   };
 
-  // Fade in/out at section edges
   const opacity = t < 0.03 ? t / 0.03 : t > 0.97 ? (1 - t) / 0.03 : 1;
 
-  // Entrance: book drops from sky and zooms in
   const DROP_END = 0.10;
   const entranceP = Math.min(1, t / DROP_END);
-  const eased = 1 - Math.pow(1 - entranceP, 3); // cubic ease-out
-  const entranceScale = 0.1 + eased * 0.9; // 0.1 → 1.0
-  const entranceY = (1 - eased) * 60; // -60vh → 0vh
+  const eased = 1 - Math.pow(1 - entranceP, 3);
+  const entranceScale = 0.1 + eased * 0.9;
+  const entranceY = (1 - eased) * 60;
 
+  // ── Shared content blocks ────────────────────────────────────────────────
+
+  const textContent = (
+    <>
+      <div
+        className="flex items-center gap-2 mb-3"
+        style={{
+          color: 'rgba(160, 40, 20, 0.85)',
+          fontFamily: '"Georgia", "Times New Roman", serif',
+          fontStyle: 'italic',
+          fontSize: isMobile ? 'clamp(8px, 2.5vw, 13px)' : 'clamp(9px, 1vw, 14px)',
+        }}
+      >
+        <span style={{ fontSize: '0.8em', opacity: 0.7 }}>✧</span>
+        <span>{project.role}</span>
+        <span style={{ fontSize: '0.8em', opacity: 0.7 }}>✧</span>
+      </div>
+
+      <h2
+        className="leading-none lowercase"
+        style={{
+          fontFamily: '"Playfair Display", "Cinzel", "Georgia", serif',
+          fontSize: isMobile ? 'clamp(20px, 6vw, 36px)' : 'clamp(24px, 3.5vw, 48px)',
+          fontWeight: 600,
+          color: 'rgba(20, 15, 5, 0.75)',
+          letterSpacing: '0.02em',
+          textShadow: '0.5px 0.5px 0px rgba(0,0,0,0.1)',
+          marginBottom: isMobile ? '6px' : '10px',
+        }}
+      >
+        {project.title}
+      </h2>
+
+      <div
+        className="flex items-center gap-1 mb-4"
+        style={{ color: 'rgba(160, 40, 20, 0.5)', fontSize: 'clamp(8px, 0.8vw, 12px)' }}
+      >
+        <span>❧</span>
+        <div style={{ width: '40px', height: '1px', background: 'currentColor' }} />
+        <span>☙</span>
+      </div>
+
+      <p
+        style={{
+          fontFamily: '"Georgia", "Times New Roman", serif',
+          fontSize: isMobile ? 'clamp(9px, 2.5vw, 14px)' : 'clamp(10px, 1.2vw, 16px)',
+          color: 'rgba(40, 25, 15, 0.8)',
+          lineHeight: 1.6,
+          marginBottom: isMobile ? '14px' : '28px',
+        }}
+      >
+        {project.subtitle}
+      </p>
+
+      <button
+        className="group flex items-center gap-2"
+        style={{
+          pointerEvents: 'auto',
+          cursor: 'pointer',
+          fontSize: isMobile ? 'clamp(9px, 2.5vw, 13px)' : 'clamp(10px, 1.1vw, 15px)',
+          fontFamily: '"Georgia", "Times New Roman", serif',
+          fontStyle: 'italic',
+          color: 'rgba(160, 40, 20, 0.95)',
+          background: 'transparent',
+          border: 'none',
+          padding: '4px 0',
+          borderBottom: '1px dashed rgba(160, 40, 20, 0.4)',
+          transition: 'all 0.3s ease',
+        }}
+        onClick={() => router.push(project.route)}
+      >
+        <span className="transition-transform group-hover:-translate-x-1" style={{ fontSize: '0.8em' }}>✦</span>
+        <span style={{ fontWeight: 600 }}>View Work</span>
+        <span className="transition-transform group-hover:translate-x-1" style={{ fontSize: '0.8em' }}>✦</span>
+      </button>
+    </>
+  );
+
+  const imageSlices = (
+    <div
+      className="absolute right-0 top-0 bottom-0"
+      style={{ width: '72cqw', transformStyle: 'preserve-3d' }}
+    >
+      <div className="absolute inset-0" style={{ overflow: 'hidden', borderRadius: '0 1px 1px 0' }}>
+        <div className="absolute right-0 top-0 bottom-0" style={{ width: '100cqw' }}>
+          <Image
+            src={project.image} alt={project.title} fill className="object-cover"
+            sizes={`${Math.round(bookSize * 0.38)}px`}
+            style={{ filter: 'contrast(0.95) saturate(0.85)' }}
+          />
+        </div>
+      </div>
+
+      <div
+        className="absolute top-0 bottom-0"
+        style={{ right: 'calc(100% - 1px)', width: '11cqw', transformOrigin: 'right center', transform: 'rotateY(-10deg)', transformStyle: 'preserve-3d' }}
+      >
+        <div className="absolute inset-0" style={{ overflow: 'hidden' }}>
+          <div className="absolute top-0 bottom-0" style={{ right: '-72cqw', width: '100cqw' }}>
+            <Image src={project.image} alt={project.title} fill className="object-cover"
+              sizes={`${Math.round(bookSize * 0.38)}px`}
+              style={{ filter: 'contrast(0.95) saturate(0.85) brightness(0.92)' }}
+            />
+          </div>
+        </div>
+
+        <div
+          className="absolute top-0 bottom-0"
+          style={{ right: 'calc(100% - 1px)', width: '5cqw', transformOrigin: 'right center', transform: 'rotateY(-10deg)', transformStyle: 'preserve-3d' }}
+        >
+          <div className="absolute inset-0" style={{ overflow: 'hidden' }}>
+            <div className="absolute top-0 bottom-0" style={{ right: '-83cqw', width: '100cqw' }}>
+              <Image src={project.image} alt={project.title} fill className="object-cover"
+                sizes={`${Math.round(bookSize * 0.38)}px`}
+                style={{ filter: 'contrast(0.95) saturate(0.85) brightness(0.85)' }}
+              />
+            </div>
+          </div>
+
+          <div
+            className="absolute top-0 bottom-0"
+            style={{ right: 'calc(100% - 1px)', width: '12cqw', transformOrigin: 'right center', transform: 'rotateY(-18deg)', transformStyle: 'preserve-3d' }}
+          >
+            <div className="absolute inset-0" style={{ overflow: 'hidden', borderRadius: '1px 0 0 1px' }}>
+              <div className="absolute top-0 bottom-0" style={{ right: '-88cqw', width: '100cqw' }}>
+                <Image src={project.image} alt={project.title} fill className="object-cover"
+                  sizes={`${Math.round(bookSize * 0.38)}px`}
+                  style={{ filter: 'contrast(0.95) saturate(0.85) brightness(0.7)' }}
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+
+  // ── Desktop layout (landscape open book) ────────────────────────────────
+  if (!isMobile) {
+    return (
+      <div
+        className="fixed pointer-events-none"
+        style={{
+          left: '50%',
+          top: '50%',
+          transform: `translate(-50%, calc(-50% - 6vh + ${entranceY}vh)) scale(${entranceScale})`,
+          transformOrigin: 'center center',
+          zIndex: 45,
+          width: `${bookSize}px`,
+          height: `${bookSize}px`,
+          opacity,
+        }}
+      >
+        <div style={{ position: 'absolute', inset: 0, ...spriteStyle }} />
+
+        {showContent && (
+          <div key={projectIdx} className="absolute inset-0" style={{ opacity: contentOpacity }}>
+            <div
+              className="absolute flex flex-col justify-center items-center text-center"
+              style={{
+                left: '9%', top: '16%', width: '36%', height: '90%',
+                padding: '0 12px',
+                mixBlendMode: 'multiply',
+                transform: 'rotate(-0.5deg)',
+              }}
+            >
+              {textContent}
+            </div>
+
+            <div
+              className="absolute"
+              style={{
+                left: '52%', top: '34%', width: '38%', height: '56%',
+                containerType: 'size',
+                perspective: '800px',
+                transformStyle: 'preserve-3d',
+                mixBlendMode: 'multiply',
+                opacity: 0.9,
+                transform: 'rotate(-0.5deg)',
+              }}
+            >
+              {imageSlices}
+            </div>
+          </div>
+        )}
+      </div>
+    );
+  }
+
+  // ── Mobile layout (portrait — book rotated 90°) ──────────────────────────
+  // Three separate wrappers so centering and entrance animation stay in screen space.
+  // Layer 1: zero-size fixed anchor at viewport center.
+  // Layer 2: entrance animation — translateY is screen-vertical before rotation.
+  // Layer 3: book square centered via negative margins, then rotated 90°.
+  // Content div: counter-rotated -90° so text/image render in screen space.
+  //
+  // After 90° CW rotation the sprite pages map to screen space as:
+  //   right page (image) → top:  ~10–48%, left: ~15–85%
+  //   left page  (text)  → bottom: ~55–91%, left: ~15–85%
   return (
-    // Layer 1: zero-size fixed anchor at screen center
     <div className="fixed pointer-events-none" style={{ left: '50%', top: '50%', zIndex: 45, opacity }}>
-      {/* Layer 2: entrance animation — translateY operates in screen space before rotation */}
       <div style={{ transform: `translateY(${entranceY}vh) scale(${entranceScale})` }}>
-        {/* Layer 3: book square — negative margins center it; rotate(90deg) makes it portrait */}
         <div
           style={{
             position: 'relative',
@@ -202,248 +381,45 @@ const ProjectBook: React.FC<ProjectBookProps> = ({ scrollX }) => {
             transform: 'rotate(90deg)',
           }}
         >
-          {/* Book sprite */}
           <div style={{ position: 'absolute', inset: 0, ...spriteStyle }} />
 
-          {/* Project content — counter-rotated so it's in screen space */}
           {showContent && (
             <div
               key={projectIdx}
               className="absolute inset-0"
               style={{ opacity: contentOpacity, transform: 'rotate(-90deg)', transformOrigin: 'center center' }}
             >
-          {/* Bottom half (was left page): Typography — screen-space left:16–100%, top:55–91% */}
-          <div
-            className="absolute flex flex-col justify-center items-center text-center"
-            style={{
-              left: '50%',
-              top: '57%',
-              width: '64%',
-              height: '30%',
-              transform: 'translateX(-50%) rotate(-0.5deg)',
-              mixBlendMode: 'multiply',
-            }}
-          >
-            {/* Role - Magical Subtitle */}
-            <div
-              className="flex items-center gap-2"
-              style={{
-                color: 'rgba(160, 40, 20, 0.85)',
-                fontFamily: '"Georgia", "Times New Roman", serif',
-                fontStyle: 'italic',
-                fontSize: 'clamp(9px, 1vw, 14px)',
-                marginBottom: '4px',
-              }}
-            >
-              <span style={{ fontSize: '0.8em', opacity: 0.7 }}>✧</span>
-              <span>{project.role}</span>
-              <span style={{ fontSize: '0.8em', opacity: 0.7 }}>✧</span>
-            </div>
-
-            {/* Title - Ornate Heading */}
-            <h2
-              className="leading-none lowercase"
-              style={{
-                fontFamily: '"Playfair Display", "Cinzel", "Georgia", serif',
-                fontSize: 'clamp(22px, 3.5vw, 48px)',
-                fontWeight: 600,
-                color: 'rgba(20, 15, 5, 0.75)',
-                letterSpacing: '0.02em',
-                textShadow: '0.5px 0.5px 0px rgba(0,0,0,0.1)',
-                marginBottom: '6px',
-              }}
-            >
-              {project.title}
-            </h2>
-
-            {/* Magical Divider */}
-            <div
-              className="flex items-center gap-1"
-              style={{
-                color: 'rgba(160, 40, 20, 0.5)',
-                fontSize: 'clamp(8px, 0.8vw, 12px)',
-                marginBottom: '6px',
-              }}
-            >
-              <span>❧</span>
-              <div style={{ width: '40px', height: '1px', background: 'currentColor' }} />
-              <span>☙</span>
-            </div>
-
-            {/* Subtitle - Script/Body */}
-            <p
-              style={{
-                fontFamily: '"Georgia", "Times New Roman", serif',
-                fontSize: 'clamp(10px, 1.1vw, 15px)',
-                color: 'rgba(40, 25, 15, 0.8)',
-                lineHeight: 1.5,
-                marginBottom: '10px',
-              }}
-            >
-              {project.subtitle}
-            </p>
-
-            {/* CTA - Ornate spell button */}
-            <button
-              className="group flex items-center gap-2"
-              style={{
-                pointerEvents: 'auto',
-                cursor: 'pointer',
-                fontSize: 'clamp(10px, 1.1vw, 15px)',
-                fontFamily: '"Georgia", "Times New Roman", serif',
-                fontStyle: 'italic',
-                color: 'rgba(160, 40, 20, 0.95)',
-                background: 'transparent',
-                border: 'none',
-                padding: '4px 0',
-                borderBottom: '1px dashed rgba(160, 40, 20, 0.4)',
-                transition: 'all 0.3s ease',
-              }}
-              onClick={() => router.push(project.route)}
-            >
-              <span
-                className="transition-transform group-hover:-translate-x-1"
-                style={{ fontSize: '0.8em' }}
-              >
-                ✦
-              </span>
-              <span style={{ fontWeight: 600 }}>View Work</span>
-              <span
-                className="transition-transform group-hover:translate-x-1"
-                style={{ fontSize: '0.8em' }}
-              >
-                ✦
-              </span>
-            </button>
-          </div>
-
-          {/* Top half (was right page): project screenshot — screen-space left:34–90%, top:10–48% */}
-          <div
-            className="absolute"
-            style={{
-              left: '36%',
-              top: '12%',
-              width: '52%',
-              height: '34%',
-              containerType: 'size', // The Magic Mirror container mapping
-              perspective: '800px',
-              transformStyle: 'preserve-3d',
-              mixBlendMode: 'multiply',
-              opacity: 0.9,
-              transform: 'rotate(-0.5deg)',
-            }}
-          >
-            {/* The Magic Mirror: 3D Origami Slices to physically fold the image */}
-
-            {/* Slice 4 (Rightmost, Flat): 72% width */}
-            <div
-              className="absolute right-0 top-0 bottom-0"
-              style={{ width: '72cqw', transformStyle: 'preserve-3d' }}
-            >
+              {/* Image — top half (was right page) */}
               <div
-                className="absolute inset-0"
-                style={{ overflow: 'hidden', borderRadius: '0 1px 1px 0' }}
-              >
-                <div className="absolute right-0 top-0 bottom-0" style={{ width: '100cqw' }}>
-                  <Image
-                    src={project.image}
-                    alt={project.title}
-                    fill
-                    className="object-cover"
-                    sizes={`${Math.round(bookSize * 0.38)}px`}
-                    style={{ filter: 'contrast(0.95) saturate(0.85)' }}
-                  />
-                </div>
-              </div>
-
-              {/* Slice 3 (Start of curve): 11% width, offset by 72% */}
-              <div
-                className="absolute top-0 bottom-0"
+                className="absolute"
                 style={{
-                  right: 'calc(100% - 1px)', // 1px overlap to hide anti-aliasing seams
-                  width: '11cqw',
-                  transformOrigin: 'right center',
-                  transform: 'rotateY(-10deg)',
+                  left: '18%', top: '11%', width: '62%', height: '36%',
+                  containerType: 'size',
+                  perspective: '800px',
                   transformStyle: 'preserve-3d',
+                  mixBlendMode: 'multiply',
+                  opacity: 0.9,
+                  transform: 'rotate(-0.5deg)',
                 }}
               >
-                <div className="absolute inset-0" style={{ overflow: 'hidden' }}>
-                  <div
-                    className="absolute top-0 bottom-0"
-                    style={{ right: '-72cqw', width: '100cqw' }}
-                  >
-                    <Image
-                      src={project.image}
-                      alt={project.title}
-                      fill
-                      className="object-cover"
-                      sizes={`${Math.round(bookSize * 0.38)}px`}
-                      style={{ filter: 'contrast(0.95) saturate(0.85) brightness(0.92)' }}
-                    />
-                  </div>
-                </div>
-
-                {/* Slice 2 (Steeper curve): 5% width, offset by 72 + 11 = 83% */}
-                <div
-                  className="absolute top-0 bottom-0"
-                  style={{
-                    right: 'calc(100% - 1px)', // 1px overlap
-                    width: '5cqw',
-                    transformOrigin: 'right center',
-                    transform: 'rotateY(-10deg)',
-                    transformStyle: 'preserve-3d',
-                  }}
-                >
-                  <div className="absolute inset-0" style={{ overflow: 'hidden' }}>
-                    <div
-                      className="absolute top-0 bottom-0"
-                      style={{ right: '-83cqw', width: '100cqw' }}
-                    >
-                      <Image
-                        src={project.image}
-                        alt={project.title}
-                        fill
-                        className="object-cover"
-                        sizes={`${Math.round(bookSize * 0.38)}px`}
-                        style={{ filter: 'contrast(0.95) saturate(0.85) brightness(0.85)' }}
-                      />
-                    </div>
-                  </div>
-
-                  {/* Slice 1 (Deepest spine): 12% width, offset by 83 + 5 = 88% */}
-                  <div
-                    className="absolute top-0 bottom-0"
-                    style={{
-                      right: 'calc(100% - 1px)', // 1px overlap
-                      width: '12cqw',
-                      transformOrigin: 'right center',
-                      transform: 'rotateY(-18deg)',
-                      transformStyle: 'preserve-3d',
-                    }}
-                  >
-                    <div
-                      className="absolute inset-0"
-                      style={{ overflow: 'hidden', borderRadius: '1px 0 0 1px' }}
-                    >
-                      <div
-                        className="absolute top-0 bottom-0"
-                        style={{ right: '-88cqw', width: '100cqw' }}
-                      >
-                        <Image
-                          src={project.image}
-                          alt={project.title}
-                          fill
-                          className="object-cover"
-                          sizes={`${Math.round(bookSize * 0.38)}px`}
-                          style={{ filter: 'contrast(0.95) saturate(0.85) brightness(0.7)' }}
-                        />
-                      </div>
-                    </div>
-                  </div>
-                </div>
+                {imageSlices}
               </div>
-            </div>
-          </div>
+
+              {/* Text — bottom half (was left page) */}
+              <div
+                className="absolute flex flex-col justify-center items-center text-center"
+                style={{
+                  left: '50%',
+                  top: '54%',
+                  width: '64%',
+                  height: '38%',
+                  transform: 'translateX(-50%) rotate(-0.5deg)',
+                  mixBlendMode: 'multiply',
+                  padding: '0 8px',
+                }}
+              >
+                {textContent}
+              </div>
             </div>
           )}
         </div>
