@@ -1,6 +1,7 @@
 'use client';
 import React, { useState, useRef, useEffect } from 'react';
 import { motion } from 'framer-motion';
+import { useViewportScale } from '@/hooks/useViewportScale';
 import Character from './Character';
 import JourneySection from './JourneySection';
 import WaypointSignpost from './WaypointSignpost';
@@ -38,16 +39,7 @@ const HorizontalJourney: React.FC = () => {
     setAttackTriggeredState(val);
   };
 
-  const [windowSize, setWindowSize] = useState({ width: 1920, height: 1080 });
-
-  useEffect(() => {
-    const handleResize = () => {
-      setWindowSize({ width: window.innerWidth, height: window.innerHeight });
-    };
-    handleResize(); // Initial call
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
+  const { windowSize, viewportScale } = useViewportScale();
 
   // Derived: samurai has reached the chest
   const chestScreenX = CHEST_WORLD_X - scrollState.x;
@@ -533,8 +525,9 @@ const HorizontalJourney: React.FC = () => {
 
       {/* Dark road overlay for final section */}
       <div
-        className="fixed bottom-0 left-0 w-full h-[200px] z-[41] pointer-events-none"
+        className="fixed bottom-0 left-0 w-full z-[41] pointer-events-none"
         style={{
+          height: Math.max(80, Math.round(200 * viewportScale)),
           background: 'linear-gradient(to top, rgba(0,0,0,0.72) 0%, rgba(0,0,0,0.38) 60%, transparent 100%)',
           opacity: scrollState.progress > 0.79 ? 1 : 0,
           transition: 'opacity 1.6s ease',
