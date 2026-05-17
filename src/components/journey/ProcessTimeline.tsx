@@ -13,8 +13,7 @@ const TABLETS = [
     title: 'Discovery',
     description: 'Understand the terrain.\nMap the unknown.',
     threshold: 0.05,
-    left: '7%',
-    bottom: '34%',
+    top: '4%',
     rotate: -2.5,
   },
   {
@@ -22,8 +21,7 @@ const TABLETS = [
     title: 'Design',
     description: 'Shape the language.\nTurn intent into form.',
     threshold: 0.14,
-    left: '30%',
-    bottom: '26%',
+    top: '27%',
     rotate: 1.8,
   },
   {
@@ -31,8 +29,7 @@ const TABLETS = [
     title: 'Build',
     description: 'Clean code.\nClean architecture.',
     threshold: 0.24,
-    left: '56%',
-    bottom: '32%',
+    top: '52%',
     rotate: -1.5,
   },
   {
@@ -40,33 +37,31 @@ const TABLETS = [
     title: 'Ship',
     description: 'Release. Gather signal.\nIterate without mercy.',
     threshold: 0.35,
-    left: '76%',
-    bottom: '25%',
+    top: '74%',
     rotate: 2.2,
   },
 ];
 
-// Treasure-map path — viewBox 0 0 100 100
-// Centers: left%+7%, 100%-bottom%-17% per tablet
-// T1: (14,31)  T2: (37,39)  T3: (63,33)  T4: (83,40)
-const PATH_D = 'M 14,31 C 22,35 29,39 37,39 C 50,39 55,33 63,33 C 72,33 77,40 83,40';
+// Vertical treasure-map path — viewBox 0 0 100 100
+// Centers: (50, 12)  (50, 35)  (50, 59)  (50, 81)
+const PATH_D = 'M 50,12 C 52,20 48,28 50,35 C 52,45 48,52 50,59 C 52,67 48,74 50,81';
 
 const DOT_POSITIONS: [number, number][] = [
-  [14, 31],
-  [37, 39],
-  [63, 33],
-  [83, 40],
+  [50, 12],
+  [50, 35],
+  [50, 59],
+  [50, 81],
 ];
 
 const ProcessTimeline: React.FC<ProcessTimelineProps> = ({ scrollProgress }) => {
   const pathProgress = Math.min(scrollProgress * 1.3, 1);
   const { viewportScale } = useViewportScale();
-  const tabletWidth = Math.max(120, Math.round(210 * viewportScale));
-  const tabletMinHeight = Math.max(200, Math.round(320 * viewportScale));
-  const tabletPadX = Math.max(12, Math.round(28 * viewportScale));
-  const tabletPadY = Math.max(20, Math.round(40 * viewportScale));
-  const numeralSize = Math.max(4.5, 8 * viewportScale);
-  const titleSize = Math.max(1.1, 1.75 * viewportScale);
+  const tabletWidth = Math.max(200, Math.round(280 * viewportScale));
+  const tabletMinHeight = Math.max(120, Math.round(160 * viewportScale));
+  const tabletPadX = Math.max(14, Math.round(24 * viewportScale));
+  const tabletPadY = Math.max(12, Math.round(20 * viewportScale));
+  const numeralSize = Math.max(3.5, 6 * viewportScale);
+  const titleSize = Math.max(1.0, 1.5 * viewportScale);
 
   return (
     <div className="absolute inset-0 overflow-hidden pointer-events-none">
@@ -162,12 +157,13 @@ const ProcessTimeline: React.FC<ProcessTimelineProps> = ({ scrollProgress }) => 
           <motion.div
             key={tablet.numeral}
             className="absolute z-20"
-            style={{ left: tablet.left, bottom: tablet.bottom }}
+            style={{ left: '50%', top: tablet.top }}
             initial={{ y: 140, opacity: 0 }}
             animate={{ y: active ? 0 : 140, opacity: active ? 1 : 0 }}
             transition={{ duration: 1.0, ease: [0.16, 1, 0.3, 1] }}
           >
-            {/* Static tilt wrapper */}
+            {/* Centering + tilt wrapper */}
+            <div style={{ transform: 'translateX(-50%)' }}>
             <div style={{ transform: `rotate(${tablet.rotate}deg)` }}>
               <div
                 className="relative overflow-hidden"
@@ -260,6 +256,7 @@ const ProcessTimeline: React.FC<ProcessTimelineProps> = ({ scrollProgress }) => 
                   transition={{ duration: 2.8, repeat: Infinity, ease: 'easeInOut', delay: idx * 0.4 }}
                 />
               </div>
+            </div>
             </div>
           </motion.div>
         );
