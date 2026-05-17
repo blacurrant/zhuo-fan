@@ -156,8 +156,7 @@ const ProjectBook: React.FC<ProjectBookProps> = ({ scrollX }) => {
   if (sectionRange === 0) return null;
   const t = Math.max(0, Math.min(1, (scrollX - sectionStart) / sectionRange));
 
-  // Book size: fill most of the viewport without overflow
-  const bookSize = Math.round(Math.min(vh * 0.88, vw * 0.56));
+  const bookSize = Math.round(Math.min(vh * 0.92, vw * 1.3));
   const scale = bookSize / FRAME_PX;
 
   const phase = useMemo(() => computePhase(t), [t]);
@@ -188,46 +187,52 @@ const ProjectBook: React.FC<ProjectBookProps> = ({ scrollX }) => {
   const entranceY = (1 - eased) * 60; // -60vh → 0vh
 
   return (
-    <div
-      className="fixed pointer-events-none"
-      style={{
-        left: '50%',
-        top: '50%',
-        transform: `translate(-50%, calc(-50% - 6vh + ${entranceY}vh)) scale(${entranceScale})`,
-        transformOrigin: 'center center',
-        zIndex: 45,
-        width: `${bookSize}px`,
-        height: `${bookSize}px`,
-        opacity,
-      }}
-    >
-      {/* Book sprite */}
-      <div style={{ position: 'absolute', inset: 0, ...spriteStyle }} />
+    // Layer 1: zero-size fixed anchor at screen center
+    <div className="fixed pointer-events-none" style={{ left: '50%', top: '50%', zIndex: 45, opacity }}>
+      {/* Layer 2: entrance animation — translateY operates in screen space before rotation */}
+      <div style={{ transform: `translateY(${entranceY}vh) scale(${entranceScale})` }}>
+        {/* Layer 3: book square — negative margins center it; rotate(90deg) makes it portrait */}
+        <div
+          style={{
+            position: 'relative',
+            width: `${bookSize}px`,
+            height: `${bookSize}px`,
+            marginLeft: `-${bookSize / 2}px`,
+            marginTop: `-${bookSize / 2}px`,
+            transform: 'rotate(90deg)',
+          }}
+        >
+          {/* Book sprite */}
+          <div style={{ position: 'absolute', inset: 0, ...spriteStyle }} />
 
-      {/* Project content — overlaid on open pages */}
-      {showContent && (
-        <div key={projectIdx} className="absolute inset-0" style={{ opacity: contentOpacity }}>
-          {/* Left page: Magic Book Typography */}
+          {/* Project content — counter-rotated so it's in screen space */}
+          {showContent && (
+            <div
+              key={projectIdx}
+              className="absolute inset-0"
+              style={{ opacity: contentOpacity, transform: 'rotate(-90deg)', transformOrigin: 'center center' }}
+            >
+          {/* Bottom half (was left page): Typography — screen-space left:16–100%, top:55–91% */}
           <div
             className="absolute flex flex-col justify-center items-center text-center"
             style={{
-              left: '9%',
-              top: '16%',
-              width: '36%',
-              height: '90%',
-              padding: '0 12px',
-              mixBlendMode: 'multiply', // Ink blending
-              transform: 'rotate(-0.5deg)', // Organic page tilt
+              left: '50%',
+              top: '57%',
+              width: '64%',
+              height: '30%',
+              transform: 'translateX(-50%) rotate(-0.5deg)',
+              mixBlendMode: 'multiply',
             }}
           >
             {/* Role - Magical Subtitle */}
             <div
-              className="flex items-center gap-2 mb-3"
+              className="flex items-center gap-2"
               style={{
-                color: 'rgba(160, 40, 20, 0.85)', // Dried ink red
+                color: 'rgba(160, 40, 20, 0.85)',
                 fontFamily: '"Georgia", "Times New Roman", serif',
                 fontStyle: 'italic',
                 fontSize: 'clamp(9px, 1vw, 14px)',
+                marginBottom: '4px',
               }}
             >
               <span style={{ fontSize: '0.8em', opacity: 0.7 }}>✧</span>
@@ -240,13 +245,12 @@ const ProjectBook: React.FC<ProjectBookProps> = ({ scrollX }) => {
               className="leading-none lowercase"
               style={{
                 fontFamily: '"Playfair Display", "Cinzel", "Georgia", serif',
-                fontSize: 'clamp(24px, 3.5vw, 48px)',
+                fontSize: 'clamp(22px, 3.5vw, 48px)',
                 fontWeight: 600,
-                color: 'rgba(20, 15, 5, 0.75)', // Deep dark brown/black ink
+                color: 'rgba(20, 15, 5, 0.75)',
                 letterSpacing: '0.02em',
-                textShadow: '0.5px 0.5px 0px rgba(0,0,0,0.1)', // Slight ink bleed
-                marginBottom: '10px',
-                filter: 'url(#ink-rough)',
+                textShadow: '0.5px 0.5px 0px rgba(0,0,0,0.1)',
+                marginBottom: '6px',
               }}
             >
               {project.title}
@@ -254,10 +258,11 @@ const ProjectBook: React.FC<ProjectBookProps> = ({ scrollX }) => {
 
             {/* Magical Divider */}
             <div
-              className="flex items-center gap-1 mb-4"
+              className="flex items-center gap-1"
               style={{
                 color: 'rgba(160, 40, 20, 0.5)',
                 fontSize: 'clamp(8px, 0.8vw, 12px)',
+                marginBottom: '6px',
               }}
             >
               <span>❧</span>
@@ -269,10 +274,10 @@ const ProjectBook: React.FC<ProjectBookProps> = ({ scrollX }) => {
             <p
               style={{
                 fontFamily: '"Georgia", "Times New Roman", serif',
-                fontSize: 'clamp(10px, 1.2vw, 16px)',
-                color: 'rgba(40, 25, 15, 0.8)', // Faded black ink
-                lineHeight: 1.6,
-                marginBottom: '28px',
+                fontSize: 'clamp(10px, 1.1vw, 15px)',
+                color: 'rgba(40, 25, 15, 0.8)',
+                lineHeight: 1.5,
+                marginBottom: '10px',
               }}
             >
               {project.subtitle}
@@ -312,14 +317,14 @@ const ProjectBook: React.FC<ProjectBookProps> = ({ scrollX }) => {
             </button>
           </div>
 
-          {/* Right page: project screenshot */}
+          {/* Top half (was right page): project screenshot — screen-space left:34–90%, top:10–48% */}
           <div
             className="absolute"
             style={{
-              left: '52%',
-              top: '34%',
-              width: '38%',
-              height: '56%',
+              left: '36%',
+              top: '12%',
+              width: '52%',
+              height: '34%',
               containerType: 'size', // The Magic Mirror container mapping
               perspective: '800px',
               transformStyle: 'preserve-3d',
@@ -439,8 +444,10 @@ const ProjectBook: React.FC<ProjectBookProps> = ({ scrollX }) => {
               </div>
             </div>
           </div>
+            </div>
+          )}
         </div>
-      )}
+      </div>
     </div>
   );
 };
