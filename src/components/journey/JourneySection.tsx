@@ -1,5 +1,6 @@
 'use client';
 import React, { useMemo } from 'react';
+import { useViewportScale } from '@/hooks/useViewportScale';
 import ParallaxBackground from './ParallaxBackground';
 
 interface JourneySectionProps {
@@ -19,14 +20,7 @@ const JourneySection: React.FC<JourneySectionProps> = ({
   behindMountains = false,
   children,
 }) => {
-  const [windowWidth, setWindowWidth] = React.useState(1920);
-
-  React.useEffect(() => {
-    setWindowWidth(window.innerWidth);
-    const handleResize = () => setWindowWidth(window.innerWidth);
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
+  const { windowSize: { width: windowWidth } } = useViewportScale();
 
   const sectionStartX = useMemo(() => {
     switch (id) {
