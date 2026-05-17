@@ -3,6 +3,7 @@ import React, { useMemo } from 'react';
 import Image from 'next/image';
 
 import { useRouter } from 'next/navigation';
+import { useViewportScale } from '@/hooks/useViewportScale';
 
 const PROJECTS = [
   {
@@ -144,16 +145,7 @@ interface ProjectBookProps {
 const ProjectBook: React.FC<ProjectBookProps> = ({ scrollX }) => {
   const router = useRouter();
 
-  const [windowSize, setWindowSize] = React.useState({ width: 1920, height: 1080 });
-
-  React.useEffect(() => {
-    const handleResize = () => {
-      setWindowSize({ width: window.innerWidth, height: window.innerHeight });
-    };
-    handleResize();
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
+  const { windowSize } = useViewportScale();
 
   const vw = windowSize.width;
   const vh = windowSize.height;
@@ -161,6 +153,7 @@ const ProjectBook: React.FC<ProjectBookProps> = ({ scrollX }) => {
   // Section: starts when scrollX = 1.5vw, spans 1.2vw of scroll
   const sectionStart = vw * 1.5;
   const sectionRange = vw * 1.2;
+  if (sectionRange === 0) return null;
   const t = Math.max(0, Math.min(1, (scrollX - sectionStart) / sectionRange));
 
   // Book size: fill most of the viewport without overflow
