@@ -41,9 +41,6 @@ const FarewellChest: React.FC<FarewellChestProps> = ({ scrollX, chestWorldX, bur
 
   const { windowSize: { width: windowWidth }, viewportScale } = useViewportScale();
 
-  const visible = screenX > -80 && screenX < windowWidth + 80;
-  if (!visible && phase === 'idle') return null;
-
   const scaledLinks = useMemo(() => links.map(link => ({
     ...link,
     offset: {
@@ -52,6 +49,9 @@ const FarewellChest: React.FC<FarewellChestProps> = ({ scrollX, chestWorldX, bur
     },
     landX: Math.round(link.landX * viewportScale),
   })), [viewportScale]);
+
+  const visible = screenX > -80 && screenX < windowWidth + 80;
+  if (!visible && phase === 'idle') return null;
 
   return (
     <>
