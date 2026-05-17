@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Github, Linkedin, Twitter, FileText, type LucideIcon } from 'lucide-react';
+import { useViewportScale } from '@/hooks/useViewportScale';
 
 interface FarewellChestProps {
   scrollX: number;
@@ -38,17 +39,19 @@ const FarewellChest: React.FC<FarewellChestProps> = ({ scrollX, chestWorldX, bur
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [burst]);
 
-  const [windowWidth, setWindowWidth] = useState(1920);
-
-  useEffect(() => {
-    setWindowWidth(window.innerWidth);
-    const handleResize = () => setWindowWidth(window.innerWidth);
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
+  const { windowSize: { width: windowWidth }, viewportScale } = useViewportScale();
 
   const visible = screenX > -80 && screenX < windowWidth + 80;
   if (!visible && phase === 'idle') return null;
+
+  const scaledLinks = links.map(link => ({
+    ...link,
+    offset: {
+      x: Math.round(link.offset.x * viewportScale),
+      y: Math.round(link.offset.y * viewportScale),
+    },
+    landX: Math.round(link.landX * viewportScale),
+  }));
 
   return (
     <>
@@ -59,7 +62,7 @@ const FarewellChest: React.FC<FarewellChestProps> = ({ scrollX, chestWorldX, bur
             className="fixed z-[45]"
             style={{
               left: screenX - 24,
-              bottom: 34,
+              bottom: Math.max(16, Math.round(34 * viewportScale)),
               cursor: atChest ? 'pointer' : 'default',
               pointerEvents: atChest ? 'auto' : 'none',
             }}
@@ -135,15 +138,15 @@ const FarewellChest: React.FC<FarewellChestProps> = ({ scrollX, chestWorldX, bur
                 initial={{ opacity: 1, x: 0, y: 0, rotate: 0 }}
                 animate={{
                   opacity: 0,
-                  x: (i % 2 === 0 ? -1 : 1) * (30 + i * 22),
-                  y: -(50 + i * 30),
+                  x: (i % 2 === 0 ? -1 : 1) * Math.round((30 + i * 22) * viewportScale),
+                  y: -Math.round((50 + i * 30) * viewportScale),
                   rotate: (i % 2 === 0 ? -1 : 1) * (120 + i * 35),
                 }}
                 transition={{ duration: 0.55, delay: i * 0.025, ease: [0.2, 0.8, 0.4, 1] }}
               />
             ))}
 
-            {links.map((link, i) => (
+            {scaledLinks.map((link, i) => (
               <motion.a
                 key={link.label}
                 href={link.href}
