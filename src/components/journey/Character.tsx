@@ -1,6 +1,7 @@
 'use client';
 import React, { useState, useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
+import { useViewportScale } from '@/hooks/useViewportScale';
 
 interface CharacterProps {
   scrollX: number;
@@ -22,14 +23,7 @@ const spriteConfig = {
 };
 
 const Character: React.FC<CharacterProps> = ({ scrollX, velocity, attackTrigger }) => {
-  const [windowWidth, setWindowWidth] = useState(1920);
-
-  useEffect(() => {
-    setWindowWidth(window.innerWidth);
-    const handleResize = () => setWindowWidth(window.innerWidth);
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
+  const { windowSize: { width: windowWidth }, viewportScale } = useViewportScale();
 
   const characterX = windowWidth / 2 - FRAME_SIZE / 2;
 
@@ -183,7 +177,7 @@ const Character: React.FC<CharacterProps> = ({ scrollX, velocity, attackTrigger 
     <>
       <motion.div
         className="fixed z-50 pointer-events-none"
-        style={{ left: characterX, bottom: 30 }}
+        style={{ left: characterX, bottom: Math.max(14, Math.round(30 * viewportScale)) }}
       >
         <div className="relative w-[128px] h-[128px] flex items-end justify-center">
           {/* Dynamic Contact Shadow */}
@@ -221,7 +215,7 @@ const Character: React.FC<CharacterProps> = ({ scrollX, velocity, attackTrigger 
               backgroundImage: `url(${currentConfig.url})`,
               backgroundPosition: `${bgPositionX}px 0`,
               backgroundRepeat: 'no-repeat',
-              transform: `scale(2.0) scaleX(${direction === 'left' ? -1 : 1})`,
+              transform: `scale(${2.0 * viewportScale}) scaleX(${direction === 'left' ? -1 : 1})`,
               transformOrigin: 'bottom center',
               transition: (state === 'dead' || state === 'attack') ? 'none' : 'transform 0.1s ease',
               filter: 'drop-shadow(0 0 4px rgba(255, 255, 255, 0.4)) drop-shadow(0 0 15px rgba(255, 255, 255, 0.3))',
@@ -232,8 +226,9 @@ const Character: React.FC<CharacterProps> = ({ scrollX, velocity, attackTrigger 
 
       {/* Road layer */}
       <div
-        className="fixed bottom-0 left-0 w-full h-[200px] z-40 pointer-events-none"
+        className="fixed bottom-0 left-0 w-full z-40 pointer-events-none"
         style={{
+          height: Math.max(80, Math.round(200 * viewportScale)),
           backgroundImage: 'url(/road.png)',
           backgroundRepeat: 'repeat-x',
           backgroundPosition: `${-scrollX}px center`,
