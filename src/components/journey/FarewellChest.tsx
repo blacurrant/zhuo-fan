@@ -1,5 +1,5 @@
 'use client';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Github, Linkedin, Twitter, FileText, type LucideIcon } from 'lucide-react';
 import { useViewportScale } from '@/hooks/useViewportScale';
@@ -44,14 +44,14 @@ const FarewellChest: React.FC<FarewellChestProps> = ({ scrollX, chestWorldX, bur
   const visible = screenX > -80 && screenX < windowWidth + 80;
   if (!visible && phase === 'idle') return null;
 
-  const scaledLinks = links.map(link => ({
+  const scaledLinks = useMemo(() => links.map(link => ({
     ...link,
     offset: {
       x: Math.round(link.offset.x * viewportScale),
       y: Math.round(link.offset.y * viewportScale),
     },
     landX: Math.round(link.landX * viewportScale),
-  }));
+  })), [viewportScale]);
 
   return (
     <>
@@ -121,7 +121,7 @@ const FarewellChest: React.FC<FarewellChestProps> = ({ scrollX, chestWorldX, bur
           <>
             <motion.div
               className="fixed z-[46] pointer-events-none rounded-full"
-              style={{ left: screenX - 40, bottom: 24, width: 80, height: 80,
+              style={{ left: screenX - 40, bottom: Math.round(24 * viewportScale), width: 80, height: 80,
                 background: 'radial-gradient(circle, rgba(234,40,4,0.9) 0%, transparent 70%)' }}
               initial={{ scale: 0, opacity: 1 }}
               animate={{ scale: 3.5, opacity: 0 }}
@@ -132,7 +132,7 @@ const FarewellChest: React.FC<FarewellChestProps> = ({ scrollX, chestWorldX, bur
               <motion.div
                 key={`shard-${i}`}
                 className="fixed z-[46] pointer-events-none"
-                style={{ left: screenX - 4, bottom: 44,
+                style={{ left: screenX - 4, bottom: Math.round(44 * viewportScale),
                   width: i % 3 === 0 ? 8 : 5, height: i % 3 === 0 ? 14 : 9,
                   background: i % 2 === 0 ? '#8B6914' : '#5C3D0A', borderRadius: 1 }}
                 initial={{ opacity: 1, x: 0, y: 0, rotate: 0 }}
