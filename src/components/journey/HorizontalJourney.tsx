@@ -45,6 +45,8 @@ const HorizontalJourney: React.FC = () => {
   // Desktop total content = 5.7vw → farewell starts at 4.7vw → chest at 5.2vw.
   // Mobile total content  = 6.7vw → farewell starts at 5.7vw → chest at 6.2vw.
   const CHEST_WORLD_X = windowSize.width * (isMobile ? 6.2 : 5.2) + 60;
+  const chestWorldXRef = useRef(CHEST_WORLD_X);
+  chestWorldXRef.current = CHEST_WORLD_X;
 
   // Derived: samurai has reached the chest
   const chestScreenX = CHEST_WORLD_X - scrollState.x;
@@ -104,7 +106,7 @@ const HorizontalJourney: React.FC = () => {
 
       // Reset attack if user scrolls back away from chest
       if (attackTriggeredRef.current) {
-        const csx = CHEST_WORLD_X - scrollLeft;
+        const csx = chestWorldXRef.current - scrollLeft;
         if (csx > window.innerWidth / 2 + CHEST_COLLISION_RANGE + 40) {
           setAttackTriggered(false);
         }
@@ -235,7 +237,7 @@ const HorizontalJourney: React.FC = () => {
 
   return (
     <div className="relative w-full h-screen bg-replicate-canvas overflow-hidden">
-      {/* Horizontal scroll container */}
+      {/* touchAction:none — vertical swipe drives horizontal scroll; pinch-zoom intentionally disabled for experience integrity */}
       <div
         ref={scrollContainerRef}
         className="w-full h-full overflow-x-auto overflow-y-hidden [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]"
