@@ -140,7 +140,7 @@ const ProjectBook: React.FC<ProjectBookProps> = ({ scrollX }) => {
   const isMobile = vw < 768;
 
   const bookSize = isMobile
-    ? Math.round(Math.min(vh * 0.9, vw * 1.1))
+    ? Math.round(Math.min(vh * 0.75, vw * 0.9))
     : Math.round(Math.min(vh * 0.88, vw * 0.56));
 
   const scale = bookSize / FRAME_PX;
@@ -394,15 +394,24 @@ const ProjectBook: React.FC<ProjectBookProps> = ({ scrollX }) => {
                 className="absolute"
                 style={{
                   left: '18%', top: '11%', width: '62%', height: '36%',
-                  containerType: 'size',
-                  perspective: '800px',
-                  transformStyle: 'preserve-3d',
-                  mixBlendMode: 'multiply',
-                  opacity: 0.9,
+                  overflow: 'hidden',
                   transform: 'rotate(-0.5deg)',
                 }}
               >
-                {imageSlices}
+                <div
+                  style={{
+                    position: 'relative',
+                    width: '100%',
+                    height: '100%',
+                    containerType: 'size',
+                    perspective: '800px',
+                    transformStyle: 'preserve-3d',
+                    mixBlendMode: 'multiply',
+                    opacity: 0.9,
+                  }}
+                >
+                  {imageSlices}
+                </div>
               </div>
 
               {/* Text — bottom half (was left page) */}
