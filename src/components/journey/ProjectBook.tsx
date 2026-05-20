@@ -395,23 +395,18 @@ const ProjectBook: React.FC<ProjectBookProps> = ({ scrollX }) => {
                 style={{
                   left: '18%', top: '11%', width: '62%', height: '36%',
                   overflow: 'hidden',
+                  borderRadius: '0 1px 1px 0',
                   transform: 'rotate(-0.5deg)',
                 }}
               >
-                <div
-                  style={{
-                    position: 'relative',
-                    width: '100%',
-                    height: '100%',
-                    containerType: 'size',
-                    perspective: '800px',
-                    transformStyle: 'preserve-3d',
-                    mixBlendMode: 'multiply',
-                    opacity: 0.9,
-                  }}
-                >
-                  {imageSlices}
-                </div>
+                <Image
+                  src={project.image}
+                  alt={project.title}
+                  fill
+                  className="object-cover"
+                  sizes={`${Math.round(bookSize * 0.38)}px`}
+                  style={{ filter: 'contrast(0.95) saturate(0.85)' }}
+                />
               </div>
 
               {/* Text — bottom half (was left page) */}
