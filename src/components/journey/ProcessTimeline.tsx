@@ -14,6 +14,8 @@ const TABLET_DATA = [
   { numeral: 'IV',  title: 'Ship',      description: 'Release. Gather signal.\nIterate without mercy.',   threshold: 0.35, rotate:  2.2 },
 ];
 
+const TABLET_THRESHOLDS_MOBILE = [0.05, 0.30, 0.57, 0.80];
+
 // Desktop: horizontal spread
 const DESKTOP_POS = [
   { left: '7%',  bottom: '34%' },
@@ -101,8 +103,8 @@ const ProcessTimeline: React.FC<ProcessTimelineProps> = ({ scrollProgress }) => 
             key={i} cx={cx} cy={cy} r="0.8" fill="#ea2804"
             initial={{ scale: 0, opacity: 0 }}
             animate={{
-              scale:   scrollProgress > TABLET_DATA[i].threshold ? 1 : 0,
-              opacity: scrollProgress > TABLET_DATA[i].threshold ? 1 : 0,
+              scale:   scrollProgress > (isMobile ? TABLET_THRESHOLDS_MOBILE[i] : TABLET_DATA[i].threshold) ? 1 : 0,
+              opacity: scrollProgress > (isMobile ? TABLET_THRESHOLDS_MOBILE[i] : TABLET_DATA[i].threshold) ? 1 : 0,
             }}
             transition={{ delay: 0.2, type: 'spring', stiffness: 280 }}
           />
@@ -111,7 +113,8 @@ const ProcessTimeline: React.FC<ProcessTimelineProps> = ({ scrollProgress }) => 
 
       {/* Codex Tablets */}
       {TABLET_DATA.map((tablet, idx) => {
-        const active = scrollProgress > tablet.threshold;
+        const threshold = isMobile ? TABLET_THRESHOLDS_MOBILE[idx] : tablet.threshold;
+        const active = scrollProgress > threshold;
         const pos = positions[idx];
 
         return (
