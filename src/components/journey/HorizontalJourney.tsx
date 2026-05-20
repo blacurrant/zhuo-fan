@@ -517,7 +517,7 @@ const HorizontalJourney: React.FC = () => {
             <ProcessTimeline
               scrollProgress={
                 isMobile
-                  ? Math.max(0, Math.min(1, (scrollState.progress * 5.7 - 2.7) / 3.0))
+                  ? Math.max(0, Math.min(1, (scrollState.progress * 5.7 - 3.7) / 2.0))
                   : Math.max(0, Math.min(1, scrollState.progress * 4.7 - 2.7))
               }
             />
