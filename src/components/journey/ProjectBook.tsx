@@ -140,7 +140,7 @@ const ProjectBook: React.FC<ProjectBookProps> = ({ scrollX }) => {
   const isMobile = vw < 768;
 
   const bookSize = isMobile
-    ? Math.round(vw)
+    ? Math.round(vw * 1.33)
     : Math.round(Math.min(vh * 0.88, vw * 0.56));
 
   const scale = bookSize / FRAME_PX;
@@ -381,9 +381,7 @@ const ProjectBook: React.FC<ProjectBookProps> = ({ scrollX }) => {
             transform: 'rotate(90deg)',
           }}
         >
-          {/* Scale sprite to fill screen width. Book graphic occupies ~75% of frame height,
-              which becomes screen width after 90° rotation. Scale by 1/0.75 to compensate. */}
-          <div style={{ position: 'absolute', inset: 0, ...spriteStyle, transform: 'scale(1.35)', transformOrigin: 'center center' }} />
+          <div style={{ position: 'absolute', inset: 0, ...spriteStyle }} />
 
           {showContent && (
             <div
