@@ -3,6 +3,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useViewportScale } from '@/hooks/useViewportScale';
 import Character from './Character';
+import Dragon from './Dragon';
 import JourneySection from './JourneySection';
 import WaypointSignpost from './WaypointSignpost';
 import ProcessTimeline from './ProcessTimeline';
@@ -10,9 +11,6 @@ import ProjectBook from './ProjectBook';
 import FarewellChest from './FarewellChest';
 import { ArrowRightCircle } from 'lucide-react';
 
-// Chest one tile ahead of where the character stops at max scroll
-// At max scroll (4.7*vw), character is at screenX 0.5*vw — chest is 180px further right
-const CHEST_WORLD_X = typeof window !== 'undefined' ? window.innerWidth * 5.2 + 60 : 0;
 const CHEST_COLLISION_RANGE = 220; // wide enough to cover the one-tile gap
 
 interface ScrollState {
@@ -40,6 +38,13 @@ const HorizontalJourney: React.FC = () => {
   };
 
   const { windowSize, viewportScale } = useViewportScale();
+
+  const isMobile = windowSize.width < 768;
+
+  // Chest sits 0.5vw into the farewell section.
+  // Desktop total content = 5.7vw → farewell starts at 4.7vw → chest at 5.2vw.
+  // Mobile total content  = 6.7vw → farewell starts at 5.7vw → chest at 6.2vw.
+  const CHEST_WORLD_X = windowSize.width * (isMobile ? 6.2 : 5.2) + 60;
 
   // Derived: samurai has reached the chest
   const chestScreenX = CHEST_WORLD_X - scrollState.x;
@@ -165,12 +170,76 @@ const HorizontalJourney: React.FC = () => {
   //   return () => cancelAnimationFrame(animationFrameId);
   // }, []);
 
+  // Mobile: vertical swipe → horizontal scroll with inertia
+  useEffect(() => {
+    const container = scrollContainerRef.current;
+    if (!container) return;
+
+    let touchStartY = 0;
+    let touchStartScrollLeft = 0;
+    let lastTouchY = 0;
+    let lastTouchTime = 0;
+    let touchVelocity = 0;
+    let inertiaFrame: number | null = null;
+
+    const handleTouchStart = (e: TouchEvent) => {
+      if (inertiaFrame !== null) {
+        cancelAnimationFrame(inertiaFrame);
+        inertiaFrame = null;
+      }
+      touchStartY = e.touches[0].clientY;
+      touchStartScrollLeft = container.scrollLeft;
+      lastTouchY = touchStartY;
+      lastTouchTime = performance.now();
+      touchVelocity = 0;
+    };
+
+    const handleTouchMove = (e: TouchEvent) => {
+      e.preventDefault();
+      const currentY = e.touches[0].clientY;
+      const now = performance.now();
+      const dt = now - lastTouchTime;
+      if (dt > 0) {
+        touchVelocity = (lastTouchY - currentY) / dt;
+      }
+      lastTouchY = currentY;
+      lastTouchTime = now;
+      container.scrollLeft = touchStartScrollLeft + (touchStartY - currentY);
+    };
+
+    const handleTouchEnd = () => {
+      let velocity = touchVelocity * 16;
+      const applyInertia = () => {
+        if (Math.abs(velocity) < 0.5) {
+          inertiaFrame = null;
+          return;
+        }
+        container.scrollLeft += velocity;
+        velocity *= 0.93;
+        inertiaFrame = requestAnimationFrame(applyInertia);
+      };
+      inertiaFrame = requestAnimationFrame(applyInertia);
+    };
+
+    container.addEventListener('touchstart', handleTouchStart, { passive: true });
+    container.addEventListener('touchmove', handleTouchMove, { passive: false });
+    container.addEventListener('touchend', handleTouchEnd);
+
+    return () => {
+      container.removeEventListener('touchstart', handleTouchStart);
+      container.removeEventListener('touchmove', handleTouchMove);
+      container.removeEventListener('touchend', handleTouchEnd);
+      if (inertiaFrame !== null) cancelAnimationFrame(inertiaFrame);
+    };
+  }, []);
+
   return (
     <div className="relative w-full h-screen bg-replicate-canvas overflow-hidden">
       {/* Horizontal scroll container */}
       <div
         ref={scrollContainerRef}
         className="w-full h-full overflow-x-auto overflow-y-hidden [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]"
+        style={{ touchAction: 'none' }}
       >
         <div className="flex h-full">
           {/* Section 1: Hero */}
@@ -440,11 +509,15 @@ const HorizontalJourney: React.FC = () => {
           <JourneySection
             id="process"
             backgroundNumber={4}
-            width={windowSize.width}
+            width={isMobile ? windowSize.width * 2 : windowSize.width}
             scrollX={scrollState.x}
           >
             <ProcessTimeline
-              scrollProgress={Math.max(0, Math.min(1, scrollState.progress * 4.7 - 2.7))}
+              scrollProgress={
+                isMobile
+                  ? Math.max(0, Math.min(1, (scrollState.progress * 5.7 - 2.7) / 3.0))
+                  : Math.max(0, Math.min(1, scrollState.progress * 4.7 - 2.7))
+              }
             />
           </JourneySection>
 
@@ -493,23 +566,10 @@ const HorizontalJourney: React.FC = () => {
       </div>
 
       {/* Waypoint signposts — placed before each section so sign appears while approaching */}
-      <WaypointSignpost label="work" position={windowSize.width * 0.5} characterX={scrollState.x} />
-      <WaypointSignpost
-        label="process"
-        position={windowSize.width * 2.6}
-        characterX={scrollState.x}
-      />
-      <WaypointSignpost
-        label="contact"
-        position={windowSize.width * 3.7}
-        characterX={scrollState.x}
-      />
-      <WaypointSignpost
-        label="rest, traveller."
-        position={windowSize.width * 4.7}
-        characterX={scrollState.x}
-        showArrow={false}
-      />
+      <WaypointSignpost label="work"             position={windowSize.width * 0.5}                    characterX={scrollState.x} />
+      <WaypointSignpost label="process"          position={windowSize.width * 2.6}                    characterX={scrollState.x} />
+      <WaypointSignpost label="contact"          position={windowSize.width * (isMobile ? 4.7 : 3.7)} characterX={scrollState.x} />
+      <WaypointSignpost label="rest, traveller." position={windowSize.width * (isMobile ? 5.7 : 4.7)} characterX={scrollState.x} showArrow={false} />
 
       {/* Magic book — fixed viewport overlay, active during projects section */}
       <ProjectBook scrollX={scrollState.x} />
@@ -541,6 +601,9 @@ const HorizontalJourney: React.FC = () => {
         progress={scrollState.progress}
         attackTrigger={attackTriggered}
       />
+
+      {/* Dragon flying in the sky */}
+      <Dragon scrollX={scrollState.x} />
 
       {/* Progress indicator */}
       <div
