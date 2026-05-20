@@ -140,7 +140,7 @@ const ProjectBook: React.FC<ProjectBookProps> = ({ scrollX }) => {
   const isMobile = vw < 768;
 
   const bookSize = isMobile
-    ? Math.round(vw * 1.33)
+    ? Math.round(vw * 1.35)
     : Math.round(Math.min(vh * 0.88, vw * 0.56));
 
   const scale = bookSize / FRAME_PX;
@@ -376,7 +376,7 @@ const ProjectBook: React.FC<ProjectBookProps> = ({ scrollX }) => {
             position: 'relative',
             width: `${bookSize}px`,
             height: `${bookSize}px`,
-            marginLeft: `-${bookSize / 2}px`,
+            marginLeft: `${-Math.round(bookSize * 0.47)}px`,
             marginTop: `-${bookSize / 2}px`,
             transform: 'rotate(90deg)',
           }}
