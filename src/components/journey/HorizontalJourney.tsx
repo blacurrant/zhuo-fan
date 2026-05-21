@@ -605,7 +605,7 @@ const HorizontalJourney: React.FC = () => {
       />
 
       {/* Dragon flying in the sky */}
-      <Dragon scrollX={scrollState.x} />
+      {/* <Dragon scrollX={scrollState.x} /> */}
 
       {/* Progress indicator */}
       <div
