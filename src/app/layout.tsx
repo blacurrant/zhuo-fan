@@ -21,6 +21,7 @@ export const viewport = {
 };
 
 export const metadata = {
+  metadataBase: new URL('https://nishant.world'),
   title: 'Nishant Choudhary - Fullstack Developer Portfolio',
   description:
     'Professional portfolio of Nishant Choudhary, a skilled fullstack developer with 2 years of experience in React.js, Next.js, and TailwindCSS. Available for hire.',
@@ -31,15 +32,17 @@ export const metadata = {
   openGraph: {
     title: 'Nishant Choudhary - Fullstack Developer Portfolio',
     description: 'Professional portfolio showcasing fullstack development projects and skills',
+    url: 'https://nishant.world',
+    siteName: 'Nishant Choudhary',
     type: 'website',
     locale: 'en_US',
-    images: [{ url: '/og-image.png', width: 1200, height: 630 }],
+    images: [{ url: 'https://nishant.world/og-image.png', width: 1200, height: 630, alt: 'Nishant Choudhary - Fullstack Developer Portfolio' }],
   },
   twitter: {
     card: 'summary_large_image',
     title: 'Nishant Choudhary - Fullstack Developer Portfolio',
     description: 'Professional portfolio showcasing fullstack development projects and skills',
-    images: ['/og-image.png'],
+    images: ['https://nishant.world/og-image.png'],
   },
   icons: {
     icon: [{ url: '/favicon.png', type: 'image/x-icon' }],
