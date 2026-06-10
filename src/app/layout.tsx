@@ -4,6 +4,11 @@ import Navbar from '@/components/sections/Navbar';
 import dynamic from 'next/dynamic';
 import ToggleNavbar from '@/components/ToggleNavbar';
 
+const PageLoader = dynamic(() => import('@/components/ui/PageLoader'), {
+  ssr: false,
+  loading: () => null,
+});
+
 
 const InvertCursor = dynamic(() => import('@/components/ui/InvertCursor'), {
   ssr: false,
@@ -89,6 +94,7 @@ export default function RootLayout({
               patternAlpha={15}
             />
           </div>
+          <PageLoader />
           <InvertCursor />
           {/* <ToggleNavbar /> */}
           {/* <Navbar /> */}
