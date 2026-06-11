@@ -9,6 +9,8 @@ import WaypointSignpost from './WaypointSignpost';
 import ProcessTimeline from './ProcessTimeline';
 import ProjectBook from './ProjectBook';
 import FarewellChest from './FarewellChest';
+import AmbientCanvas, { AmbientState } from './AmbientCanvas';
+import AtmosphereOverlay from './AtmosphereOverlay';
 import { ArrowRightCircle } from 'lucide-react';
 
 const CHEST_COLLISION_RANGE = 220; // wide enough to cover the one-tile gap
@@ -29,6 +31,7 @@ const HorizontalJourney: React.FC = () => {
 
   const lastScrollRef = useRef(0);
   const lastScrollTimeRef = useRef(performance.now());
+  const ambientRef = useRef<AmbientState>({ x: 0, velocity: 0, progress: 0 });
   const [attackTriggered, setAttackTriggeredState] = useState(false);
   const attackTriggeredRef = useRef(false);
 
@@ -103,6 +106,10 @@ const HorizontalJourney: React.FC = () => {
         progress,
         velocity,
       });
+
+      ambientRef.current.x = scrollLeft;
+      ambientRef.current.velocity = velocity;
+      ambientRef.current.progress = progress;
 
       // Reset attack if user scrolls back away from chest
       if (attackTriggeredRef.current) {
@@ -602,6 +609,30 @@ const HorizontalJourney: React.FC = () => {
         velocity={scrollState.velocity}
         progress={scrollState.progress}
         attackTrigger={attackTriggered}
+      />
+
+      {/* Living world: petals → motes → fireflies + stars, footstep dust, speed lines */}
+      <AmbientCanvas stateRef={ambientRef} />
+
+      {/* Day → golden hour → night grading */}
+      <AtmosphereOverlay progress={scrollState.progress} />
+
+      {/* Lantern glow — the samurai carries light through the dark */}
+      <div
+        className="fixed pointer-events-none"
+        style={{
+          left: '50%',
+          bottom: Math.max(14, Math.round(30 * viewportScale)) - 20,
+          transform: 'translateX(-50%)',
+          width: 340 * viewportScale + 120,
+          height: 340 * viewportScale + 120,
+          borderRadius: '50%',
+          background:
+            'radial-gradient(circle, rgba(255,196,110,0.32) 0%, rgba(255,170,80,0.12) 40%, rgba(255,170,80,0) 70%)',
+          zIndex: 56, // above the night-multiply layer (55) → punches a hole in the dark
+          opacity: Math.max(0, Math.min(1, (scrollState.progress - 0.74) / 0.18)),
+          transition: 'opacity 0.4s linear',
+        }}
       />
 
       {/* Dragon flying in the sky */}

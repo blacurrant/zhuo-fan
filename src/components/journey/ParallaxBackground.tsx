@@ -170,6 +170,42 @@ const ParallaxBackground: React.FC<ParallaxBackgroundProps> = ({
     }
   }, [layers, backgroundNumber]);
 
+  // Hook D: ambient drift — clouds/birds keep moving when scroll is idle
+  useLayoutEffect(() => {
+    if (
+      typeof window !== 'undefined' &&
+      window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    )
+      return;
+
+    const drifters = layers
+      .filter((l) => l.includes('cloud') || l.includes('bird'))
+      .map((l, i) => ({
+        el: xRefsMap.current[`${backgroundNumber}-${l}`],
+        speed: l.includes('bird') ? 16 : 3 + i * 2.2, // px/sec
+      }))
+      .filter((d): d is { el: HTMLDivElement; speed: number } => !!d.el);
+
+    if (drifters.length === 0) return;
+
+    let raf: number;
+    let lastT = performance.now();
+    const offsets = drifters.map(() => 0);
+
+    const tick = (now: number) => {
+      raf = requestAnimationFrame(tick);
+      if (document.hidden) { lastT = now; return; }
+      const dt = (now - lastT) / 1000;
+      lastT = now;
+      drifters.forEach((d, i) => {
+        offsets[i] = (offsets[i] - d.speed * dt) % 1920;
+        d.el.style.backgroundPositionX = `${offsets[i]}px`;
+      });
+    };
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
+  }, [layers, backgroundNumber]);
+
   return (
     <div className={`absolute inset-0 overflow-hidden ${foregroundOnly ? '' : 'bg-[#7ab0d4]'}`}>
       {layers.map((layer) => {
