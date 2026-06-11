@@ -23,11 +23,15 @@ const JourneySection: React.FC<JourneySectionProps> = ({
   const { windowSize: { width: windowWidth } } = useViewportScale();
 
   const sectionStartX = useMemo(() => {
+    // Process is 2vw wide on mobile vs 1vw desktop, so everything after it
+    // shifts right by one viewport. Sections up to and including process are
+    // unaffected (they sit before the wide bit).
+    const isMobile = windowWidth < 768;
     switch (id) {
       case 'hero': return 0;
       case 'projects': return windowWidth * 1.5;
       case 'process': return windowWidth * 3.7;
-      case 'contact': return windowWidth * 4.7;
+      case 'contact': return windowWidth * (isMobile ? 5.7 : 4.7);
       default: return 0;
     }
   }, [id, windowWidth]);
