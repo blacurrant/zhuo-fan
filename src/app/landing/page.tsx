@@ -195,12 +195,21 @@ export default function LandingPage() {
               onClick={() => project.route !== '#' && router.push(project.route)}
               className={`group flex flex-col gap-3 ${project.route !== '#' ? 'cursor-pointer' : ''}`}
             >
-              {/* Image or placeholder */}
+              {/* Image / Video / placeholder */}
               <div
                 className="overflow-hidden relative h-[40vh] md:h-[52vh]"
-                style={{ border: '1px solid rgba(20,12,5,0.1)', background: project.image ? undefined : 'rgba(20,12,5,0.03)' }}
+                style={{ border: '1px solid rgba(20,12,5,0.1)', background: (project.image || project.video) ? undefined : 'rgba(20,12,5,0.03)' }}
               >
-                {project.image ? (
+                {project.video ? (
+                  <video
+                    src={project.video}
+                    autoPlay
+                    muted
+                    loop
+                    playsInline
+                    className="w-full h-full object-cover group-hover:scale-[1.04] transition-transform duration-700 ease-out"
+                  />
+                ) : project.image ? (
                   <Image
                     src={project.image}
                     alt={project.alt}
