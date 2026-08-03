@@ -1,40 +1,11 @@
 'use client';
-import React, { useMemo } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import Image from 'next/image';
 
 import { useRouter } from 'next/navigation';
 import { useViewportScale } from '@/hooks/useViewportScale';
-
-const PROJECTS = [
-  {
-    title: 'Craon',
-    subtitle: 'AI Video Editor · SaaS',
-    role: 'Lead Frontend Engineer',
-    image: '/craon/craon-hero.png',
-    route: '/works/craon',
-  },
-  {
-    title: 'MelloUp',
-    subtitle: 'Event Marketing · MVP',
-    role: 'Founding Engineer',
-    image: '/melloup/melloup.png',
-    route: '/works/melloup',
-  },
-  {
-    title: 'Ibasho',
-    subtitle: 'Brand · UI/UX · Web',
-    role: 'Lead Designer & Developer',
-    image: '/ibasho/ibashoo.png',
-    route: '/works/ibasho',
-  },
-  {
-    title: 'FreightEZ',
-    subtitle: 'Fleet TMS · B2B SaaS',
-    role: 'Frontend Engineer',
-    image: '/freightez/freightez-hero.png',
-    route: '/works/freightez',
-  },
-];
+import { startOf } from './layout';
+import { PROJECTS } from './projects';
 
 const FRAME_PX = 272;
 
@@ -126,13 +97,35 @@ interface ProjectBookProps {
   scrollX: number;
 }
 
+const VISITED_KEY = 'journey-visited';
+
 const ProjectBook: React.FC<ProjectBookProps> = ({ scrollX }) => {
   const router = useRouter();
   const { windowSize } = useViewportScale();
   const vw = windowSize.width;
   const vh = windowSize.height;
 
-  const sectionStart = vw * 1.5;
+  // Wax-seal "visited" stamps — persisted per tab
+  const [visited, setVisited] = useState<string[]>([]);
+  useEffect(() => {
+    try {
+      setVisited(JSON.parse(sessionStorage.getItem(VISITED_KEY) || '[]'));
+    } catch {
+      /* corrupt storage — start clean */
+    }
+  }, []);
+  const openProject = (route: string) => {
+    const next = Array.from(new Set([...visited, route]));
+    try {
+      sessionStorage.setItem(VISITED_KEY, JSON.stringify(next));
+    } catch {
+      /* storage unavailable — stamp is cosmetic */
+    }
+    setVisited(next);
+    router.push(route);
+  };
+
+  const sectionStart = vw * startOf('projects', vw < 768);
   const sectionRange = vw * 1.2;
   if (sectionRange === 0) return null;
   const t = Math.max(0, Math.min(1, (scrollX - sectionStart) / sectionRange));
@@ -238,12 +231,35 @@ const ProjectBook: React.FC<ProjectBookProps> = ({ scrollX }) => {
           borderBottom: '1px dashed rgba(160, 40, 20, 0.4)',
           transition: 'all 0.3s ease',
         }}
-        onClick={() => router.push(project.route)}
+        onClick={() => openProject(project.route)}
       >
         <span className="transition-transform group-hover:-translate-x-1" style={{ fontSize: '0.8em' }}>✦</span>
         <span style={{ fontWeight: 600 }}>View Work</span>
         <span className="transition-transform group-hover:translate-x-1" style={{ fontSize: '0.8em' }}>✦</span>
       </button>
+
+      {/* Wax seal — stamped once the page has been visited */}
+      {visited.includes(project.route) && (
+        <div
+          title="visited"
+          style={{
+            position: 'absolute',
+            bottom: '6%',
+            right: '8%',
+            width: 28,
+            height: 28,
+            borderRadius: '50%',
+            background: 'rgba(234,40,4,0.75)',
+            filter: 'url(#ink-rough)',
+            transform: 'rotate(-8deg)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}
+        >
+          <span style={{ color: 'rgba(255,255,255,0.9)', fontSize: '0.6rem', lineHeight: 1 }}>✦</span>
+        </div>
+      )}
     </>
   );
 

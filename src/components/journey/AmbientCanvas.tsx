@@ -7,8 +7,8 @@
  *
  * What it draws, by journey progress (p = 0 → 1):
  *   p 0.00 – 0.62   sakura/ink petals drifting on the wind (hero + adventures)
- *   p 0.50 – 0.85   warm dust motes (process section, golden hour)
- *   p 0.74 – 1.00   fireflies + twinkling stars (farewell, night)
+ *   p 0.50 – 0.85   warm dust motes + gusting autumn leaves (process, golden hour)
+ *   p 0.74 – 1.00   fireflies + twinkling stars + rare shooting star (farewell, night)
  *   always          footstep dust puffs under the samurai when he moves,
  *                   horizontal speed-lines when he runs
  *
@@ -28,6 +28,7 @@ export interface AmbientState {
   x: number;        // scrollLeft in px
   velocity: number; // px / ms (same value HorizontalJourney already computes)
   progress: number; // 0..1
+  attractorX?: number | null; // campfire screen-x — fireflies gather toward it
 }
 
 interface AmbientCanvasProps {
@@ -58,10 +59,13 @@ const AmbientCanvas: React.FC<AmbientCanvasProps> = ({ stateRef }) => {
 
     let W = 0, H = 0, dpr = 1;
     let petals: Petal[] = [];
+    let leaves: Petal[] = []; // same shape, autumn tones, gust-driven
     let motes: Mote[] = [];
     let flies: Fly[] = [];
     let stars: Star[] = [];
     const puffs: Puff[] = [];
+    let meteor: { x: number; y: number; vx: number; vy: number; life: number; max: number } | null = null;
+    let meteorCooldown = 6; // seconds before the first chance
 
     const isMobile = () => W < 768;
     const budget = (desktop: number) =>
@@ -78,6 +82,19 @@ const AmbientCanvas: React.FC<AmbientCanvasProps> = ({ stateRef }) => {
         rot: Math.random() * Math.PI * 2,
         rotV: (Math.random() - 0.5) * 1.6,
         size: 3 + Math.random() * 4,
+        depth: 0.25 + Math.random() * 0.55,
+        tone: Math.random(),
+      }));
+      leaves = Array.from({ length: budget(14) }, () => ({
+        x: Math.random() * W,
+        y: Math.random() * H,
+        vy: 20 + Math.random() * 26,
+        sway: 24 + Math.random() * 36,
+        swayP: Math.random() * Math.PI * 2,
+        swayV: 0.8 + Math.random() * 1.1,
+        rot: Math.random() * Math.PI * 2,
+        rotV: (Math.random() - 0.5) * 2.4,
+        size: 3.5 + Math.random() * 4,
         depth: 0.25 + Math.random() * 0.55,
         tone: Math.random(),
       }));
@@ -196,6 +213,34 @@ const AmbientCanvas: React.FC<AmbientCanvasProps> = ({ stateRef }) => {
         }
       }
 
+      // ── autumn leaves (golden hour) — ride periodic gusts ──
+      if (moteA > 0.01) {
+        const gust = Math.max(0, Math.sin(t * 0.35)) ** 3 * 2.2;
+        for (const lf of leaves) {
+          lf.swayP += lf.swayV * dt;
+          lf.rot += lf.rotV * (1 + gust) * dt;
+          lf.x +=
+            ((wind * (1 + gust) - 40 * gust) * lf.depth + Math.cos(lf.swayP) * lf.sway) * dt -
+            dx * lf.depth;
+          lf.y += lf.vy * (1 + gust * 0.4) * dt;
+          if (lf.y > H + 12) { lf.y = -12; lf.x = Math.random() * W; }
+          if (lf.x < -20) lf.x += W + 40;
+          if (lf.x > W + 20) lf.x -= W + 40;
+
+          const a = moteA * (0.3 + lf.depth * 0.5);
+          ctx.fillStyle = lf.tone > 0.5
+            ? `rgba(196,140,60,${a})`
+            : `rgba(150,92,42,${a})`;
+          ctx.save();
+          ctx.translate(lf.x, lf.y);
+          ctx.rotate(lf.rot);
+          ctx.beginPath();
+          ctx.ellipse(0, 0, lf.size, lf.size * 0.45, 0, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.restore();
+        }
+      }
+
       // ── dust motes (golden hour) ──
       if (moteA > 0.01) {
         for (const m of motes) {
@@ -214,11 +259,18 @@ const AmbientCanvas: React.FC<AmbientCanvasProps> = ({ stateRef }) => {
 
       // ── fireflies ──
       if (nightA > 0.01) {
+        const ax = stateRef.current.attractorX;
+        const attract = ax != null && ax > -100 && ax < W + 100;
         for (const f of flies) {
           f.px += f.speed * dt;
           f.py += f.speed * 0.8 * dt;
           f.x += (Math.cos(f.px) * 24 + wind * 0.15 * f.depth) * dt - dx * f.depth;
           f.y += Math.sin(f.py) * 18 * dt;
+          if (attract) {
+            // ease toward the campfire — deeper flies commit harder
+            f.x += (ax! - f.x) * 0.35 * f.depth * dt;
+            f.y += (H * 0.78 - f.y) * 0.25 * f.depth * dt;
+          }
           if (f.x < -16) f.x += W + 32;
           if (f.x > W + 16) f.x -= W + 32;
           f.y = Math.max(H * 0.3, Math.min(H * 0.96, f.y));
@@ -234,6 +286,47 @@ const AmbientCanvas: React.FC<AmbientCanvasProps> = ({ stateRef }) => {
           ctx.fillStyle = `rgba(255,238,150,${a})`;
           ctx.beginPath();
           ctx.arc(f.x, f.y, f.size, 0, Math.PI * 2);
+          ctx.fill();
+        }
+      }
+
+      // ── shooting star — one at a time, rare, night only ──
+      if (nightA > 0.5) {
+        meteorCooldown -= dt;
+        if (!meteor && meteorCooldown <= 0 && Math.random() < 0.02) {
+          meteor = {
+            x: W * (0.3 + Math.random() * 0.6),
+            y: H * (0.05 + Math.random() * 0.15),
+            vx: -W * (0.45 + Math.random() * 0.25),
+            vy: H * 0.22,
+            life: 0,
+            max: 0.9,
+          };
+        }
+      }
+      if (meteor) {
+        meteor.life += dt;
+        if (meteor.life >= meteor.max) {
+          meteor = null;
+          meteorCooldown = 7 + Math.random() * 10;
+        } else {
+          meteor.x += meteor.vx * dt;
+          meteor.y += meteor.vy * dt;
+          const a = Math.sin(Math.PI * (meteor.life / meteor.max)) * nightA;
+          const tailX = meteor.x - meteor.vx * 0.12;
+          const tailY = meteor.y - meteor.vy * 0.12;
+          const grad = ctx.createLinearGradient(meteor.x, meteor.y, tailX, tailY);
+          grad.addColorStop(0, `rgba(255,255,255,${a * 0.9})`);
+          grad.addColorStop(1, 'rgba(255,255,255,0)');
+          ctx.strokeStyle = grad;
+          ctx.lineWidth = 1.5;
+          ctx.beginPath();
+          ctx.moveTo(meteor.x, meteor.y);
+          ctx.lineTo(tailX, tailY);
+          ctx.stroke();
+          ctx.fillStyle = `rgba(255,255,255,${a})`;
+          ctx.beginPath();
+          ctx.arc(meteor.x, meteor.y, 1.4, 0, Math.PI * 2);
           ctx.fill();
         }
       }
