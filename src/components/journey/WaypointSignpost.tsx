@@ -10,6 +10,7 @@ interface WaypointSignpostProps {
   characterX: number;
   showArrow?: boolean;
   isVisible?: boolean;
+  onNavigate?: () => void; // fast travel — makes the board a button
 }
 
 const WaypointSignpost: React.FC<WaypointSignpostProps> = ({
@@ -18,6 +19,7 @@ const WaypointSignpost: React.FC<WaypointSignpostProps> = ({
   characterX,
   showArrow = true,
   isVisible = true,
+  onNavigate,
 }) => {
   const distance = position - characterX; // positive means it's ahead
 
@@ -39,8 +41,8 @@ const WaypointSignpost: React.FC<WaypointSignpostProps> = ({
       // animate={{ opacity: 1, y: 20 }}
       // transition={{ duration: 0.5 }}
     >
-      {/* Wooden Sign Board */}
-      <div className="relative bg-[#8b5a2b] border-4 border-[#5c3a21] text-[#f4e4bc] px-3 py-1 shadow-xl flex items-center justify-center transform rounded-md z-10">
+      {/* Wooden Sign Board — a fast-travel button when onNavigate is provided */}
+      <BoardWrapper onNavigate={onNavigate} label={label}>
         {/* Right Arrow Cutout Shape effect (using CSS clip-path or border, but a simple arrow text works too) */}
         <span
           style={{
@@ -52,10 +54,10 @@ const WaypointSignpost: React.FC<WaypointSignpostProps> = ({
           {label}
         </span>
         {showArrow && <ArrowRight size={14} className="text-3xl font-bold drop-shadow-md" />}
-        
+
         {/* Wooden texture stripes */}
         <div className="absolute inset-0 opacity-10 bg-[repeating-linear-gradient(0deg,transparent,transparent_4px,#000_5px,#000_6px)] pointer-events-none" />
-      </div>
+      </BoardWrapper>
 
       {/* Wooden Post */}
       <div
@@ -66,5 +68,28 @@ const WaypointSignpost: React.FC<WaypointSignpostProps> = ({
     </motion.div>
   );
 };
+
+const boardClass =
+  'relative bg-[#8b5a2b] border-4 border-[#5c3a21] text-[#f4e4bc] px-3 py-1 shadow-xl flex items-center justify-center transform rounded-md z-10';
+
+const BoardWrapper: React.FC<{
+  onNavigate?: () => void;
+  label: string;
+  children: React.ReactNode;
+}> = ({ onNavigate, label, children }) =>
+  onNavigate ? (
+    <motion.button
+      type="button"
+      onClick={onNavigate}
+      aria-label={`Travel to ${label}`}
+      className={`${boardClass} pointer-events-auto cursor-pointer`}
+      whileHover={{ scale: 1.06, rotate: -1 }}
+      whileTap={{ scale: 0.96 }}
+    >
+      {children}
+    </motion.button>
+  ) : (
+    <div className={boardClass}>{children}</div>
+  );
 
 export default WaypointSignpost;

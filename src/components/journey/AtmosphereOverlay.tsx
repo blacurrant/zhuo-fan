@@ -67,6 +67,23 @@ const AtmosphereOverlay: React.FC<AtmosphereOverlayProps> = ({ progress }) => {
             'linear-gradient(180deg, rgba(16,20,52,0.62) 0%, rgba(20,22,52,0.40) 55%, rgba(8,10,30,0.62) 100%)',
         }}
       />
+      {/* moon — rises with the night, screen blend punches through the dark */}
+      <div aria-hidden style={{ ...layer, opacity: night, mixBlendMode: 'screen' }}>
+        <div
+          style={{
+            position: 'absolute',
+            right: '16%',
+            top: `${38 - night * 22}%`,
+            width: 74,
+            height: 74,
+            borderRadius: '50%',
+            background:
+              'radial-gradient(circle at 38% 35%, #fdf6e3 0%, #efe6c8 55%, rgba(230,220,190,0.85) 68%, rgba(230,220,190,0) 72%)',
+            boxShadow:
+              '0 0 40px 12px rgba(255,244,214,0.28), 0 0 120px 40px rgba(255,244,214,0.12)',
+          }}
+        />
+      </div>
       {/* vignette — quiet by day, heavy by night */}
       <div
         aria-hidden
