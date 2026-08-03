@@ -148,6 +148,14 @@ const ParallaxBackground: React.FC<ParallaxBackgroundProps> = ({
       const bgLayers = layers.filter((l) => !isForeground(l) && !l.includes('sky'));
       const fgLayers = layers.filter((l) => isForeground(l) && !l.includes('sky'));
 
+      // Reduced motion: skip the entrance tween, place layers immediately
+      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        [...bgLayers, ...fgLayers].forEach((l) =>
+          gsap.set(yRefsMap.current[`1-${l}`], { y: 0 })
+        );
+        return;
+      }
+
       if (bgLayers.length > 0) {
         gsap.to(bgLayers.map((l) => yRefsMap.current[`1-${l}`]), {
           duration: 1.2,

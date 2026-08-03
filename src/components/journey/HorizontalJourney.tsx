@@ -1,6 +1,6 @@
 'use client';
 import React, { useState, useRef, useEffect } from 'react';
-import { motion } from 'framer-motion';
+import { motion, MotionConfig } from 'framer-motion';
 import { useViewportScale } from '@/hooks/useViewportScale';
 import Character from './Character';
 import Dragon from './Dragon';
@@ -11,6 +11,8 @@ import ProjectBook from './ProjectBook';
 import FarewellChest from './FarewellChest';
 import AmbientCanvas, { AmbientState } from './AmbientCanvas';
 import AtmosphereOverlay from './AtmosphereOverlay';
+import Campfire from './Campfire';
+import { SECTIONS, widthOf, startOf, maxScrollVw, chestVw, waypointDefs, processProgress } from './layout';
 import { ArrowRightCircle } from 'lucide-react';
 
 const CHEST_COLLISION_RANGE = 220; // wide enough to cover the one-tile gap
@@ -44,12 +46,22 @@ const HorizontalJourney: React.FC = () => {
 
   const isMobile = windowSize.width < 768;
 
-  // Chest sits 0.5vw into the farewell section.
-  // Desktop total content = 5.7vw → farewell starts at 4.7vw → chest at 5.2vw.
-  // Mobile total content  = 6.7vw → farewell starts at 5.7vw → chest at 6.2vw.
-  const CHEST_WORLD_X = windowSize.width * (isMobile ? 6.2 : 5.2) + 60;
+  // Chest sits 0.5vw into the farewell section — see layout.ts for the world map.
+  const CHEST_WORLD_X = windowSize.width * chestVw(isMobile) + 60;
   const chestWorldXRef = useRef(CHEST_WORLD_X);
   chestWorldXRef.current = CHEST_WORLD_X;
+
+  // Campfire rests just inside the farewell section, before the chest
+  const CAMPFIRE_WORLD_X = windowSize.width * (startOf('contact', isMobile) + 0.18);
+  const campfireWorldXRef = useRef(CAMPFIRE_WORLD_X);
+  campfireWorldXRef.current = CAMPFIRE_WORLD_X;
+  const campfireScreenX = CAMPFIRE_WORLD_X - scrollState.x;
+  const nightIntensity = Math.max(0, Math.min(1, (scrollState.progress - 0.74) / 0.18));
+  // Lantern dies down as the campfire reaches centre stage
+  const lanternHandover = Math.max(
+    0,
+    Math.min(1, (campfireScreenX - windowSize.width * 0.5) / (windowSize.width * 0.35))
+  );
 
   // Derived: samurai has reached the chest
   const chestScreenX = CHEST_WORLD_X - scrollState.x;
@@ -110,6 +122,7 @@ const HorizontalJourney: React.FC = () => {
       ambientRef.current.x = scrollLeft;
       ambientRef.current.velocity = velocity;
       ambientRef.current.progress = progress;
+      ambientRef.current.attractorX = campfireWorldXRef.current - scrollLeft;
 
       // Reset attack if user scrolls back away from chest
       if (attackTriggeredRef.current) {
@@ -130,36 +143,49 @@ const HorizontalJourney: React.FC = () => {
     }
   }, []);
 
-  // Arrow keys for scroll
+  // Keyboard travel — scoped to the journey container (focused on mount)
+  // so arrow keys aren't hijacked page-wide once focus moves elsewhere.
   useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (!scrollContainerRef.current) return;
+    const container = scrollContainerRef.current;
+    if (!container) return;
 
+    const handleKeyDown = (e: KeyboardEvent) => {
       const step = 100;
       if (e.key === 'ArrowRight') {
         e.preventDefault();
-        scrollContainerRef.current.scrollLeft += step;
+        container.scrollLeft += step;
       }
       if (e.key === 'ArrowLeft') {
         e.preventDefault();
-        scrollContainerRef.current.scrollLeft -= step;
+        container.scrollLeft -= step;
+      }
+      if (e.key === 'Home') {
+        e.preventDefault();
+        container.scrollTo({ left: 0, behavior: 'smooth' });
+      }
+      if (e.key === 'End') {
+        e.preventDefault();
+        container.scrollTo({ left: container.scrollWidth, behavior: 'smooth' });
       }
     };
 
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
+    container.focus({ preventScroll: true });
+    container.addEventListener('keydown', handleKeyDown);
+    return () => container.removeEventListener('keydown', handleKeyDown);
   }, []);
 
-  // Vertical scroll (wheel/touchpad) → horizontal scroll
+  // Wheel/touchpad → horizontal scroll. Vertical wheel maps to horizontal;
+  // native horizontal deltas (trackpad swipe, Magic Mouse) pass through on
+  // whichever axis dominates the gesture.
   useEffect(() => {
     const handleWheel = (e: WheelEvent) => {
       if (!scrollContainerRef.current) return;
 
       e.preventDefault();
 
-      // Map vertical wheel movement to horizontal scroll
       // deltaY is typically 100-120 per wheel notch; scale proportionally
-      const scrollAmount = e.deltaY * 0.8;
+      const scrollAmount =
+        Math.abs(e.deltaX) > Math.abs(e.deltaY) ? e.deltaX : e.deltaY * 0.8;
 
       scrollContainerRef.current.scrollLeft += scrollAmount;
     };
@@ -179,13 +205,15 @@ const HorizontalJourney: React.FC = () => {
   //   return () => cancelAnimationFrame(animationFrameId);
   // }, []);
 
-  // Mobile: vertical swipe → horizontal scroll with inertia
+  // Mobile: swipe on either axis → horizontal scroll with inertia
   useEffect(() => {
     const container = scrollContainerRef.current;
     if (!container) return;
 
+    let touchStartX = 0;
     let touchStartY = 0;
     let touchStartScrollLeft = 0;
+    let lastTouchX = 0;
     let lastTouchY = 0;
     let lastTouchTime = 0;
     let touchVelocity = 0;
@@ -196,24 +224,31 @@ const HorizontalJourney: React.FC = () => {
         cancelAnimationFrame(inertiaFrame);
         inertiaFrame = null;
       }
+      touchStartX = e.touches[0].clientX;
       touchStartY = e.touches[0].clientY;
       touchStartScrollLeft = container.scrollLeft;
+      lastTouchX = touchStartX;
       lastTouchY = touchStartY;
       lastTouchTime = performance.now();
       touchVelocity = 0;
     };
 
     const handleTouchMove = (e: TouchEvent) => {
+      // Multi-touch (pinch-zoom) is the browser's — touchAction: pinch-zoom
+      if (e.touches.length > 1) return;
       e.preventDefault();
+      const currentX = e.touches[0].clientX;
       const currentY = e.touches[0].clientY;
       const now = performance.now();
       const dt = now - lastTouchTime;
       if (dt > 0) {
-        touchVelocity = (lastTouchY - currentY) / dt;
+        touchVelocity = (lastTouchY - currentY + (lastTouchX - currentX)) / dt;
       }
+      lastTouchX = currentX;
       lastTouchY = currentY;
       lastTouchTime = now;
-      container.scrollLeft = touchStartScrollLeft + (touchStartY - currentY);
+      container.scrollLeft =
+        touchStartScrollLeft + (touchStartY - currentY) + (touchStartX - currentX);
     };
 
     const handleTouchEnd = () => {
@@ -243,22 +278,26 @@ const HorizontalJourney: React.FC = () => {
   }, []);
 
   return (
+    <MotionConfig reducedMotion="user">
     <div className="relative w-full h-screen bg-replicate-canvas overflow-hidden">
-      {/* touchAction:none — vertical swipe drives horizontal scroll; pinch-zoom intentionally disabled for experience integrity */}
+      {/* touchAction: pinch-zoom — JS drives both pan axes, browser keeps zoom (WCAG 1.4.4) */}
       <div
         ref={scrollContainerRef}
-        className="w-full h-full overflow-x-auto overflow-y-hidden [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]"
-        style={{ touchAction: 'none' }}
+        tabIndex={0}
+        role="region"
+        aria-label="Nishant's journey — a horizontally scrolling portfolio. Use arrow keys, Home, or End to travel."
+        className="w-full h-full overflow-x-auto overflow-y-hidden outline-none [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]"
+        style={{ touchAction: 'pinch-zoom' }}
       >
         <div className="flex h-full">
           {/* Section 1: Hero */}
           <JourneySection
             id="hero"
             backgroundNumber={1}
-            width={windowSize.width * 1.5}
+            width={windowSize.width * widthOf('hero', isMobile)}
             scrollX={scrollState.x}
           >
-            <div className="flex h-full" style={{ width: windowSize.width * 1.5 }}>
+            <div className="flex h-full" style={{ width: windowSize.width * widthOf('hero', isMobile) }}>
               {/* Ink roughness filter — woodblock/letterpress effect */}
               <svg style={{ position: 'absolute', width: 0, height: 0 }}>
                 <defs>
@@ -486,7 +525,7 @@ const HorizontalJourney: React.FC = () => {
           <JourneySection
             id="projects"
             backgroundNumber={2}
-            width={windowSize.width * 2.2}
+            width={windowSize.width * widthOf('projects', isMobile)}
             scrollX={scrollState.x}
             behindMountains
           >
@@ -518,15 +557,11 @@ const HorizontalJourney: React.FC = () => {
           <JourneySection
             id="process"
             backgroundNumber={4}
-            width={isMobile ? windowSize.width * 2 : windowSize.width}
+            width={windowSize.width * widthOf('process', isMobile)}
             scrollX={scrollState.x}
           >
             <ProcessTimeline
-              scrollProgress={
-                isMobile
-                  ? Math.max(0, Math.min(1, (scrollState.progress * 5.7 - 3.7) / 2.0))
-                  : Math.max(0, Math.min(1, scrollState.progress * 4.7 - 2.7))
-              }
+              scrollProgress={processProgress(scrollState.x, windowSize.width, isMobile)}
             />
           </JourneySection>
 
@@ -534,7 +569,7 @@ const HorizontalJourney: React.FC = () => {
           <JourneySection
             id="contact"
             backgroundNumber={3}
-            width={windowSize.width}
+            width={windowSize.width * widthOf('contact', isMobile)}
             scrollX={scrollState.x}
             behindMountains
           >
@@ -574,14 +609,72 @@ const HorizontalJourney: React.FC = () => {
         </div>
       </div>
 
-      {/* Waypoint signposts — placed before each section so sign appears while approaching */}
-      <WaypointSignpost label="work"             position={windowSize.width * 0.5}                    characterX={scrollState.x} />
-      <WaypointSignpost label="process"          position={windowSize.width * 2.6}                    characterX={scrollState.x} />
-      <WaypointSignpost label="contact"          position={windowSize.width * (isMobile ? 4.7 : 3.7)} characterX={scrollState.x} />
-      <WaypointSignpost label="rest, traveller." position={windowSize.width * (isMobile ? 5.7 : 4.7)} characterX={scrollState.x} showArrow={false} />
+      {/* Waypoint signposts — placed before each section so sign appears while
+          approaching. Clicking one fast-travels to its section. */}
+      {waypointDefs(isMobile).map((wp) => (
+        <WaypointSignpost
+          key={wp.label}
+          label={wp.label}
+          position={windowSize.width * wp.x}
+          characterX={scrollState.x}
+          showArrow={wp.showArrow}
+          onNavigate={() =>
+            scrollContainerRef.current?.scrollTo({
+              left: wp.targetVw * windowSize.width,
+              behavior: 'smooth',
+            })
+          }
+        />
+      ))}
 
       {/* Magic book — fixed viewport overlay, active during projects section */}
       <ProjectBook scrollX={scrollState.x} />
+
+      {/* Scroll-composed haiku — three letterpress lines across the journey */}
+      {[
+        { text: 'ink dries on the road', xVw: 1.15, top: '24%', dark: false },
+        {
+          text: 'a traveller walks the page',
+          xVw: startOf('process', isMobile) + (isMobile ? 0.65 : 0.4),
+          top: '24%',
+          dark: false,
+        },
+        {
+          text: 'goodnight, drifting stars',
+          xVw: startOf('contact', isMobile) + 0.5,
+          top: '32%',
+          dark: true,
+        },
+      ].map((line) => {
+        const screenX = line.xVw * windowSize.width - scrollState.x;
+        const opacity =
+          1 - Math.min(1, Math.abs(screenX - windowSize.width * 0.5) / (windowSize.width * 0.45));
+        if (opacity <= 0.01) return null;
+        return (
+          <div
+            key={line.text}
+            className="fixed z-30 pointer-events-none select-none whitespace-nowrap"
+            style={{
+              left: screenX,
+              top: line.top,
+              transform: 'translateX(-50%)',
+              fontFamily: '"Georgia", "Times New Roman", serif',
+              fontStyle: 'italic',
+              fontSize: '0.85rem',
+              letterSpacing: '0.14em',
+              color: line.dark ? 'rgba(255,255,255,0.75)' : 'rgba(20,12,5,0.7)',
+              textShadow: line.dark ? '0 1px 10px rgba(0,0,0,0.7)' : 'none',
+              filter: 'url(#ink-rough)',
+              opacity,
+            }}
+          >
+            {line.text}
+          </div>
+        );
+      })}
+
+      {/* Campfire — the resting place; fireflies gather, lantern hands over */}
+      <Campfire scrollX={scrollState.x} worldX={CAMPFIRE_WORLD_X} night={nightIntensity} />
 
       {/* Farewell chest */}
       <FarewellChest
@@ -630,7 +723,7 @@ const HorizontalJourney: React.FC = () => {
           background:
             'radial-gradient(circle, rgba(255,196,110,0.32) 0%, rgba(255,170,80,0.12) 40%, rgba(255,170,80,0) 70%)',
           zIndex: 56, // above the night-multiply layer (55) → punches a hole in the dark
-          opacity: Math.max(0, Math.min(1, (scrollState.progress - 0.74) / 0.18)),
+          opacity: nightIntensity * lanternHandover,
           transition: 'opacity 0.4s linear',
         }}
       />
@@ -638,15 +731,74 @@ const HorizontalJourney: React.FC = () => {
       {/* Dragon flying in the sky */}
       {/* <Dragon scrollX={scrollState.x} /> */}
 
-      {/* Progress indicator */}
+      {/* Journey minimap — road strip with waypoint dots + samurai marker */}
       <div
-        className="fixed bottom-8 left-8 font-body text-xs uppercase tracking-[0.18em] font-semibold"
-        style={{
-          color: 'rgba(255,255,255,0.65)',
-          textShadow: '0 1px 8px rgba(0,0,0,0.9)',
-        }}
+        className="fixed bottom-8 left-8 z-[60] flex items-center gap-3"
+        role="progressbar"
+        aria-valuemin={0}
+        aria-valuemax={100}
+        aria-valuenow={Math.round(scrollState.progress * 100)}
+        aria-label="Journey progress"
       >
-        {Math.round(scrollState.progress * 100)}%
+        <div className="relative" style={{ width: 148, height: 14 }}>
+          {/* road */}
+          <div
+            style={{
+              position: 'absolute',
+              left: 0,
+              right: 0,
+              top: '50%',
+              height: 1,
+              background: 'rgba(255,255,255,0.35)',
+              boxShadow: '0 1px 8px rgba(0,0,0,0.9)',
+            }}
+          />
+          {/* waypoint dots at section starts */}
+          {SECTIONS.map((s) => {
+            const frac = startOf(s.id, isMobile) / maxScrollVw(isMobile);
+            const passed = scrollState.progress >= frac - 0.001;
+            return (
+              <div
+                key={s.id}
+                title={s.id}
+                style={{
+                  position: 'absolute',
+                  left: frac * 148,
+                  top: '50%',
+                  width: 4,
+                  height: 4,
+                  borderRadius: '50%',
+                  transform: 'translate(-50%, -50%)',
+                  background: passed ? 'rgba(234,40,4,0.9)' : 'rgba(255,255,255,0.45)',
+                  transition: 'background 0.4s ease',
+                }}
+              />
+            );
+          })}
+          {/* samurai marker */}
+          <div
+            style={{
+              position: 'absolute',
+              left: scrollState.progress * 148,
+              top: '50%',
+              width: 6,
+              height: 6,
+              borderRadius: '50%',
+              transform: 'translate(-50%, -50%)',
+              background: '#fff',
+              boxShadow: '0 0 6px rgba(255,255,255,0.9)',
+            }}
+          />
+        </div>
+        <span
+          className="font-body text-xs uppercase tracking-[0.18em] font-semibold"
+          style={{
+            color: 'rgba(255,255,255,0.65)',
+            textShadow: '0 1px 8px rgba(0,0,0,0.9)',
+          }}
+        >
+          {Math.round(scrollState.progress * 100)}%
+        </span>
       </div>
 
       {/* Music Toggle - Redesigned as a Calligraphy Stamp / Wax Seal */}
@@ -706,6 +858,7 @@ const HorizontalJourney: React.FC = () => {
         </motion.div>
       </button>
     </div>
+    </MotionConfig>
   );
 };
 

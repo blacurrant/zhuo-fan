@@ -9,6 +9,9 @@ export default function InvertCursor() {
   useEffect(() => {
     const updateMousePosition = (e: MouseEvent) => {
       setMousePosition({ x: e.clientX, y: e.clientY });
+      // Safari never fires document mouseenter when the pointer is already
+      // inside the window at load — a mousemove proves the pointer is here.
+      setIsVisible(true);
     };
 
     const handleMouseEnter = () => setIsVisible(true);
