@@ -83,10 +83,10 @@ export default function LandingPage() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-16">
           <motion.div {...fadeUp(0.65)}>
             <p style={{ fontFamily: GEO, fontStyle: 'italic', fontSize: 'clamp(0.95rem, 1.4vw, 1.1rem)', color: 'rgba(20,12,5,0.85)', letterSpacing: '0.06em', marginBottom: '1.2rem' }}>
-              Full-Stack Creative Developer
+              Design Engineer
             </p>
             <p style={{ fontFamily: GEO, fontSize: 'clamp(0.82rem, 1.1vw, 0.95rem)', color: 'rgba(20,12,5,0.72)', lineHeight: 1.9 }}>
-              Developer & Designer with 2+ years crafting immersive digital experiences. Based in India, working remote. Obsessive about craft.
+              I design it and I build it — GPU simulation, motion systems, 200+ animated components shipped this year. Based in India, working remote. Obsessive about craft.
             </p>
           </motion.div>
 
@@ -131,8 +131,8 @@ export default function LandingPage() {
             <motion.div
               key={item.id}
               {...fadeUp(0.08 * idx)}
-              onClick={() => router.push(item.route)}
-              className="group cursor-pointer grid grid-cols-[2.5rem_1fr] md:grid-cols-[3.5rem_1fr] gap-4 md:gap-8 py-8"
+              onClick={() => item.route !== '#' && router.push(item.route)}
+              className={`group grid grid-cols-[2.5rem_1fr] md:grid-cols-[3.5rem_1fr] gap-4 md:gap-8 py-8 ${item.route !== '#' ? 'cursor-pointer' : ''}`}
               style={{ borderBottom: '1px solid rgba(20,12,5,0.1)' }}
             >
               {/* Roman numeral — left gutter */}
@@ -146,11 +146,13 @@ export default function LandingPage() {
                   <h3 style={{ fontFamily: PF, fontSize: 'clamp(1.6rem, 3vw, 2.4rem)', fontWeight: 100, color: 'rgba(12,7,2,0.9)', lineHeight: 1, letterSpacing: '-0.01em', filter: 'url(#ink-rough)' }}>
                     {item.company}
                   </h3>
-                  <ArrowUpRight
-                    size={15}
-                    style={{ marginTop: '6px', flexShrink: 0, color: 'rgba(20,12,5,0.2)', transition: 'all 0.25s' }}
-                    className="group-hover:text-[rgba(234,40,4,0.75)] group-hover:translate-x-1 group-hover:-translate-y-1"
-                  />
+                  {item.route !== '#' && (
+                    <ArrowUpRight
+                      size={15}
+                      style={{ marginTop: '6px', flexShrink: 0, color: 'rgba(20,12,5,0.2)', transition: 'all 0.25s' }}
+                      className="group-hover:text-[rgba(234,40,4,0.75)] group-hover:translate-x-1 group-hover:-translate-y-1"
+                    />
+                  )}
                 </div>
 
                 <div className="flex flex-wrap items-center gap-3">
@@ -309,7 +311,7 @@ export default function LandingPage() {
 
           <motion.div {...fadeUp(0.3)} className="flex flex-col justify-center gap-6">
             <p style={{ fontFamily: PF, fontSize: 'clamp(1.15rem, 2vw, 1.55rem)', fontWeight: 400, fontStyle: 'italic', color: 'rgba(12,7,2,0.82)', lineHeight: 1.55 }}>
-              "Frontend Developer and Designer with 2+ years crafting beautiful, responsive web experiences."
+              "Design and engineering, one person. The last ten percent is where I live."
             </p>
             <div style={{ width: '44px', height: '1px', background: 'rgba(20,12,5,0.22)' }} />
             <p style={{ fontFamily: GEO, fontSize: '0.9rem', color: 'rgba(20,12,5,0.65)', lineHeight: 1.9 }}>

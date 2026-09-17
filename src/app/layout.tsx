@@ -27,26 +27,26 @@ export const viewport = {
 
 export const metadata = {
   metadataBase: new URL('https://nishant.world'),
-  title: 'Nishant Choudhary - Fullstack Developer Portfolio',
+  title: 'Nishant Choudhary — Design Engineer & Creative Developer',
   description:
-    'Professional portfolio of Nishant Choudhary, a skilled fullstack developer with 2 years of experience in React.js, Next.js, and TailwindCSS. Available for hire.',
+    'Design engineer and creative developer. GPU simulation, WebGL, motion systems and 200+ animated components shipped this year. React, Next.js, GSAP, Three.js. Based in India, working remote. Available for work.',
   keywords:
-    'fullstack developer, react developer, next.js, tailwindcss, web development, portfolio, nishant choudhary',
+    'design engineer, creative developer, webgl developer, frontend engineer, interaction design, motion design, gsap, three.js, shaders, react, next.js, nishant choudhary',
   authors: [{ name: 'Nishant Choudhary' }],
   creator: 'Nishant Choudhary',
   openGraph: {
-    title: 'Nishant Choudhary - Fullstack Developer Portfolio',
-    description: 'Professional portfolio showcasing fullstack development projects and skills',
+    title: 'Nishant Choudhary — Design Engineer & Creative Developer',
+    description: 'Design engineer and creative developer — GPU simulation, WebGL and motion systems. Based in India, working remote.',
     url: 'https://nishant.world',
     siteName: 'Nishant Choudhary',
     type: 'website',
     locale: 'en_US',
-    images: [{ url: 'https://nishant.world/og-image.png', width: 1200, height: 630, alt: 'Nishant Choudhary - Fullstack Developer Portfolio' }],
+    images: [{ url: 'https://nishant.world/og-image.png', width: 1200, height: 630, alt: 'Nishant Choudhary — Design Engineer & Creative Developer' }],
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Nishant Choudhary - Fullstack Developer Portfolio',
-    description: 'Professional portfolio showcasing fullstack development projects and skills',
+    title: 'Nishant Choudhary — Design Engineer & Creative Developer',
+    description: 'Design engineer and creative developer — GPU simulation, WebGL and motion systems. Based in India, working remote.',
     images: ['https://nishant.world/og-image.png'],
   },
   icons: {

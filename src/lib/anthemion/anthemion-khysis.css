@@ -1,0 +1,101 @@
+/* Extracted from anthemion/src/anthemion.css — the two blocks khysis needs:
+   the element's own layout + CSS-fallback wash, and the page's one motion
+   control (WCAG 2.2.2), which the raymarch harness writes into document.body.
+   Imported globally from HorizontalJourney (App Router allows it). */
+.anthemion-motion {
+  position: fixed;
+  right: var(--anthemion-motion-x, 1rem);
+  bottom: var(--anthemion-motion-y, 1rem);
+  /* Above the document, unlike the fields it controls. Deliberately below the
+     four-digit range a buyer's own modal or toast is likely to claim. */
+  z-index: var(--anthemion-motion-layer, 90);
+
+  /* It sits over an unknown, moving picture, so it cannot inherit a background
+     and it cannot be transparent. Its own colours, both readable on either. */
+  color: var(--anthemion-motion-ink, #fff);
+  background: var(--anthemion-motion-ground, rgb(0 0 0 / 0.66));
+  border: 1px solid rgb(255 255 255 / 0.28);
+  border-radius: 999px;
+  padding: 0.45em 0.9em;
+
+  font: inherit;
+  font-size: var(--anthemion-motion-size, 0.75rem);
+  letter-spacing: 0.02em;
+  line-height: 1;
+  cursor: pointer;
+
+  /* Quiet until wanted, and never invisible: a control WCAG requires may not
+     be hidden behind a hover. This is the floor, and it stays legible. */
+  opacity: var(--anthemion-motion-rest, 0.5);
+  transition: opacity 160ms ease;
+}
+
+.anthemion-motion:hover,
+.anthemion-motion:focus-visible {
+  opacity: 1;
+}
+
+/* The control is often the only focusable thing over a dark field, so the ring
+   is drawn in its own ink rather than left to the UA's, which may be invisible
+   against whatever the shader happens to be painting underneath. */
+.anthemion-motion:focus-visible {
+  outline: 2px solid var(--anthemion-motion-ink, #fff);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .anthemion-motion {
+    /* Nothing loops under reduced motion, so the harness never renders this.
+       The rule is here for the case where a field is already running when the
+       setting changes mid-session. */
+    transition: none;
+  }
+}
+
+/* ---- khysis -------------------------------------------------------------
+   Fallback by element, never by a class. The primed ground with two faint
+   washes on it: where the paint is, not what it does. */
+
+anthemion-khysis {
+  display: block;
+  position: fixed;
+  inset: 0;
+  z-index: var(--khysis-layer, -1);
+  pointer-events: none;
+  overflow: hidden;
+  background:
+    radial-gradient(
+      26% 34% at 34% 42%,
+      color-mix(in srgb, var(--khysis-first, #1b3f8f) 22%, transparent),
+      transparent 72%
+    ),
+    radial-gradient(
+      22% 30% at 63% 61%,
+      color-mix(in srgb, var(--khysis-second, #b32338) 18%, transparent),
+      transparent 70%
+    ),
+    var(--khysis-ground, #efe9dd);
+}
+
+anthemion-khysis[place='inline'] {
+  position: relative;
+  inset: auto;
+  z-index: auto;
+  width: 100%;
+  aspect-ratio: var(--khysis-ratio, 16 / 10);
+}
+
+.anthemion-khysis__gl {
+  display: block;
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.anthemion-khysis__probe {
+  position: absolute;
+  width: 0;
+  height: 0;
+  overflow: hidden;
+}

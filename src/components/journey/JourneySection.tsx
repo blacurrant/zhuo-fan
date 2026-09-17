@@ -13,6 +13,22 @@ interface JourneySectionProps {
   children?: React.ReactNode;
 }
 
+/**
+ * THE SKY IS COMPUTED NOW; THE TERRAIN IS STILL DRAWN. One <anthemion-khysis>
+ * watercolour field (mounted once in HorizontalJourney, fixed at z -1) is the
+ * sky for the whole journey, and each section's ParallaxBackground draws only
+ * its terrain and clouds over it — the sky.png layers are filtered out inside
+ * ParallaxBackground, and this section carries no opaque background, because
+ * either one would sit exactly on top of the fixed field and hide it.
+ *
+ * Why the split: the razor seams at section boundaries were mostly SKY —
+ * full-height gradient walls (teal day / violet dusk / starlit night) meeting
+ * along a 1px line. Terrain silhouettes meeting is ordinary landscape;
+ * atmospheres meeting is a rendering error. One continuous wash under
+ * everything removes the worst of the cut while the mountains, pines and
+ * clouds keep the world a world. AtmosphereOverlay still grades day to night
+ * over the lot.
+ */
 const JourneySection: React.FC<JourneySectionProps> = ({
   id,
   backgroundNumber,
@@ -31,7 +47,7 @@ const JourneySection: React.FC<JourneySectionProps> = ({
   return (
     <div
       id={id}
-      className="relative flex-shrink-0 h-full bg-replicate-canvas overflow-hidden"
+      className="relative flex-shrink-0 h-full overflow-hidden"
       style={{ width: `${width}px` }}
     >
       <ParallaxBackground
