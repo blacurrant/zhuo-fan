@@ -15,7 +15,7 @@ const CONTACT_LINKS = [
   { label: 'GitHub', href: 'https://github.com/blacurrant' },
   { label: 'LinkedIn', href: 'https://linkedin.com/in/nishant-choudhary-dev' },
   { label: 'Twitter', href: 'https://twitter.com/nishantcy' },
-  { label: 'Résumé (PDF)', href: '/Nishant_fullstack_cv.pdf' },
+  { label: 'Résumé (PDF)', href: '/Nishant_Choudhary_CV.pdf' },
 ];
 
 export default function JourneyPage() {
@@ -25,7 +25,7 @@ export default function JourneyPage() {
           assistive tech. The visual experience below is client-only (ssr: false)
           and ships an empty body without this. */}
       <section className="sr-only">
-        <h1>Nishant Choudhary — Full-Stack Creative Developer</h1>
+        <h1>Nishant Choudhary — Design Engineer & Creative Developer</h1>
         <p>
           Charting immersive digital worlds through code, design, and obsessive attention to
           craft. This page is an interactive, horizontally-scrolling journey; a conventional

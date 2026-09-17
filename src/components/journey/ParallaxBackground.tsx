@@ -65,11 +65,18 @@ const ParallaxBackground: React.FC<ParallaxBackgroundProps> = ({
   }, [backgroundNumber]);
 
   const layers = useMemo(() => {
-    return allLayers.filter((l) => {
-      if (foregroundOnly === undefined) return true;          // all layers
-      if (foregroundOnly === true) return isForeground(l);   // rocks/ground only
-      return !isForeground(l);                               // sky/clouds/pines only
-    });
+    return allLayers
+      // THE SKY IS NOT DRAWN HERE ANY MORE. One continuous <anthemion-khysis>
+      // wash behind the whole journey is the sky; each set's sky.png was a
+      // full-height gradient wall that met the next set's along a 1px seam.
+      // Terrain and clouds stay — silhouettes meeting is landscape, skies
+      // meeting is a rendering error.
+      .filter((l) => !l.includes('sky'))
+      .filter((l) => {
+        if (foregroundOnly === undefined) return true;          // all layers
+        if (foregroundOnly === true) return isForeground(l);   // rocks/ground only
+        return !isForeground(l);                               // clouds/pines only
+      });
   }, [allLayers, foregroundOnly]);
 
   // Hook A: Set initial state once on mount
@@ -99,13 +106,28 @@ const ParallaxBackground: React.FC<ParallaxBackgroundProps> = ({
       const elX = xRefsMap.current[`${backgroundNumber}-${layer}`];
       if (!elX) return;
 
-      let distFromVisible = 0;
-      const sectionEndScroll = sectionStartX + sectionWidth - windowSize.width;
+      // OFF BY ONE VIEWPORT WIDTH, and it was visible as a hard vertical seam at
+      // every section boundary. This measured the distance from the SCROLL
+      // POSITION to the section, not from the EDGE OF THE SCREEN to the section
+      // — so a section counted as "1 viewport away" at the exact moment its
+      // first pixel came on screen. With the fade completing at 0.6 x viewport
+      // width, a section was fully transparent while a slice of it was already
+      // in view, and its layers were still mid-flight vertically. On a 2560-wide
+      // screen that slice is ~450px of bare container.
+      //
+      // What both the fade and the vertical offset actually want is: zero while
+      // ANY part of the section overlaps the viewport, growing only once it is
+      // genuinely off screen. A parallax layer should never be caught in
+      // transit while someone is looking at it.
+      const viewLeft = scrollX;
+      const viewRight = scrollX + windowSize.width;
+      const sectionEndX = sectionStartX + sectionWidth;
 
-      if (scrollX < sectionStartX) {
-        distFromVisible = sectionStartX - scrollX;
-      } else if (scrollX > sectionEndScroll) {
-        distFromVisible = scrollX - sectionEndScroll;
+      let distFromVisible = 0;
+      if (sectionEndX < viewLeft) {
+        distFromVisible = viewLeft - sectionEndX;        // passed, off to the left
+      } else if (sectionStartX > viewRight) {
+        distFromVisible = sectionStartX - viewRight;     // not yet, off to the right
       }
 
       let opacity = 1;
@@ -129,10 +151,13 @@ const ParallaxBackground: React.FC<ParallaxBackgroundProps> = ({
         const direction = isForeground(layer) ? 1 : -1;
         const yOffset = distFromVisible * depth * 0.8;
 
-        gsap.set(elX, { x: 0, y: direction * yOffset, opacity });
+        // autoAlpha = opacity + visibility:hidden at zero. A fully faded
+        // section's layers leave the compositor entirely instead of sitting
+        // as invisible full-viewport textures over the canvas.
+        gsap.set(elX, { x: 0, y: direction * yOffset, autoAlpha: opacity });
       } else {
         // Sky never fades — it's the atmosphere; fading it reveals the raw container bg
-        gsap.set(elX, { x: 0, y: 0, opacity: 1 });
+        gsap.set(elX, { x: 0, y: 0, autoAlpha: 1 });
       }
     });
   }, [scrollX, sectionStartX, sectionWidth, layers, allLayers, backgroundNumber]);
@@ -200,13 +225,20 @@ const ParallaxBackground: React.FC<ParallaxBackgroundProps> = ({
     let lastT = performance.now();
     const offsets = drifters.map(() => 0);
 
+    // The wrap has to happen at ONE TILE, and the tile is no longer 1920 wide:
+    // 'auto 100%' scales it with the viewport height. Wrapping at a hardcoded
+    // 1920 on a 1440-tall screen (2560px tiles) lurched the clouds 640px
+    // sideways every cycle.
+    const tileWidth = () => Math.max(1, window.innerHeight * (1920 / 1080));
+
     const tick = (now: number) => {
       raf = requestAnimationFrame(tick);
       if (document.hidden) { lastT = now; return; }
       const dt = (now - lastT) / 1000;
       lastT = now;
+      const wrap = tileWidth();
       drifters.forEach((d, i) => {
-        offsets[i] = (offsets[i] - d.speed * dt) % 1920;
+        offsets[i] = (offsets[i] - d.speed * dt) % wrap;
         d.el.style.backgroundPositionX = `${offsets[i]}px`;
       });
     };
@@ -214,8 +246,11 @@ const ParallaxBackground: React.FC<ParallaxBackgroundProps> = ({
     return () => cancelAnimationFrame(raf);
   }, [layers, backgroundNumber]);
 
+  // No flat-blue backstop on the container any more: it was the ground behind
+  // the old sky.png, and opaque, it would sit exactly on top of the fixed
+  // khysis field. The wash is the atmosphere now.
   return (
-    <div className={`absolute inset-0 overflow-hidden ${foregroundOnly ? '' : 'bg-[#7ab0d4]'}`}>
+    <div className="absolute inset-0 overflow-hidden">
       {layers.map((layer) => {
         const layerKey = `${backgroundNumber}-${layer}`;
 
@@ -230,11 +265,30 @@ const ParallaxBackground: React.FC<ParallaxBackgroundProps> = ({
               className="absolute inset-0"
               style={{
                 backgroundImage: `url(/parallax-backgrounds/game_background_${backgroundNumber}/layers/${layer}.png)`,
-                backgroundSize: '1920px 1080px',
+                // ARTWORK IS 1920x1080 AND THE VIEWPORT IS NOT. Pinning the
+                // background to '1920px 1080px' left every layer's artwork
+                // ending at y=1080 with bare div below it, so on any screen
+                // taller than 1080 CSS px the layer's rectangular bottom edge
+                // was visible — pines sliced mid-tree, a flat slab beneath, the
+                // character standing on nothing. Worse, Hook B then translates
+                // each layer vertically by its own depth, so all those hard
+                // edges slid across each other at different rates.
+                //
+                // 'auto 100%' scales to the viewport height and lets the width
+                // follow the aspect ratio, so it always covers vertically and
+                // still tiles horizontally for the drift below.
+                backgroundSize: 'auto 100%',
                 backgroundPosition: '0 0',
                 backgroundRepeat: 'repeat-x',
                 backgroundAttachment: 'local',
-                willChange: 'transform',
+                /* willChange REMOVED. With the opaque sky gone, every one of
+                   these transparent layers composites over the live khysis
+                   canvas, and a will-change hint on all of them asks the GPU
+                   to hold ~25 viewport-sized layers at once. Exhaust that
+                   budget and the compositor starts promoting and demoting
+                   layers per frame, which looks exactly like elements
+                   flickering and fighting. The browser promotes transformed
+                   layers on its own when it is worth it. */
               }}
             />
           </div>

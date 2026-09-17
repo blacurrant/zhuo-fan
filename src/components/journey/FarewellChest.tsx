@@ -16,7 +16,7 @@ const links = [
   { label: 'GitHub',   href: 'https://github.com/blacurrant',                 offset: { x: -520, y: -260 }, icon: Github,   landRotate: -1, landX: -520 },
   { label: 'LinkedIn', href: 'https://linkedin.com/in/nishant-choudhary-dev', offset: { x:  420, y: -280 }, icon: Linkedin,  landRotate:   1, landX:  420 },
   { label: 'Twitter',  href: 'https://twitter.com/nishantcy',                offset: { x: -250, y: -420 }, icon: Twitter,   landRotate:  1, landX: -250 },
-  { label: 'Résumé',   href: '/Nishant_fullstack_cv.pdf',                     offset: { x:  200, y: -440 }, icon: FileText,  landRotate:  -1, landX:  200 },
+  { label: 'Résumé',   href: '/Nishant_Choudhary_CV.pdf',                     offset: { x:  200, y: -440 }, icon: FileText,  landRotate:  -1, landX:  200 },
 ];
 
 const FarewellChest: React.FC<FarewellChestProps> = ({ scrollX, chestWorldX, burst, atChest, onAttackClick }) => {

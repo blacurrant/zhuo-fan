@@ -1,18 +1,29 @@
 export const experience = [
   {
-    id: 'craon',
+    id: 'halfheaven',
     numeral: 'I',
+    company: 'Half Heaven',
+    role: 'Design Engineer — Independent Practice',
+    period: '2025 — Present',
+    description:
+      'Independent design engineering, solo. Brand and interface work for Luxelayer and Reznoir, plus anthemion — an open-source library of 34 web components and 9 GPU-raymarched fields on one shared harness.',
+    tags: ['WebGL', 'GLSL', 'Next.js', 'Motion', 'Brand'],
+    route: '#',
+  },
+  {
+    id: 'craon',
+    numeral: 'II',
     company: 'Craon',
-    role: 'Full-Stack Developer',
+    role: 'Design Engineer',
     period: '2024 — Present',
     description:
-      'Built an AI-powered video editing SaaS from the ground up. End-to-end ownership across frontend, backend, and infrastructure — from auth to real-time video processing pipelines.',
-    tags: ['React', 'Next.js', 'TypeScript', 'Node.js', 'AI'],
+      'Designed and architected the entire frontend of an AI-powered video editing SaaS — interface, design system and motion, owned end to end. Shipped the backend and infrastructure alongside it, from auth to real-time video processing pipelines.',
+    tags: ['React', 'Next.js', 'TypeScript', 'Design System', 'Node.js', 'AI'],
     route: '/works/craon',
   },
   {
     id: 'freightez',
-    numeral: 'II',
+    numeral: 'III',
     company: 'FreightEZ',
     role: 'Lead Frontend Engineer',
     period: '2023 — 2024',
@@ -23,7 +34,7 @@ export const experience = [
   },
   {
     id: 'melloup',
-    numeral: 'III',
+    numeral: 'IV',
     company: 'MelloUp',
     role: 'Founding Engineer',
     period: '2023',
@@ -35,6 +46,17 @@ export const experience = [
 ];
 
 export const projects = [
+  {
+    id: 'anthemion',
+    title: 'anthemion',
+    role: 'Open Source',
+    sub: 'WebGL · GLSL · 9 raymarched fields · MIT',
+    image: '/anthemion/khaos.png',
+    alt: 'A gravitationally lensed accretion disc, raymarched in a fragment shader',
+    route: '#',
+    year: '2026',
+    video: null,
+  },
   {
     id: 'ibasho',
     title: 'Ibasho',
