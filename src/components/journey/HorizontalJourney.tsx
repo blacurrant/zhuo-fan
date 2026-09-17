@@ -5,6 +5,7 @@ import { useViewportScale } from '@/hooks/useViewportScale';
 import Character from './Character';
 import Dragon from './Dragon';
 import JourneySection from './JourneySection';
+import SectionGate from './SectionGate';
 import WaypointSignpost from './WaypointSignpost';
 import ProcessTimeline from './ProcessTimeline';
 import ProjectBook from './ProjectBook';
@@ -14,6 +15,7 @@ import AtmosphereOverlay from './AtmosphereOverlay';
 import Campfire from './Campfire';
 import { SECTIONS, widthOf, startOf, maxScrollVw, chestVw, waypointDefs, processProgress } from './layout';
 import { ArrowRightCircle } from 'lucide-react';
+import '@/lib/anthemion/anthemion-khysis.css';
 
 const CHEST_COLLISION_RANGE = 220; // wide enough to cover the one-tile gap
 
@@ -71,12 +73,25 @@ const HorizontalJourney: React.FC = () => {
     if (atChest && !attackTriggeredRef.current) setAttackTriggered(true);
   };
   
+  // <anthemion-khysis> — registers itself on import. Client-only and after
+  // mount, per the library's own hydration rule: register at module scope and
+  // the element rewrites its light DOM before React hydrates, and React
+  // discards any subtree whose hydration does not match (measured upstream:
+  // 10 page errors before deferring, 0 after).
+  useEffect(() => {
+    import('@/lib/anthemion/khysis');
+  }, []);
+
   // Background Music state
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const [isMusicPlaying, setIsMusicPlaying] = useState(false);
 
   useEffect(() => {
     audioRef.current = new Audio('/music/Heartbeat.mp3');
+    // `new Audio()` defaults to preload="auto", which pulled the whole 4.65MB
+    // track down on mount — 56% of this page's bytes, for a file that cannot
+    // play until someone presses the button. Deferred to the first play().
+    audioRef.current.preload = 'none';
     audioRef.current.loop = true;
     audioRef.current.volume = 0.4; // Subtle volume
 
@@ -279,7 +294,22 @@ const HorizontalJourney: React.FC = () => {
 
   return (
     <MotionConfig reducedMotion="user">
-    <div className="relative w-full h-screen bg-replicate-canvas overflow-hidden">
+    <div className="relative w-full h-screen overflow-hidden">
+      {/* THE WORLD'S GROUND — one computed watercolour field, fixed behind
+          everything at z -1, replacing the four parallax artwork sets (see
+          JourneySection.tsx for the reasoning). gate="pointer": travelling
+          the page lays the wash. Its own ground paints the page cream, so
+          nothing above it may be opaque. Under prefers-reduced-motion the
+          field composes its primed state once and never loops. */}
+      <anthemion-khysis
+        gate="pointer"
+        style={{
+          '--khysis-ground': '#f9f7f3',
+          '--khysis-first': '#3e7d8c',
+          '--khysis-second': '#c2401f',
+          '--khysis-third': '#7a5c3e',
+        } as React.CSSProperties}
+      />
       {/* touchAction: pinch-zoom — JS drives both pan axes, browser keeps zoom (WCAG 1.4.4) */}
       <div
         ref={scrollContainerRef}
@@ -423,7 +453,7 @@ const HorizontalJourney: React.FC = () => {
                     animate={{ opacity: 1 }}
                     transition={{ duration: 0.6, delay: 0.72 }}
                   >
-                    Full-Stack Creative Developer
+                    Design Engineer
                   </motion.p>
 
                   {/* Description */}
@@ -539,7 +569,9 @@ const HorizontalJourney: React.FC = () => {
                 style={{
                   fontSize: '9.2vw',
                   letterSpacing: '-0.02em',
-                  color: 'rgba(255,255,255,1)',
+                  // Solid white was for the old teal sky; on the cream wash it
+                  // vanished. Ghost ink, the same register as the other titles.
+                  color: 'rgba(20,12,5,0.12)',
                   lineHeight: 1.0,
                   paddingTop: '0.15em',
                   WebkitMaskImage:
@@ -624,6 +656,17 @@ const HorizontalJourney: React.FC = () => {
               behavior: 'smooth',
             })
           }
+        />
+      ))}
+
+      {/* Torii gates on the section boundaries — the samurai passes through
+          one into each new land, which is what lets the terrain change there
+          read as arrival rather than error. */}
+      {SECTIONS.slice(1).map((s) => (
+        <SectionGate
+          key={`gate-${s.id}`}
+          worldX={windowSize.width * startOf(s.id, isMobile)}
+          scrollX={scrollState.x}
         />
       ))}
 

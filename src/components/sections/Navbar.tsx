@@ -57,7 +57,7 @@ const Navbar: React.FC = () => {
           >
             <div className="w-full max-w-5xl h-[80vh] bg-white dark:bg-gray-950 rounded-lg shadow-xl overflow-hidden flex flex-col">
               <div className="flex items-center justify-between px-4 py-3 border-b border-gray-200 dark:border-gray-800">
-                <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Nishant Fullstack CV</h3>
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Nishant Choudhary — CV</h3>
                 <div className="flex items-center gap-2">
                   <Button
                     variant="ghost"

@@ -22,9 +22,14 @@ export default function ExperienceSwitch({ current }: ExperienceSwitchProps) {
 
   const label       = isJourney ? 'The Editorial' : 'The Journey';
   const sublabel    = isJourney ? 'Switch to minimal' : 'Switch to adventure';
-  const borderColor = isJourney ? 'rgba(252,252,252,0.18)' : 'rgba(20,12,5,0.18)';
-  const bgIdle      = isJourney ? 'rgba(252,252,252,0.06)' : 'rgba(20,12,5,0.04)';
-  const bgHover     = isJourney ? 'rgba(252,252,252,0.12)' : 'rgba(20,12,5,0.08)';
+  // The journey's ground is now the khysis wash: cream by day, graded to
+  // night by AtmosphereOverlay. Translucent white text held on the old teal
+  // sky and vanishes on cream — no single ink survives that range, so the
+  // journey variant carries its own PLATE: a dark ground the white text is
+  // always read against, whatever the wash is doing behind it.
+  const borderColor = isJourney ? 'rgba(252,252,252,0.22)' : 'rgba(20,12,5,0.18)';
+  const bgIdle      = isJourney ? 'rgba(20,12,5,0.55)'     : 'rgba(20,12,5,0.04)';
+  const bgHover     = isJourney ? 'rgba(20,12,5,0.72)'     : 'rgba(20,12,5,0.08)';
   const textMain    = isJourney ? 'rgba(252,252,252,0.85)' : 'rgba(12,7,2,0.85)';
   const textSub     = isJourney ? 'rgba(252,252,252,0.4)'  : 'rgba(20,12,5,0.4)';
 
