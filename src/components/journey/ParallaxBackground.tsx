@@ -13,9 +13,13 @@ interface ParallaxBackgroundProps {
    * true      → render only foreground layers: rocks/ground/plant
    */
   foregroundOnly?: boolean;
+  /** px the artwork extends past the section's left/right edge to crossfade with its neighbour */
+  bleedLeft?: number;
+  bleedRight?: number;
 }
 
 const FOREGROUND_KEYWORDS = ['rock', 'ground', 'plant'];
+const CLOUD_ALPHA = 0.55;
 
 const getDepthForLayer = (layerName: string, position: number, totalLayers: number): number => {
   if (layerName.includes('sky')) return 0.05;
@@ -37,9 +41,16 @@ const ParallaxBackground: React.FC<ParallaxBackgroundProps> = ({
   sectionWidth,
   scrollX,
   foregroundOnly,
+  bleedLeft = 0,
+  bleedRight = 0,
 }) => {
   const yRefsMap = useRef<{ [key: string]: HTMLDivElement | null }>({});
   const xRefsMap = useRef<{ [key: string]: HTMLDivElement | null }>({});
+  // Last y/alpha written per layer. Hook B runs on every scroll tick for all
+  // four sections, and writing unchanged values still dirties style on 25
+  // viewport-sized layers — measured at ~5ms of forced flush per scroll event,
+  // against 0.01ms with the layers absent.
+  const lastWrittenRef = useRef<{ [key: string]: { y: number; a: number } }>({});
   // Section 1 starts already "entered"
   const animationFiredRef = useRef(false);
 
@@ -121,13 +132,16 @@ const ParallaxBackground: React.FC<ParallaxBackgroundProps> = ({
       // transit while someone is looking at it.
       const viewLeft = scrollX;
       const viewRight = scrollX + windowSize.width;
-      const sectionEndX = sectionStartX + sectionWidth;
+      // Measured against the BLED box: the crossfade strip past the section's
+      // edge is on screen before the section is, and must not be caught mid-flight.
+      const boxStartX = sectionStartX - bleedLeft;
+      const boxEndX = sectionStartX + sectionWidth + bleedRight;
 
       let distFromVisible = 0;
-      if (sectionEndX < viewLeft) {
-        distFromVisible = viewLeft - sectionEndX;        // passed, off to the left
-      } else if (sectionStartX > viewRight) {
-        distFromVisible = sectionStartX - viewRight;     // not yet, off to the right
+      if (boxEndX < viewLeft) {
+        distFromVisible = viewLeft - boxEndX;            // passed, off to the left
+      } else if (boxStartX > viewRight) {
+        distFromVisible = boxStartX - viewRight;         // not yet, off to the right
       }
 
       let opacity = 1;
@@ -146,21 +160,32 @@ const ParallaxBackground: React.FC<ParallaxBackgroundProps> = ({
         }
       }
 
+      // Clouds are thinned so the khysis wash — the one surface here that
+      // remembers the pointer — reads through the sky instead of behind it.
+      if (layer.includes('cloud')) opacity *= CLOUD_ALPHA;
+
       if (!layer.includes('sky')) {
         const depth = getDepthForLayer(layer, idx, allLayers.length);
         const direction = isForeground(layer) ? 1 : -1;
-        const yOffset = distFromVisible * depth * 0.8;
+        const y = direction * distFromVisible * depth * 0.8;
+
+        const key = `${backgroundNumber}-${layer}`;
+        const last = lastWrittenRef.current[key];
+        // Skip: nothing changed, or it was invisible and still is (y is
+        // written fresh the moment it becomes visible again).
+        if (last && last.a === opacity && (opacity === 0 || last.y === y)) return;
+        lastWrittenRef.current[key] = { y, a: opacity };
 
         // autoAlpha = opacity + visibility:hidden at zero. A fully faded
         // section's layers leave the compositor entirely instead of sitting
         // as invisible full-viewport textures over the canvas.
-        gsap.set(elX, { x: 0, y: direction * yOffset, autoAlpha: opacity });
+        gsap.set(elX, { x: 0, y, autoAlpha: opacity });
       } else {
         // Sky never fades — it's the atmosphere; fading it reveals the raw container bg
         gsap.set(elX, { x: 0, y: 0, autoAlpha: 1 });
       }
     });
-  }, [scrollX, sectionStartX, sectionWidth, layers, allLayers, backgroundNumber]);
+  }, [scrollX, sectionStartX, sectionWidth, bleedLeft, bleedRight, layers, allLayers, backgroundNumber, windowSize.width]);
 
   // Hook C: Entrance animations (only for Section 1 on load)
   useLayoutEffect(() => {
@@ -249,8 +274,23 @@ const ParallaxBackground: React.FC<ParallaxBackgroundProps> = ({
   // No flat-blue backstop on the container any more: it was the ground behind
   // the old sky.png, and opaque, it would sit exactly on top of the fixed
   // khysis field. The wash is the atmosphere now.
+  // THE SEAM. Each section's artwork used to stop dead at its own edge, so
+  // clouds and mountains met the next set's on a full-height 1px line that the
+  // torii only covered at the bottom. The artwork now bleeds past the edge and
+  // ramps out over twice the bleed, while the neighbour ramps in over the same
+  // strip: the two alphas sum to one, so the boundary is a dissolve.
+  const mask = `linear-gradient(to right, transparent 0, #000 ${bleedLeft * 2}px, #000 calc(100% - ${bleedRight * 2}px), transparent 100%)`;
+
   return (
-    <div className="absolute inset-0 overflow-hidden">
+    <div
+      className="absolute top-0 bottom-0 overflow-hidden"
+      style={{
+        left: -bleedLeft,
+        right: -bleedRight,
+        WebkitMaskImage: mask,
+        maskImage: mask,
+      }}
+    >
       {layers.map((layer) => {
         const layerKey = `${backgroundNumber}-${layer}`;
 

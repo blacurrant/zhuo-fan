@@ -4,8 +4,9 @@ import Image from 'next/image';
 
 import { useRouter } from 'next/navigation';
 import { useViewportScale } from '@/hooks/useViewportScale';
-import { startOf } from './layout';
+import { bookWindow } from './layout';
 import { PROJECTS } from './projects';
+import { pageTurn } from './sfx';
 
 const FRAME_PX = 272;
 
@@ -48,7 +49,9 @@ function computePhase(t: number): Phase | null {
         frame: frameOf(tp * 2 * 0.5, 16),
         projectIdx: fromIdx,
         showContent: true,
-        contentOpacity: 1 - tp * 2,
+        // Out in the first quarter of the turn: text still showing while the
+        // page sprite sweeps across it read as mud.
+        contentOpacity: Math.max(0, 1 - tp * 4),
       };
     }
     return {
@@ -56,7 +59,7 @@ function computePhase(t: number): Phase | null {
       frame: frameOf(0.5 + (tp - 0.5) * 0.5, 16),
       projectIdx: toIdx,
       showContent: true,
-      contentOpacity: (tp - 0.5) * 2,
+      contentOpacity: Math.max(0, (tp - 0.75) * 4),
     };
   };
 
@@ -125,10 +128,22 @@ const ProjectBook: React.FC<ProjectBookProps> = ({ scrollX }) => {
     router.push(route);
   };
 
-  const sectionStart = vw * startOf('projects', vw < 768);
-  const sectionRange = vw * 1.2;
+  const { startVw, spanVw } = bookWindow(vw < 768);
+  const sectionStart = vw * startVw;
+  const sectionRange = vw * spanVw;
+  const t = sectionRange > 0 ? Math.max(0, Math.min(1, (scrollX - sectionStart) / sectionRange)) : 0;
+
+  // Which page turn is under way (-1: none). Before any early return, so the
+  // hook order holds on every render.
+  const turning =
+    t >= B.TURN_01_S && t < B.TURN_01_E ? 0 :
+    t >= B.TURN_12_S && t < B.TURN_12_E ? 1 :
+    t >= B.TURN_23_S && t < B.TURN_23_E ? 2 : -1;
+  useEffect(() => {
+    if (turning >= 0) pageTurn();
+  }, [turning]);
+
   if (sectionRange === 0) return null;
-  const t = Math.max(0, Math.min(1, (scrollX - sectionStart) / sectionRange));
 
   const isMobile = vw < 768;
 
@@ -186,7 +201,7 @@ const ProjectBook: React.FC<ProjectBookProps> = ({ scrollX }) => {
           fontFamily: '"Playfair Display", "Cinzel", "Georgia", serif',
           fontSize: isMobile ? 'clamp(20px, 6vw, 36px)' : 'clamp(24px, 3.5vw, 48px)',
           fontWeight: 600,
-          color: 'rgba(20, 15, 5, 0.75)',
+          color: 'rgba(20, 15, 5, 0.9)',
           letterSpacing: '0.02em',
           textShadow: '0.5px 0.5px 0px rgba(0,0,0,0.1)',
           marginBottom: isMobile ? '6px' : '10px',
@@ -208,12 +223,26 @@ const ProjectBook: React.FC<ProjectBookProps> = ({ scrollX }) => {
         style={{
           fontFamily: '"Georgia", "Times New Roman", serif',
           fontSize: isMobile ? 'clamp(9px, 2.5vw, 14px)' : 'clamp(10px, 1.2vw, 16px)',
-          color: 'rgba(40, 25, 15, 0.8)',
+          color: 'rgba(40, 25, 15, 0.85)',
           lineHeight: 1.6,
-          marginBottom: isMobile ? '14px' : '28px',
+          marginBottom: isMobile ? '6px' : '10px',
         }}
       >
         {project.subtitle}
+      </p>
+
+      <p
+        style={{
+          fontFamily: '"Georgia", "Times New Roman", serif',
+          fontStyle: 'italic',
+          fontSize: isMobile ? 'clamp(9px, 2.4vw, 13px)' : 'clamp(10px, 0.95vw, 14px)',
+          color: 'rgba(40, 25, 15, 0.78)',
+          lineHeight: 1.55,
+          maxWidth: '26ch',
+          marginBottom: isMobile ? '12px' : '22px',
+        }}
+      >
+        {project.summary}
       </p>
 
       <button
