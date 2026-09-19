@@ -45,6 +45,21 @@ export const totalWidth = (isMobile: boolean): number =>
 /** Scrollable range = total content minus the one visible viewport. */
 export const maxScrollVw = (isMobile: boolean): number => totalWidth(isMobile) - 1;
 
+/**
+ * Scroll window (vw) the project book plays over. It used to run 1.2vw from
+ * the projects start, leaving ~0.3vw of bare landscape before it (hero copy
+ * gone, book not yet arrived) and ~0.4vw after it (book closed, process
+ * tablets still off screen). It now opens as the hero copy leaves and closes
+ * as the first tablet comes into view.
+ */
+export const bookWindow = (isMobile: boolean): { startVw: number; spanVw: number } => {
+  const startVw = startOf('projects', isMobile) - 0.2;
+  // Mobile tablets stay hidden until the process section itself is reached
+  // (processProgress has no lead-in there), so the book can run closer to it.
+  const endVw = startOf('process', isMobile) - (isMobile ? 0.2 : 0.85);
+  return { startVw, spanVw: endVw - startVw };
+};
+
 /** Chest sits 0.5vw into the farewell section (+60px applied by caller). */
 export const chestVw = (isMobile: boolean): number => startOf('contact', isMobile) + 0.5;
 

@@ -8,6 +8,8 @@ export interface JourneyProject {
   role: string;
   image: string;
   route: string;
+  /** One line of what it does, taken from the case study — never invented. */
+  summary: string;
 }
 
 export const PROJECTS: JourneyProject[] = [
@@ -17,6 +19,7 @@ export const PROJECTS: JourneyProject[] = [
     role: 'Lead Frontend Engineer',
     image: '/craon/craon-hero.png',
     route: '/works/craon',
+    summary: 'A browser video editor with AI automation and 60 FPS timeline scrubbing.',
   },
   {
     title: 'MelloUp',
@@ -24,6 +27,7 @@ export const PROJECTS: JourneyProject[] = [
     role: 'Founding Engineer',
     image: '/melloup/melloup.png',
     route: '/works/melloup',
+    summary: 'Measures what event marketing actually returns, calculated in under a second.',
   },
   {
     title: 'Ibasho',
@@ -31,6 +35,7 @@ export const PROJECTS: JourneyProject[] = [
     role: 'Lead Designer & Developer',
     image: '/ibasho/ibashoo.png',
     route: '/works/ibasho',
+    summary: 'Privacy-first journaling — the server never sees a word in plaintext.',
   },
   {
     title: 'FreightEZ',
@@ -38,5 +43,6 @@ export const PROJECTS: JourneyProject[] = [
     role: 'Frontend Engineer',
     image: '/freightez/freightez-hero.png',
     route: '/works/freightez',
+    summary: 'Dispatch, compliance and live tracking for small freight fleets.',
   },
 ];

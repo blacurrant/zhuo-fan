@@ -8,10 +8,10 @@ interface ProcessTimelineProps {
 }
 
 const TABLET_DATA = [
-  { numeral: 'I',   title: 'Discovery', description: 'Understand the terrain.\nMap the unknown.',          threshold: 0.05, rotate: -2.5 },
-  { numeral: 'II',  title: 'Design',    description: 'Shape the language.\nTurn intent into form.',        threshold: 0.14, rotate:  1.8 },
-  { numeral: 'III', title: 'Build',     description: 'Clean code.\nClean architecture.',                   threshold: 0.24, rotate: -1.5 },
-  { numeral: 'IV',  title: 'Ship',      description: 'Release. Gather signal.\nIterate without mercy.',   threshold: 0.35, rotate:  2.2 },
+  { numeral: 'I',   title: 'Discovery', description: 'Find the one thing it must get right.', threshold: 0.05, rotate: -2.5 },
+  { numeral: 'II',  title: 'Design',    description: 'Type, spacing and motion as one system.',     threshold: 0.14, rotate:  1.8 },
+  { numeral: 'III', title: 'Build',     description: 'Designed and built by the same hands.', threshold: 0.24, rotate: -1.5 },
+  { numeral: 'IV',  title: 'Ship',      description: 'Watch real use. Chase the last ten percent.',  threshold: 0.35, rotate:  2.2 },
 ];
 
 const TABLET_THRESHOLDS_MOBILE = [0.05, 0.30, 0.57, 0.80];
@@ -62,7 +62,9 @@ const ProcessTimeline: React.FC<ProcessTimelineProps> = ({ scrollProgress }) => 
           style={{
             fontSize: '9.2vw',
             letterSpacing: '-0.02em',
-            color: 'rgba(255,255,255,1)',
+            // White was for the old teal sky and vanishes on the cream wash —
+            // same ghost ink as "Adventures".
+            color: 'rgba(20,12,5,0.12)',
             lineHeight: 1.0,
             paddingTop: '0.15em',
             WebkitMaskImage: 'linear-gradient(to bottom, rgba(0,0,0,1) 0%, rgba(0,0,0,0.5) 55%, rgba(0,0,0,0) 88%)',

@@ -13,6 +13,7 @@ import FarewellChest from './FarewellChest';
 import AmbientCanvas, { AmbientState } from './AmbientCanvas';
 import AtmosphereOverlay from './AtmosphereOverlay';
 import Campfire from './Campfire';
+import { setSfxEnabled, footstep } from './sfx';
 import { SECTIONS, widthOf, startOf, maxScrollVw, chestVw, waypointDefs, processProgress } from './layout';
 import { ArrowRightCircle } from 'lucide-react';
 import '@/lib/anthemion/anthemion-khysis.css';
@@ -27,6 +28,11 @@ interface ScrollState {
 
 const HorizontalJourney: React.FC = () => {
   const scrollContainerRef = useRef<HTMLDivElement>(null);
+  // Wheel and swipe move the road when they start on it, or on a fixed overlay
+  // that opts in. Other overlays (the book, the signposts) keep their gestures.
+  const drivesRoad = (t: EventTarget | null) =>
+    t instanceof Element &&
+    (!!scrollContainerRef.current?.contains(t) || !!t.closest('[data-scroll-through]'));
   const [scrollState, setScrollState] = useState<ScrollState>({
     x: 0,
     progress: 0,
@@ -34,6 +40,7 @@ const HorizontalJourney: React.FC = () => {
   });
 
   const lastScrollRef = useRef(0);
+  const strideRef = useRef(0);
   const lastScrollTimeRef = useRef(performance.now());
   const ambientRef = useRef<AmbientState>({ x: 0, velocity: 0, progress: 0 });
   const [attackTriggered, setAttackTriggeredState] = useState(false);
@@ -53,8 +60,10 @@ const HorizontalJourney: React.FC = () => {
   const chestWorldXRef = useRef(CHEST_WORLD_X);
   chestWorldXRef.current = CHEST_WORLD_X;
 
-  // Campfire rests just inside the farewell section, before the chest
-  const CAMPFIRE_WORLD_X = windowSize.width * (startOf('contact', isMobile) + 0.18);
+  // Campfire burns beside the samurai where he stops, so the letter reads as
+  // written at the camp. At 0.18vw it sat against the torii at the screen edge.
+  const CAMPFIRE_WORLD_X =
+    windowSize.width * (startOf('contact', isMobile) + 0.5) - Math.max(110, Math.round(170 * viewportScale));
   const campfireWorldXRef = useRef(CAMPFIRE_WORLD_X);
   campfireWorldXRef.current = CAMPFIRE_WORLD_X;
   const campfireScreenX = CAMPFIRE_WORLD_X - scrollState.x;
@@ -70,8 +79,24 @@ const HorizontalJourney: React.FC = () => {
   const atChest = Math.abs(chestScreenX - windowSize.width / 2) < CHEST_COLLISION_RANGE;
 
   const handleAttackClick = () => {
-    if (atChest && !attackTriggeredRef.current) setAttackTriggered(true);
+    if (attackTriggeredRef.current) return;
+    if (atChest) {
+      setAttackTriggered(true);
+      return;
+    }
+    // Pressed before arriving (keyboard, or an early click): walk there first.
+    scrollContainerRef.current?.scrollTo({
+      left: chestWorldXRef.current - windowSize.width / 2,
+      behavior: 'smooth',
+    });
   };
+
+  // The letter shows itself when the road has run out — within a few percent
+  // of a viewport of the end — not while the last section is still arriving.
+  // It is the page's one conversion and is not behind any gesture; the crate
+  // is a flourish beside it.
+  const farewellOnScreen =
+    scrollState.x > windowSize.width * (maxScrollVw(isMobile) - 0.06);
   
   // <anthemion-khysis> — registers itself on import. Client-only and after
   // mount, per the library's own hydration rule: register at module scope and
@@ -105,6 +130,7 @@ const HorizontalJourney: React.FC = () => {
 
   const toggleMusic = () => {
     if (!audioRef.current) return;
+    setSfxEnabled(!isMusicPlaying);
     if (isMusicPlaying) {
       audioRef.current.pause();
       setIsMusicPlaying(false);
@@ -145,6 +171,13 @@ const HorizontalJourney: React.FC = () => {
         if (csx > window.innerWidth / 2 + CHEST_COLLISION_RANGE + 40) {
           setAttackTriggered(false);
         }
+      }
+
+      // A footstep every stride of travel (silent unless sound is on)
+      strideRef.current += Math.abs(scrollLeft - lastScrollRef.current);
+      if (strideRef.current > 110) {
+        strideRef.current = 0;
+        footstep();
       }
 
       lastScrollRef.current = scrollLeft;
@@ -194,7 +227,7 @@ const HorizontalJourney: React.FC = () => {
   // whichever axis dominates the gesture.
   useEffect(() => {
     const handleWheel = (e: WheelEvent) => {
-      if (!scrollContainerRef.current) return;
+      if (!scrollContainerRef.current || !drivesRoad(e.target)) return;
 
       e.preventDefault();
 
@@ -205,11 +238,11 @@ const HorizontalJourney: React.FC = () => {
       scrollContainerRef.current.scrollLeft += scrollAmount;
     };
 
-    const container = scrollContainerRef.current;
-    if (container) {
-      container.addEventListener('wheel', handleWheel, { passive: false });
-      return () => container.removeEventListener('wheel', handleWheel);
-    }
+    // On window, not the container: fixed overlays that opt in with
+    // data-scroll-through (the farewell letter) sit outside it, and a wheel
+    // over them would otherwise go nowhere and leave the visitor stuck.
+    window.addEventListener('wheel', handleWheel, { passive: false });
+    return () => window.removeEventListener('wheel', handleWheel);
   }, []);
 
   // TODO: Momentum/inertia scrolling - disabled pending fix
@@ -233,8 +266,11 @@ const HorizontalJourney: React.FC = () => {
     let lastTouchTime = 0;
     let touchVelocity = 0;
     let inertiaFrame: number | null = null;
+    let tracking = false;
 
     const handleTouchStart = (e: TouchEvent) => {
+      tracking = drivesRoad(e.target);
+      if (!tracking) return;
       if (inertiaFrame !== null) {
         cancelAnimationFrame(inertiaFrame);
         inertiaFrame = null;
@@ -250,7 +286,7 @@ const HorizontalJourney: React.FC = () => {
 
     const handleTouchMove = (e: TouchEvent) => {
       // Multi-touch (pinch-zoom) is the browser's — touchAction: pinch-zoom
-      if (e.touches.length > 1) return;
+      if (!tracking || e.touches.length > 1) return;
       e.preventDefault();
       const currentX = e.touches[0].clientX;
       const currentY = e.touches[0].clientY;
@@ -267,6 +303,8 @@ const HorizontalJourney: React.FC = () => {
     };
 
     const handleTouchEnd = () => {
+      if (!tracking) return;
+      tracking = false;
       let velocity = touchVelocity * 16;
       const applyInertia = () => {
         if (Math.abs(velocity) < 0.5) {
@@ -280,14 +318,16 @@ const HorizontalJourney: React.FC = () => {
       inertiaFrame = requestAnimationFrame(applyInertia);
     };
 
-    container.addEventListener('touchstart', handleTouchStart, { passive: true });
-    container.addEventListener('touchmove', handleTouchMove, { passive: false });
-    container.addEventListener('touchend', handleTouchEnd);
+    // On window for the same reason as the wheel: a swipe that starts on the
+    // letter must still move the road.
+    window.addEventListener('touchstart', handleTouchStart, { passive: true });
+    window.addEventListener('touchmove', handleTouchMove, { passive: false });
+    window.addEventListener('touchend', handleTouchEnd);
 
     return () => {
-      container.removeEventListener('touchstart', handleTouchStart);
-      container.removeEventListener('touchmove', handleTouchMove);
-      container.removeEventListener('touchend', handleTouchEnd);
+      window.removeEventListener('touchstart', handleTouchStart);
+      window.removeEventListener('touchmove', handleTouchMove);
+      window.removeEventListener('touchend', handleTouchEnd);
       if (inertiaFrame !== null) cancelAnimationFrame(inertiaFrame);
     };
   }, []);
@@ -470,8 +510,8 @@ const HorizontalJourney: React.FC = () => {
                     animate={{ opacity: 1 }}
                     transition={{ duration: 0.6, delay: 0.86 }}
                   >
-                    Charting immersive digital worlds through code, design, and obsessive attention
-                    to craft.
+                    I design it and I build it — interfaces, motion and GPU work, one person
+                    from first sketch to shipped.
                   </motion.p>
 
                   {/* CTA — stamped */}
@@ -605,38 +645,6 @@ const HorizontalJourney: React.FC = () => {
             scrollX={scrollState.x}
             behindMountains
           >
-            {/* "thank you" — written in the clouds, sky zone, fades in as section enters */}
-            <div
-              className="absolute inset-0 flex items-start justify-center select-none pointer-events-none"
-              style={{ zIndex: 0, paddingTop: '8vh' }}
-            >
-              <div
-                style={{
-                                        fontFamily: '"Playfair Display", "Georgia", "Times New Roman", serif',
-                      fontSize: 'clamp(3.8rem, 8vw, 7rem)',
-                      fontWeight: 100,
-                      // color: 'rgba(12,7,2,0.92)',
-                      lineHeight: 0.88,
-                      letterSpacing: '-0.02em',
-                      marginBottom: '1.75rem',
-                      filter: 'url(#ink-rough)',
-                  // fontFamily: '"Georgia", "Times New Roman", serif',
-                  // fontSize: 'clamp(3rem, 8.5vw, 7.5rem)',
-                  // fontWeight: 400,
-                  color: 'rgba(255,255,255,0.42)',
-                  // letterSpacing: '0.04em',
-                  // lineHeight: 1.2,
-                  // fontStyle: 'italic',
-                  textAlign: 'center',
-                  opacity: scrollState.progress > 0.87 ? 1 : 0,
-                  transition: 'opacity 1.4s ease',
-                  WebkitMaskImage: 'linear-gradient(to bottom, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.7) 50%, rgba(0,0,0,0) 90%)',
-                  maskImage: 'linear-gradient(to bottom, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.7) 50%, rgba(0,0,0,0.1) 95%)',
-                }}
-              >
-                goodnight
-              </div>
-            </div>
           </JourneySection>
         </div>
       </div>
@@ -696,7 +704,9 @@ const HorizontalJourney: React.FC = () => {
         return (
           <div
             key={line.text}
-            className="fixed z-30 pointer-events-none select-none whitespace-nowrap"
+            // The night line sits above the z-55 night-multiply layer; under it,
+            // white ink was multiplied down to the sky's own grey.
+            className={`fixed ${line.dark ? 'z-[57]' : 'z-30'} pointer-events-none select-none whitespace-nowrap`}
             style={{
               left: screenX,
               top: line.top,
@@ -716,6 +726,37 @@ const HorizontalJourney: React.FC = () => {
         );
       })}
 
+      {/* "goodnight" — written in the night sky. Fixed and world-positioned like
+          the haiku, above the z-55 night-multiply layer: inside the section it
+          was graded with the world and 42% white came out the sky's own grey. */}
+      {(() => {
+        const screenX = (startOf('contact', isMobile) + 0.5) * windowSize.width - scrollState.x;
+        if (screenX < -windowSize.width || screenX > windowSize.width * 2) return null;
+        return (
+          <div
+            aria-hidden
+            className="fixed z-[57] pointer-events-none select-none whitespace-nowrap"
+            style={{
+              left: screenX,
+              top: '8vh',
+              transform: 'translateX(-50%)',
+              fontFamily: '"Playfair Display", "Georgia", "Times New Roman", serif',
+              fontSize: 'clamp(3.8rem, 8vw, 7rem)',
+              fontWeight: 100,
+              lineHeight: 0.88,
+              letterSpacing: '-0.02em',
+              color: 'rgba(255,248,232,0.9)',
+              textShadow: '0 2px 24px rgba(8,10,30,0.55)',
+              filter: 'url(#ink-rough)',
+              opacity: scrollState.progress > 0.87 ? 1 : 0,
+              transition: 'opacity 1.4s ease',
+            }}
+          >
+            goodnight
+          </div>
+        );
+      })()}
+
       {/* Campfire — the resting place; fireflies gather, lantern hands over */}
       <Campfire scrollX={scrollState.x} worldX={CAMPFIRE_WORLD_X} night={nightIntensity} />
 
@@ -726,6 +767,8 @@ const HorizontalJourney: React.FC = () => {
         burst={attackTriggered}
         atChest={atChest && !attackTriggered}
         onAttackClick={handleAttackClick}
+        reveal={farewellOnScreen}
+        onWalkAgain={() => scrollContainerRef.current?.scrollTo({ left: 0, behavior: 'smooth' })}
       />
 
       {/* Dark road overlay for final section */}

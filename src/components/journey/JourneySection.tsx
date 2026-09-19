@@ -2,7 +2,10 @@
 import React, { useMemo } from 'react';
 import { useViewportScale } from '@/hooks/useViewportScale';
 import ParallaxBackground from './ParallaxBackground';
-import { startOf, type SectionId } from './layout';
+import { SECTIONS, startOf, type SectionId } from './layout';
+
+/** Crossfade strip at each section boundary, as a fraction of viewport width. */
+const BLEED_VW = 0.12;
 
 interface JourneySectionProps {
   id: SectionId;
@@ -44,10 +47,19 @@ const JourneySection: React.FC<JourneySectionProps> = ({
     [id, windowWidth]
   );
 
+  // No bleed off the world's outer edges: left of the first section is
+  // unreachable, and right of the last would widen the scroll range.
+  const index = SECTIONS.findIndex((s) => s.id === id);
+  const bleed = Math.round(windowWidth * BLEED_VW);
+  const bleedLeft = index > 0 ? bleed : 0;
+  const bleedRight = index < SECTIONS.length - 1 ? bleed : 0;
+
   return (
     <div
       id={id}
-      className="relative flex-shrink-0 h-full overflow-hidden"
+      // No overflow-hidden: the artwork bleeds into the neighbouring section to
+      // crossfade (ParallaxBackground clips its own box).
+      className="relative flex-shrink-0 h-full"
       style={{ width: `${width}px` }}
     >
       <ParallaxBackground
@@ -56,6 +68,8 @@ const JourneySection: React.FC<JourneySectionProps> = ({
         sectionWidth={width}
         scrollX={scrollX}
         foregroundOnly={behindMountains ? false : undefined}
+        bleedLeft={bleedLeft}
+        bleedRight={bleedRight}
       />
 
       <div className="relative z-10 h-full w-full">
@@ -70,6 +84,8 @@ const JourneySection: React.FC<JourneySectionProps> = ({
             sectionWidth={width}
             scrollX={scrollX}
             foregroundOnly={true}
+            bleedLeft={bleedLeft}
+            bleedRight={bleedRight}
           />
         </div>
       )}
